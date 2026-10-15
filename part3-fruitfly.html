@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PART 3 重現 fruitfly-lab｜果蠅模擬重現</title>
+<link rel="stylesheet" href="assets/flysimu.css">
+</head>
+<body>
+<div class="crumb"><a href="https://marginli.github.io/bsc-topics/">BSC 專題課程</a> ／ <a href="index.html">果蠅模擬重現</a> ／ PART 3</div>
+<header class="hero">
+  <p class="eyebrow">PART 3</p>
+  <h1>重現 fruitfly-lab</h1>
+  <p class="subtitle">六個步驟，每一步先寫下「怎樣算對上」再跑：資料、子圖、驗證、校準、七個條件、統計</p>
+</header>
+
+<div class="wrap">
+
+  <div class="pager top">
+    <a href="part2-setup.html">← PART 2　準備環境與資料</a>
+    <a href="part4-blackjack.html">PART 4　重現 fly-blackjack →</a>
+  </div>
+
+  <nav class="toc">
+    <h2>本頁章節</h2>
+    <ol>
+      <li><a href="#s1">三種「對上」</a></li>
+      <li><a href="#s2">結論：六個步驟的成績</a></li>
+      <li><a href="#s3">FF1　資料是同一份嗎</a></li>
+      <li><a href="#s4">FF2　子圖逐位相同</a></li>
+      <li><a href="#s5">FF3　子圖與全腦的反應方向一致</a></li>
+      <li><a href="#s6">FF4　校準出同樣的閾值</a></li>
+      <li><a href="#s7">FF5–FF6　七個條件，每一局都相同</a></li>
+      <li><a href="#s8">遊戲版本換一個小版號，分數就變了</a></li>
+    </ol>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s1"><span class="pt">1</span>三種「對上」</h2>
+
+  <p>重現的每一步都要先回答：<b>本機的數字要和作者的差多少以內，才算對上？</b>答案取決於那一步有沒有隨機性、隨機性有沒有被固定住。這一頁用三種判定標準：</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>判定標準</th><th>什麼時候用</th><th>本頁哪些步驟</th></tr>
+    <tr><td><b>逐位相同</b>：檔案或數字一個位元都不差</td><td>這一步沒有隨機性，或隨機性由亂數種子完全固定</td><td>FF1、FF2、FF4、FF5</td></tr>
+    <tr><td><b>在誤差範圍內</b>：與作者的值相差不超過一個事先訂好的比例</td><td>這一步的隨機輸入在不同電腦上不保證相同</td><td>FF3（訂 ±20%）</td></tr>
+    <tr><td><b>形狀相同</b>：條件之間的高低順序與差距方向一樣</td><td>環境的某個版本和作者不同，數字本來就不會一樣</td><td>換成 ViZDoom 1.3.2 之後的 FF5（<a href="#s8">第 8 節</a>）</td></tr>
+  </table>
+  </div>
+
+  <div class="plain"><b>白話：</b>擲一顆骰子一百次，只要兩個人用同一顆「固定好的」骰子，結果會一模一樣（逐位相同）；用不同的骰子，平均點數也會接近 3.5（誤差範圍）；如果其中一個人的骰子被換過，至少「擲出 6 的次數比擲出 1 的少不了多少」這種關係應該還在（形狀相同）。<b>判定標準要在跑之前訂</b>，跑完才訂，就變成看結果決定標準。</div>
+
+  <p class="figsrc">骰子是說明用的例子，不是實驗數字；ViZDoom 1.3.2 的結果見第 8 節。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s2"><span class="pt">2</span>結論：六個步驟的成績</h2>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>步驟</th><th>做什麼</th><th>判定標準</th><th>結果</th></tr>
+    <tr><td>FF1</td><td>核對連線表</td><td>逐位相同</td><td><b>相同</b>：138,639 顆神經元、15,091,983 條連結、54,492,922 個突觸，與 FlyWire 官方檔逐條一致</td></tr>
+    <tr><td>FF2</td><td>重新抽出子圖</td><td>逐位相同</td><td><b>相同</b>：兩個輸出檔的 md5（檔案內容的指紋，見第 4 節）與作者附的檔案一致</td></tr>
+    <tr><td>FF3</td><td>子圖與全腦的反應比較</td><td>大於 10 Hz 的項目在作者值的 ±20% 內，方向相同</td><td><b>12 項中 11 項在範圍內</b>，1 項 +22%；方向全部相同</td></tr>
+    <tr><td>FF4</td><td>校準閾值</td><td>逐位相同</td><td><b>相同</b>：轉向 130.93、開火 95.68；打亂接線 40.46、8.44</td></tr>
+    <tr><td>FF5</td><td>七個條件各玩 10 局</td><td>逐位相同</td><td><b>70 局全部相同</b></td></tr>
+    <tr><td>FF6</td><td>統計檢定</td><td>逐位相同</td><td><b>相同</b>：平均、標準差、p 值都一樣</td></tr>
+  </table>
+  </div>
+
+  <p class="figsrc">每一列的數字出處見下面對應的小節。</p>
+
+  <p>步驟代號 FF1–FF6 是本課自己編的，下載包裡的 <code>fruitfly_lab/run_all.sh</code> 照這個順序執行，每一步的終端輸出存在 <code>logs/</code>、數字存在 <code>results/</code>。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s3"><span class="pt">3</span>FF1　資料是同一份嗎</h2>
+
+  <p>fruitfly-lab 不直接讀 FlyWire 的原始檔，而是讀 Shiu 全腦模型 repo 附的 <code>Connectivity_783.parquet</code>——Shiu 等人從 FlyWire v783 整理出來的連線表。所以第一步要確認：<b>這份二手整理和 FlyWire 官方發布的連線表是不是同一份。</b></p>
+
+  <p>比對的對象是 FlyWire 官方的 <code>proofread_connections_783.feather</code>。官方檔把「同一對神經元在不同神經氈裡的連結」分成不同列，共 16,847,997 列；按神經元對合併之後是 15,091,983 條連結。兩份逐條比對：</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>項目</th><th>Shiu 的連線表</th><th>FlyWire 官方檔（合併後）</th></tr>
+    <tr><td>神經元</td><td>138,639</td><td>138,639</td></tr>
+    <tr><td>連結</td><td>15,091,983</td><td>15,091,983</td></tr>
+    <tr><td>突觸總數</td><td>54,492,922</td><td>54,492,922</td></tr>
+    <tr><td>只出現在其中一份的連結</td><td>0</td><td>0</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">由 <code>ext/ff1_compare_conn.py</code> 算出，輸出在 <code>out/fruitfly/logs/ff1_conn.log</code>。</p>
+
+  <p>官方 feather 檔要另外下載，所以下載包的 FF1 預設只印出 Shiu 連線表的三個數字；另外下載了官方檔的話，設定 <code>FLYWIRE_FEATHER</code> 就會做逐條比對（見 <a href="part2-setup.html#s3">PART 2 第 3 節</a>）。</p>
+
+  <p>抽子圖還需要一個<b>註解檔</b>：每顆神經元屬於哪個細胞型態、在哪一側。這個檔案在 GitHub 上會持續更新——本課用的版本與更早下載的一份相比，<code>cell_type</code> 欄有 232 列不同。這不影響重現：下一步 FF2 抽出的子圖逐位相同，代表子圖用到的那幾種細胞型態沒有被改到。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s4"><span class="pt">4</span>FF2　子圖逐位相同</h2>
+
+  <p>用作者的 <code>flycircuit/extract.py</code> 重新抽一次子圖，比對兩個輸出檔的 <b>md5</b>（一個檔案內容的 32 字元指紋，內容差一個位元，指紋就完全不同）：</p>
+
+<pre><code>7c97b8f2db09ad880be0394ba1c7e9c0  circuit/edges.bin
+25a0ca03374cd3591beacb575a441dc2  circuit/meta.json</code></pre>
+  <p class="figsrc">重新抽出與作者附的檔案，md5 完全相同。輸出在 <code>out/fruitfly/logs/ff2_md5_rerun.txt</code> 與 <code>ff2_md5_committed.txt</code>。</p>
+
+  <p>抽出來的子圖：3,963 顆神經元、354,879 條連結、38% 抑制性。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s5"><span class="pt">5</span>FF3　子圖與全腦的反應方向一致</h2>
+
+  <p>切出子圖會丟掉子圖外的所有輸入。作者用一個驗證來說明這樣切還算合理：用 100 Hz 刺激一側的 LC10a，比較三種模型裡下游神經元的放電率——<b>子圖</b>、<b>打亂接線的子圖</b>、以及 Shiu 的<b>全腦模型</b>（用 Brian2 模擬全部 138,639 顆神經元）。每種跑 5 次、每次 1 秒。</p>
+
+  <p>這一步有隨機的輸入放電，而作者附的數字和本機重跑的數字並不相同（子圖與打亂接線兩種模型在本機重跑兩次是逐位相同的，但與作者附的檔案不同，原因本課沒有追到），所以判定標準訂成：<b>大於 10 Hz 的項目，與作者的值相差在 ±20% 以內，而且反應落在同一側。</b></p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>刺激</th><th>模型</th><th>DNa02 左／右（作者）</th><th>本機</th><th>AOTU019 左／右（作者）</th><th>本機</th></tr>
+    <tr><td>左眼 LC10a</td><td>子圖</td><td>103.8 ／ 0.0</td><td>93.2 ／ 0.0</td><td>222.4 ／ 0.0</td><td>224.8 ／ 0.0</td></tr>
+    <tr><td>左眼 LC10a</td><td>打亂接線</td><td>21.0 ／ 0.2</td><td>21.2 ／ 0.4</td><td>1.0 ／ 21.6</td><td>0.8 ／ <b>26.4</b></td></tr>
+    <tr><td>左眼 LC10a</td><td>全腦</td><td>105.6 ／ 0.0</td><td>109.6 ／ 0.0</td><td>171.2 ／ 0.0</td><td>171.8 ／ 0.0</td></tr>
+    <tr><td>右眼 LC10a</td><td>子圖</td><td>0.0 ／ 4.0</td><td>0.0 ／ 4.4</td><td>0.0 ／ 243.6</td><td>0.0 ／ 242.0</td></tr>
+    <tr><td>右眼 LC10a</td><td>打亂接線</td><td>46.0 ／ 0.0</td><td>45.0 ／ 0.0</td><td>17.6 ／ 36.0</td><td>19.2 ／ 34.4</td></tr>
+    <tr><td>右眼 LC10a</td><td>全腦</td><td>0.0 ／ 58.8</td><td>0.0 ／ 61.6</td><td>0.0 ／ 184.8</td><td>0.0 ／ 185.4</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">單位 Hz。作者的值出自作者附的 <code>output/validation.json</code>（收在 <code>out/fruitfly/validation_author.json</code>），本機的值在 <code>out/fruitfly/validation_local.json</code>。</p>
+
+  <p>大於 10 Hz 的項目共 12 項，<b>11 項在 ±20% 以內</b>；粗體那一項（打亂接線、左眼刺激時的 AOTU019 右）是 +22%（作者 21.6 Hz、本機 26.4 Hz）。它屬於打亂接線這個對照組，而且反應落在同一側，不影響這一步要驗證的事：<b>完整子圖與全腦在兩側都把訊號送到同一側的 DNa02。</b></p>
+
+  <p>表裡還有一個值得注意的數字：右眼刺激時，子圖的 DNa02 右只有 4.4 Hz，全腦卻有 61.6 Hz。作者也得到同樣的落差（4.0 對 58.8），但在 README 只標了「同側、偏弱」。這個落差是怎麼來的，放在 <a href="part5-checks.html#s5">PART 5 第 5 節</a>追。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s6"><span class="pt">6</span>FF4　校準出同樣的閾值</h2>
+
+  <p>照 <a href="part1-what.html#s4">PART 1 第 4 節</a>的校準流程重跑一次，兩組閾值都與作者附的檔案逐位相同：</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>迴路</th><th>轉向閾值</th><th>開火閾值</th></tr>
+    <tr><td>完整接線</td><td>130.93</td><td>95.68</td></tr>
+    <tr><td>打亂接線（<code>scrambled_cal</code> 用）</td><td>40.46</td><td>8.44</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">輸出在 <code>out/fruitfly/local_doom_vizdoom130/calibration_fly.json</code> 與 <code>calibration_scrambled.json</code>。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s7"><span class="pt">7</span>FF5–FF6　七個條件，每一局都相同</h2>
+
+  <p>七個條件（定義見 <a href="part1-what.html#s5">PART 1 第 5 節</a>）各玩 10 局，亂數種子與作者相同。用和作者一樣的 <b>ViZDoom 1.3.0</b>，<b>70 局的擊殺數全部逐局相同</b>，所以平均、標準差與 p 值也完全相同：</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>條件</th><th>每局擊殺（10 局）</th><th>平均 ± 標準差</th><th>p（對完整接線）</th></tr>
+    <tr><td><code>oracle</code></td><td>11 14 13 8 15 10 5 11 11 17</td><td>11.5 ± 3.47</td><td>0.348</td></tr>
+    <tr><td><code>fly</code></td><td>7 11 9 4 16 10 10 15 4 16</td><td>10.2 ± 4.47</td><td>—</td></tr>
+    <tr><td><code>lesion025</code></td><td>2 11 4 3 3 2 16 1 3 10</td><td>5.5 ± 5.02</td><td>0.048</td></tr>
+    <tr><td><code>scrambled_cal</code></td><td>0 1 0 0 0 1 1 1 2 1</td><td>0.7 ± 0.67</td><td>0.002</td></tr>
+    <tr><td><code>scrambled</code></td><td>0 0 0 0 0 0 0 0 0 0</td><td>0.0 ± 0.0</td><td>0.002</td></tr>
+    <tr><td><code>lesion</code></td><td>0 0 0 0 0 0 0 0 0 0</td><td>0.0 ± 0.0</td><td>0.002</td></tr>
+    <tr><td><code>random</code></td><td>1 0 1 1 1 1 1 1 1 1</td><td>0.9 ± 0.32</td><td>0.002</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">本機與作者的逐局數字都在 <code>out/fruitfly/local_doom_vizdoom130/</code> 與 <code>out/fruitfly/author_doom/</code> 的 <code>analysis.json</code>。p 值是作者的 <code>doom/analyze.py</code> 算的配對置換檢定。</p>
+
+  <p><b>p 值</b>是「如果兩個條件其實沒有差別，純靠運氣得到這麼大（或更大）差距的機率」。慣例上小於 0.05 就說差距顯著。表上 <code>lesion025</code> 的 0.048 剛好低於這條線；10 局夠不夠，放在 <a href="part5-checks.html#s2">PART 5 第 2 節</a>用 50 局重新檢查。</p>
+
+  <p>逐局相同還說明了一件事：模型的神經元模擬（作者在 macOS、本課在 Linux）在兩台電腦上給出完全相同的結果。所以只要分數不同，差異只可能來自遊戲本身——第 8 節就是這種情形。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s8"><span class="pt">8</span>遊戲版本換一個小版號，分數就變了</h2>
+
+  <p>用 <code>pip install vizdoom</code> 不指定版本，會裝到當時最新的 <b>1.3.2</b>。同一套程式、同一組種子，換成 1.3.2 跑：</p>
+
+  <figure class="fig">
+    <img src="assets/p3-fly-episodes.png" alt="fly 條件 10 局的逐局擊殺數。作者（ViZDoom 1.3.0）與本機 ViZDoom 1.3.0 兩條線完全重疊：7、11、9、4、16、10、10、15、4、16，平均 10.2。本機 ViZDoom 1.3.2 是另一條線：15、5、7、3、13、10、2、4、3、3，平均 6.5。">
+    <figcaption><b>圖 1　同一個條件（完整接線）、同一組種子，三次執行的逐局擊殺數。</b>作者的圓圈與本機 1.3.0 的叉號每一局都重疊；本機 1.3.2 的方塊是另一串數字。
+    <span class="figsrc">由 <code>scripts/make_figures.py</code> 從 <code>out/fruitfly/</code> 的三份 <code>fly.json</code> 畫出。</span></figcaption>
+  </figure>
+
+  <p>連不使用神經網路的 <code>oracle</code> 逐局分數也變了（1.3.0：11 14 13 8 15 10 5 11 11 17；1.3.2：10 12 11 10 13 15 5 14 10 19）。<code>oracle</code> 只讀遊戲回報的敵人位置，它的分數會變，代表<b>遊戲本身的隨機抽樣在兩個版本之間不同</b>，不是神經網路的問題。</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>條件</th><th>ViZDoom 1.3.0（與作者相同）</th><th>ViZDoom 1.3.2</th></tr>
+    <tr><td><code>oracle</code></td><td>11.5（p = 0.348）</td><td>11.9（p = 0.019）</td></tr>
+    <tr><td><code>fly</code></td><td>10.2</td><td>6.5</td></tr>
+    <tr><td><code>lesion025</code></td><td>5.5（p = 0.048）</td><td>2.8（p = 0.015）</td></tr>
+    <tr><td><code>scrambled_cal</code></td><td>0.7</td><td>0.9</td></tr>
+    <tr><td><code>random</code></td><td>0.9</td><td>0.9</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">10 局平均擊殺；p 值對完整接線。1.3.2 的結果在 <code>out/fruitfly/local_doom_vizdoom132/analysis.json</code>。</p>
+
+  <p>用「形狀相同」來判定：<b>條件之間的高低順序沒有變</b>，完整接線仍然遠高於打亂接線與隨機，損毀 AOTU025 仍然降分。但有一個結論跟著版本翻了：在作者的版本下，完整接線和 <code>oracle</code> 沒有顯著差別（p = 0.348）；在 1.3.2 下，<code>oracle</code> 顯著較高（p = 0.019）。「果蠅迴路打得跟完美規則一樣好」這句話，只在某一個遊戲版本下成立。</p>
+
+  <div class="note"><b>這一節帶走的事：</b>重現時，<b>環境裡每一個會影響隨機性的套件都要固定版本</b>，不只是主程式。fruitfly-lab 的 repo 裡碰巧附了一個 ViZDoom 執行時自動產生的設定檔 <code>_vizdoom.ini</code>，第一行記著產生它的版本 1.3.0，所以這一次對得回去；沒有這一行，1.3.2 的結果會讓人以為重現失敗。</div>
+
+  <div class="pager">
+    <a href="part2-setup.html">← PART 2　準備環境與資料</a>
+    <a href="part4-blackjack.html">PART 4　重現 fly-blackjack →</a>
+  </div>
+
+</div>
+<div class="foot">BSC 腦空間體研究中心 · 專題課程 果蠅模擬重現 · 教材由 Claude Code 產生　·　<a href="index.html">回課程首頁</a></div>
+</body>
+</html>

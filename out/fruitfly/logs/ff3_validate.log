@@ -1,0 +1,15 @@
+LC10a_L  subgraph   DNa02 L=  93.2 R=   0.0  R-L= -93.2  AOTU019 L/R=225/0  AOTU025 L/R=163/0  (0.9s)
+LC10a_L  scrambled  DNa02 L=  21.2 R=   0.4  R-L= -20.8  AOTU019 L/R=1/26  AOTU025 L/R=0/5  (0.8s)
+>>> Experiment:     LC10a_L
+    Output file:    /home/wanjuli/claude_bscai/fly_play_game/fruitfly_lab/repo/Drosophila_brain_model/results/validate/LC10a_L.parquet
+    Excited neurons: 115
+    Elapsed time:   14 s
+LC10a_L  full_brain DNa02 L= 109.6 R=   0.0  R-L=-109.6  AOTU019 L/R=172/0  AOTU025 L/R=153/0  (15.7s)
+LC10a_R  subgraph   DNa02 L=   0.0 R=   4.4  R-L=  +4.4  AOTU019 L/R=0/242  AOTU025 L/R=0/61  (0.8s)
+LC10a_R  scrambled  DNa02 L=  45.0 R=   0.0  R-L= -45.0  AOTU019 L/R=19/34  AOTU025 L/R=0/30  (0.8s)
+>>> Experiment:     LC10a_R
+    Output file:    /home/wanjuli/claude_bscai/fly_play_game/fruitfly_lab/repo/Drosophila_brain_model/results/validate/LC10a_R.parquet
+    Excited neurons: 119
+    Elapsed time:   14 s
+LC10a_R  full_brain DNa02 L=   0.0 R=  61.6  R-L= +61.6  AOTU019 L/R=0/185  AOTU025 L/R=0/121  (15.4s)
+已保存 output/validation.json

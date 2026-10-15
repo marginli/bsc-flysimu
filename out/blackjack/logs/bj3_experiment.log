@@ -1,0 +1,19 @@
+
+ACQUISITION  (12 seeds, 20 trials, learning index = change in punished odour minus change in unpaired odour)
+
+condition                           index       sd   vs control
+----------------------------------------------------------------
+connectome + plasticity            -1.301    0.324             --
+plasticity off                      0.000    0.000        -4.0 sd
+dopamine disconnected               0.000    0.000        -4.0 sd
+KC->MBON shuffled                  -1.232    0.437        -0.2 sd
+unpaired odour and shock            0.000    0.000        -4.0 sd
+
+odours: isoamyl-acetate punished, linalool unpaired
+phase                start       end
+--------------------------------------
+acquisition         -0.599    -1.838
+extinction          -1.794    -1.134
+reversal (B)        -0.595    -1.361
+
+wrote data/mb_results.json

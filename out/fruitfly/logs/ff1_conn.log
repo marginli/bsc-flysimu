@@ -1,0 +1,15 @@
+shiu cols ['Presynaptic_ID', 'Postsynaptic_ID', 'Presynaptic_Index', 'Postsynaptic_Index', 'Connectivity', 'Excitatory', 'Excitatory x Connectivity']
+local cols ['pre_pt_root_id', 'post_pt_root_id', 'neuropil', 'syn_count', 'gaba_avg', 'ach_avg', 'glut_avg', 'oct_avg', 'ser_avg', 'da_avg']
+{
+ "shiu_edges": 15091983,
+ "shiu_synapses": 54492922,
+ "local_rows": 16847997,
+ "local_edges_after_neuropil_merge": 15091983,
+ "local_synapses": 54492922,
+ "shiu_neurons": 138639,
+ "local_neurons": 138639,
+ "only_shiu": 0,
+ "only_local": 0,
+ "both": 15091983,
+ "count_equal_frac": 1.0
+}

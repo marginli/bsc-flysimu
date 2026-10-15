@@ -1,0 +1,896 @@
+{
+ "fruitfly": [
+  {
+   "step": "FF1",
+   "what": "Shiu 連線表的神經元數 = 138,639",
+   "file": "results/ff1_conn.json",
+   "keys": [
+    "shiu_neurons"
+   ],
+   "kind": "exact",
+   "value": 138639
+  },
+  {
+   "step": "FF1",
+   "what": "Shiu 連線表的連結數 = 15,091,983",
+   "file": "results/ff1_conn.json",
+   "keys": [
+    "shiu_edges"
+   ],
+   "kind": "exact",
+   "value": 15091983
+  },
+  {
+   "step": "FF1",
+   "what": "Shiu 連線表的突觸總數 = 54,492,922",
+   "file": "results/ff1_conn.json",
+   "keys": [
+    "shiu_synapses"
+   ],
+   "kind": "exact",
+   "value": 54492922
+  },
+  {
+   "step": "FF2",
+   "what": "重新抽出的子圖與作者附的檔案逐位相同（md5）",
+   "file": "logs/ff2_md5_rerun.txt",
+   "kind": "same",
+   "other": "logs/ff2_md5_committed.txt"
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_L、subgraph：DNa02_L 在作者 103.8 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_L/subgraph",
+    "DNa02_L"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 103.8
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_L、subgraph：AOTU019_L 在作者 222.4 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_L/subgraph",
+    "AOTU019_L"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 222.4
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_L、scrambled：DNa02_L 在作者 21.0 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_L/scrambled",
+    "DNa02_L"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 21.0
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_L、scrambled：AOTU019_R 在作者 21.6 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_L/scrambled",
+    "AOTU019_R"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 21.6,
+   "known": "本課實跑也不符（26.4 Hz），見 PART 3 第 5 節"
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_L、full_brain：DNa02_L 在作者 105.6 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_L/full_brain",
+    "DNa02_L"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 105.6
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_L、full_brain：AOTU019_L 在作者 171.2 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_L/full_brain",
+    "AOTU019_L"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 171.2
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_R、subgraph：AOTU019_R 在作者 243.6 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_R/subgraph",
+    "AOTU019_R"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 243.6
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_R、scrambled：DNa02_L 在作者 46.0 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_R/scrambled",
+    "DNa02_L"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 46.0
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_R、scrambled：AOTU019_L 在作者 17.6 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_R/scrambled",
+    "AOTU019_L"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 17.6
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_R、scrambled：AOTU019_R 在作者 36.0 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_R/scrambled",
+    "AOTU019_R"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 36.0
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_R、full_brain：DNa02_R 在作者 58.8 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_R/full_brain",
+    "DNa02_R"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 58.8
+  },
+  {
+   "step": "FF3",
+   "what": "刺激 LC10a_R、full_brain：AOTU019_R 在作者 184.8 Hz 的 ±20% 內",
+   "file": "results/validation_local.json",
+   "keys": [
+    "LC10a_R/full_brain",
+    "AOTU019_R"
+   ],
+   "kind": "rel",
+   "tol": 0.2,
+   "value": 184.8
+  },
+  {
+   "step": "FF4",
+   "what": "fly 的轉向閾值 = 作者的 130.93",
+   "file": "results/local_doom_vizdoom130/calibration_fly.json",
+   "keys": [
+    "cal",
+    "turn_th"
+   ],
+   "kind": "exact",
+   "value": 130.93
+  },
+  {
+   "step": "FF4",
+   "what": "fly 的開火閾值 = 作者的 95.68",
+   "file": "results/local_doom_vizdoom130/calibration_fly.json",
+   "keys": [
+    "cal",
+    "fire_th"
+   ],
+   "kind": "exact",
+   "value": 95.68
+  },
+  {
+   "step": "FF4",
+   "what": "scrambled 的轉向閾值 = 作者的 40.46",
+   "file": "results/local_doom_vizdoom130/calibration_scrambled.json",
+   "keys": [
+    "cal",
+    "turn_th"
+   ],
+   "kind": "exact",
+   "value": 40.46
+  },
+  {
+   "step": "FF4",
+   "what": "scrambled 的開火閾值 = 作者的 8.44",
+   "file": "results/local_doom_vizdoom130/calibration_scrambled.json",
+   "keys": [
+    "cal",
+    "fire_th"
+   ],
+   "kind": "exact",
+   "value": 8.44
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.0、fly：10 局逐局擊殺 = 作者 [7, 11, 9, 4, 16, 10, 10, 15, 4, 16]",
+   "file": "results/local_doom_vizdoom130/fly.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    7,
+    11,
+    9,
+    4,
+    16,
+    10,
+    10,
+    15,
+    4,
+    16
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.0、scrambled：10 局逐局擊殺 = 作者 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",
+   "file": "results/local_doom_vizdoom130/scrambled.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.0、scrambled_cal：10 局逐局擊殺 = 作者 [0, 1, 0, 0, 0, 1, 1, 1, 2, 1]",
+   "file": "results/local_doom_vizdoom130/scrambled_cal.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.0、lesion：10 局逐局擊殺 = 作者 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",
+   "file": "results/local_doom_vizdoom130/lesion.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.0、lesion025：10 局逐局擊殺 = 作者 [2, 11, 4, 3, 3, 2, 16, 1, 3, 10]",
+   "file": "results/local_doom_vizdoom130/lesion025.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    2,
+    11,
+    4,
+    3,
+    3,
+    2,
+    16,
+    1,
+    3,
+    10
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.0、random：10 局逐局擊殺 = 作者 [1, 0, 1, 1, 1, 1, 1, 1, 1, 1]",
+   "file": "results/local_doom_vizdoom130/random.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.0、oracle：10 局逐局擊殺 = 作者 [11, 14, 13, 8, 15, 10, 5, 11, 11, 17]",
+   "file": "results/local_doom_vizdoom130/oracle.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    11,
+    14,
+    13,
+    8,
+    15,
+    10,
+    5,
+    11,
+    11,
+    17
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.2、fly：10 局逐局擊殺 = 本課 [15, 5, 7, 3, 13, 10, 2, 4, 3, 3]",
+   "file": "results/local_doom_vizdoom132/fly.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    15,
+    5,
+    7,
+    3,
+    13,
+    10,
+    2,
+    4,
+    3,
+    3
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.2、scrambled：10 局逐局擊殺 = 本課 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",
+   "file": "results/local_doom_vizdoom132/scrambled.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.2、scrambled_cal：10 局逐局擊殺 = 本課 [0, 1, 0, 1, 0, 1, 2, 1, 2, 1]",
+   "file": "results/local_doom_vizdoom132/scrambled_cal.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    2,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.2、lesion：10 局逐局擊殺 = 本課 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",
+   "file": "results/local_doom_vizdoom132/lesion.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.2、lesion025：10 局逐局擊殺 = 本課 [2, 3, 3, 1, 2, 6, 2, 4, 3, 2]",
+   "file": "results/local_doom_vizdoom132/lesion025.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    2,
+    3,
+    3,
+    1,
+    2,
+    6,
+    2,
+    4,
+    3,
+    2
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.2、random：10 局逐局擊殺 = 本課 [1, 0, 1, 1, 1, 1, 1, 1, 1, 1]",
+   "file": "results/local_doom_vizdoom132/random.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "step": "FF5",
+   "what": "ViZDoom 1.3.2、oracle：10 局逐局擊殺 = 本課 [10, 12, 11, 10, 13, 15, 5, 14, 10, 19]",
+   "file": "results/local_doom_vizdoom132/oracle.json",
+   "keys": [
+    "episodes"
+   ],
+   "pluck": "kills",
+   "kind": "exact",
+   "value": [
+    10,
+    12,
+    11,
+    10,
+    13,
+    15,
+    5,
+    14,
+    10,
+    19
+   ]
+  },
+  {
+   "step": "E1",
+   "what": "ViZDoom 1.3.0、fly：50 局平均擊殺 9.86",
+   "file": "results/ext_vizdoom1.3.0/E1.json",
+   "keys": [
+    "summary",
+    "fly",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": 9.86
+  },
+  {
+   "step": "E1",
+   "what": "ViZDoom 1.3.0、lesion025：50 局平均擊殺 4.92",
+   "file": "results/ext_vizdoom1.3.0/E1.json",
+   "keys": [
+    "summary",
+    "lesion025",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": 4.92
+  },
+  {
+   "step": "E1",
+   "what": "ViZDoom 1.3.0、scrambled_cal：50 局平均擊殺 0.9",
+   "file": "results/ext_vizdoom1.3.0/E1.json",
+   "keys": [
+    "summary",
+    "scrambled_cal",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": 0.9
+  },
+  {
+   "step": "E1",
+   "what": "ViZDoom 1.3.0、random：50 局平均擊殺 1.2",
+   "file": "results/ext_vizdoom1.3.0/E1.json",
+   "keys": [
+    "summary",
+    "random",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": 1.2
+  },
+  {
+   "step": "E1",
+   "what": "ViZDoom 1.3.2、fly：50 局平均擊殺 7.92",
+   "file": "results/ext_vizdoom1.3.2/E1.json",
+   "keys": [
+    "summary",
+    "fly",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": 7.92
+  },
+  {
+   "step": "E1",
+   "what": "ViZDoom 1.3.2、lesion025：50 局平均擊殺 3.92",
+   "file": "results/ext_vizdoom1.3.2/E1.json",
+   "keys": [
+    "summary",
+    "lesion025",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": 3.92
+  },
+  {
+   "step": "E1",
+   "what": "ViZDoom 1.3.2、scrambled_cal：50 局平均擊殺 1.0",
+   "file": "results/ext_vizdoom1.3.2/E1.json",
+   "keys": [
+    "summary",
+    "scrambled_cal",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": 1.0
+  },
+  {
+   "step": "E1",
+   "what": "ViZDoom 1.3.2、random：50 局平均擊殺 1.2",
+   "file": "results/ext_vizdoom1.3.2/E1.json",
+   "keys": [
+    "summary",
+    "random",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": 1.2
+  },
+  {
+   "step": "E2",
+   "what": "打亂接線各自校準：50 局平均 1.16",
+   "file": "results/ext_vizdoom1.3.0/E2.json",
+   "keys": [
+    "summary",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": 1.16
+  },
+  {
+   "step": "E3",
+   "what": "只讀 DNa02、fly_alt：50 局平均 0.68",
+   "file": "results/ext_vizdoom1.3.0/E3.json",
+   "keys": [
+    "fly_alt",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": 0.68
+  },
+  {
+   "step": "E3",
+   "what": "只讀 DNa02、lesion019_alt：50 局平均 1.72",
+   "file": "results/ext_vizdoom1.3.0/E3.json",
+   "keys": [
+    "lesion019_alt",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": 1.72
+  },
+  {
+   "step": "E4",
+   "what": "E4 的分析結果檔存在且含右眼刺激的比較",
+   "file": "results/E4_asymmetry.json",
+   "keys": [
+    "LC10a_R"
+   ],
+   "kind": "contains",
+   "value": []
+  }
+ ],
+ "blackjack": [
+  {
+   "step": "BJ1",
+   "what": "Dino 四列結果與 README 相同（45／0／0／0 完成）",
+   "file": "logs/bj1_train.log",
+   "kind": "contains",
+   "value": [
+    "connectome + trained readout                 45         29.12       210.7",
+    "SAME readout, circuit silenced                0          3.48        18.7",
+    "untrained readout                             0          2.26        11.8",
+    "uniform random actions                        0          2.43        12.7"
+   ]
+  },
+  {
+   "step": "BJ2",
+   "what": "切出蕈狀體跑兩次，md5 相同且 = 32dc49359f237250162ed33dcb5da93c",
+   "file": "logs/bj2_md5.txt",
+   "kind": "md5_twice",
+   "value": "32dc49359f237250162ed33dcb5da93c"
+  },
+  {
+   "step": "BJ3",
+   "what": "connectome + plasticity：12 種子平均學習指數 -1.301",
+   "file": "results/mb_results.json",
+   "keys": [
+    "acquisition",
+    "connectome + plasticity"
+   ],
+   "mean": true,
+   "kind": "exact",
+   "value": -1.301427
+  },
+  {
+   "step": "BJ3",
+   "what": "KC->MBON shuffled：12 種子平均學習指數 -1.232",
+   "file": "results/mb_results.json",
+   "keys": [
+    "acquisition",
+    "KC->MBON shuffled"
+   ],
+   "mean": true,
+   "kind": "exact",
+   "value": -1.231649
+  },
+  {
+   "step": "BJ3",
+   "what": "dopamine disconnected：12 種子平均學習指數 0.000",
+   "file": "results/mb_results.json",
+   "keys": [
+    "acquisition",
+    "dopamine disconnected"
+   ],
+   "mean": true,
+   "kind": "exact",
+   "value": 0.0
+  },
+  {
+   "step": "BJ4",
+   "what": "author_policy、learning：每 90 秒電擊 3.85",
+   "file": "results/bj4_forage.json",
+   "keys": [
+    "author_policy",
+    "learning",
+    "shocks"
+   ],
+   "kind": "exact",
+   "value": 3.85
+  },
+  {
+   "step": "BJ4",
+   "what": "author_policy、dopamine cut：每 90 秒電擊 7.5",
+   "file": "results/bj4_forage.json",
+   "keys": [
+    "author_policy",
+    "dopamine cut",
+    "shocks"
+   ],
+   "kind": "exact",
+   "value": 7.5
+  },
+  {
+   "step": "BJ4",
+   "what": "retrained、learning：每 90 秒電擊 1.925",
+   "file": "results/bj4_forage.json",
+   "keys": [
+    "retrained",
+    "learning",
+    "shocks"
+   ],
+   "kind": "exact",
+   "value": 1.925
+  },
+  {
+   "step": "BJ4",
+   "what": "retrained、dopamine cut：每 90 秒電擊 1.875",
+   "file": "results/bj4_forage.json",
+   "keys": [
+    "retrained",
+    "dopamine cut",
+    "shocks"
+   ],
+   "kind": "exact",
+   "value": 1.875
+  },
+  {
+   "step": "BJ4b",
+   "what": "seconds=45 重新訓練、learning：電擊 3.85",
+   "file": "results/bj4b_forage_s45_eval.json",
+   "keys": [
+    "learning",
+    "shocks"
+   ],
+   "kind": "exact",
+   "value": 3.85
+  },
+  {
+   "step": "BJ4b",
+   "what": "seconds=45 重新訓練、dopamine cut：電擊 7.5",
+   "file": "results/bj4b_forage_s45_eval.json",
+   "keys": [
+    "dopamine cut",
+    "shocks"
+   ],
+   "kind": "exact",
+   "value": 7.5
+  },
+  {
+   "step": "BJ4b",
+   "what": "seconds=45 重新訓練的驗證分數 = 作者策略檔記錄的 2942.2",
+   "file": "results/bj4b_forage_s45_eval.json",
+   "keys": [
+    "validation"
+   ],
+   "kind": "exact",
+   "value": 2942.240450387357
+  },
+  {
+   "step": "BJ5",
+   "what": "untrained greedy：最後 2,000 手平均每手 -0.4802",
+   "file": "results/bj5_blackjack_30000.json",
+   "keys": [
+    "conditions",
+    "untrained greedy",
+    "mean_last"
+   ],
+   "kind": "exact",
+   "value": -0.4801666666666667
+  },
+  {
+   "step": "BJ5",
+   "what": "no learning + exploration decay：最後 2,000 手平均每手 -0.4747",
+   "file": "results/bj5_blackjack_30000.json",
+   "keys": [
+    "conditions",
+    "no learning + exploration decay",
+    "mean_last"
+   ],
+   "kind": "exact",
+   "value": -0.4746666666666666
+  },
+  {
+   "step": "BJ5",
+   "what": "dopamine cut + exploration decay：最後 2,000 手平均每手 -0.4747",
+   "file": "results/bj5_blackjack_30000.json",
+   "keys": [
+    "conditions",
+    "dopamine cut + exploration decay",
+    "mean_last"
+   ],
+   "kind": "exact",
+   "value": -0.4746666666666666
+  },
+  {
+   "step": "BJ5",
+   "what": "connectome + dopamine：最後 2,000 手平均每手 -0.1478",
+   "file": "results/bj5_blackjack_30000.json",
+   "keys": [
+    "conditions",
+    "connectome + dopamine",
+    "mean_last"
+   ],
+   "kind": "exact",
+   "value": -0.14775000000000002
+  },
+  {
+   "step": "X1",
+   "what": "50 種子學習指數 -1.377",
+   "file": "results/bj_extra.json",
+   "keys": [
+    "X1_50_seeds",
+    "none",
+    "mean"
+   ],
+   "kind": "exact",
+   "value": -1.3773391033650628
+  },
+  {
+   "step": "X2",
+   "what": "DAN→MBON 打亂 10 組平均 -0.305",
+   "file": "results/bj_extra.json",
+   "keys": [
+    "X2_dan_mbon_shuffled",
+    "mean_of_means"
+   ],
+   "kind": "exact",
+   "value": -0.30522807139576313
+  },
+  {
+   "step": "X4",
+   "what": "MBON 標記與文獻規則一致 62/97",
+   "file": "results/bj_extra.json",
+   "keys": [
+    "X4_mbon_valence",
+    "agree"
+   ],
+   "kind": "exact",
+   "value": 62
+  }
+ ]
+}

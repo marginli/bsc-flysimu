@@ -1,0 +1,413 @@
+{
+ "policy": "lesion019_alt",
+ "episodes": [
+  {
+   "episode": 0,
+   "kills": 0,
+   "shots": 9,
+   "tics": 228,
+   "accuracy": 0.0,
+   "wall_s": 0.7
+  },
+  {
+   "episode": 1,
+   "kills": 1,
+   "shots": 14,
+   "tics": 368,
+   "accuracy": 0.071,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 2,
+   "kills": 1,
+   "shots": 23,
+   "tics": 368,
+   "accuracy": 0.043,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 3,
+   "kills": 2,
+   "shots": 26,
+   "tics": 440,
+   "accuracy": 0.077,
+   "wall_s": 1.5
+  },
+  {
+   "episode": 4,
+   "kills": 2,
+   "shots": 26,
+   "tics": 460,
+   "accuracy": 0.077,
+   "wall_s": 1.6
+  },
+  {
+   "episode": 5,
+   "kills": 3,
+   "shots": 26,
+   "tics": 468,
+   "accuracy": 0.115,
+   "wall_s": 1.5
+  },
+  {
+   "episode": 6,
+   "kills": 1,
+   "shots": 25,
+   "tics": 364,
+   "accuracy": 0.04,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 7,
+   "kills": 3,
+   "shots": 26,
+   "tics": 412,
+   "accuracy": 0.115,
+   "wall_s": 1.4
+  },
+  {
+   "episode": 8,
+   "kills": 3,
+   "shots": 26,
+   "tics": 502,
+   "accuracy": 0.115,
+   "wall_s": 1.7
+  },
+  {
+   "episode": 9,
+   "kills": 3,
+   "shots": 12,
+   "tics": 428,
+   "accuracy": 0.25,
+   "wall_s": 1.4
+  },
+  {
+   "episode": 10,
+   "kills": 1,
+   "shots": 23,
+   "tics": 344,
+   "accuracy": 0.043,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 11,
+   "kills": 1,
+   "shots": 1,
+   "tics": 326,
+   "accuracy": 1.0,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 12,
+   "kills": 1,
+   "shots": 13,
+   "tics": 360,
+   "accuracy": 0.077,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 13,
+   "kills": 1,
+   "shots": 4,
+   "tics": 294,
+   "accuracy": 0.25,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 14,
+   "kills": 2,
+   "shots": 16,
+   "tics": 400,
+   "accuracy": 0.125,
+   "wall_s": 1.3
+  },
+  {
+   "episode": 15,
+   "kills": 2,
+   "shots": 26,
+   "tics": 436,
+   "accuracy": 0.077,
+   "wall_s": 1.5
+  },
+  {
+   "episode": 16,
+   "kills": 2,
+   "shots": 17,
+   "tics": 420,
+   "accuracy": 0.118,
+   "wall_s": 1.4
+  },
+  {
+   "episode": 17,
+   "kills": 1,
+   "shots": 22,
+   "tics": 344,
+   "accuracy": 0.045,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 18,
+   "kills": 3,
+   "shots": 8,
+   "tics": 404,
+   "accuracy": 0.375,
+   "wall_s": 1.3
+  },
+  {
+   "episode": 19,
+   "kills": 2,
+   "shots": 21,
+   "tics": 340,
+   "accuracy": 0.095,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 20,
+   "kills": 1,
+   "shots": 14,
+   "tics": 396,
+   "accuracy": 0.071,
+   "wall_s": 1.3
+  },
+  {
+   "episode": 21,
+   "kills": 0,
+   "shots": 0,
+   "tics": 226,
+   "accuracy": 0.0,
+   "wall_s": 0.7
+  },
+  {
+   "episode": 22,
+   "kills": 2,
+   "shots": 11,
+   "tics": 360,
+   "accuracy": 0.182,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 23,
+   "kills": 0,
+   "shots": 4,
+   "tics": 286,
+   "accuracy": 0.0,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 24,
+   "kills": 1,
+   "shots": 24,
+   "tics": 360,
+   "accuracy": 0.042,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 25,
+   "kills": 1,
+   "shots": 25,
+   "tics": 372,
+   "accuracy": 0.04,
+   "wall_s": 1.3
+  },
+  {
+   "episode": 26,
+   "kills": 0,
+   "shots": 0,
+   "tics": 326,
+   "accuracy": 0.0,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 27,
+   "kills": 0,
+   "shots": 9,
+   "tics": 322,
+   "accuracy": 0.0,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 28,
+   "kills": 1,
+   "shots": 12,
+   "tics": 352,
+   "accuracy": 0.083,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 29,
+   "kills": 1,
+   "shots": 19,
+   "tics": 370,
+   "accuracy": 0.053,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 30,
+   "kills": 3,
+   "shots": 22,
+   "tics": 432,
+   "accuracy": 0.136,
+   "wall_s": 1.4
+  },
+  {
+   "episode": 31,
+   "kills": 3,
+   "shots": 21,
+   "tics": 440,
+   "accuracy": 0.143,
+   "wall_s": 1.5
+  },
+  {
+   "episode": 32,
+   "kills": 1,
+   "shots": 14,
+   "tics": 290,
+   "accuracy": 0.071,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 33,
+   "kills": 1,
+   "shots": 16,
+   "tics": 336,
+   "accuracy": 0.062,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 34,
+   "kills": 1,
+   "shots": 24,
+   "tics": 356,
+   "accuracy": 0.042,
+   "wall_s": 1.3
+  },
+  {
+   "episode": 35,
+   "kills": 3,
+   "shots": 26,
+   "tics": 460,
+   "accuracy": 0.115,
+   "wall_s": 1.6
+  },
+  {
+   "episode": 36,
+   "kills": 4,
+   "shots": 26,
+   "tics": 540,
+   "accuracy": 0.154,
+   "wall_s": 1.8
+  },
+  {
+   "episode": 37,
+   "kills": 2,
+   "shots": 12,
+   "tics": 408,
+   "accuracy": 0.167,
+   "wall_s": 1.3
+  },
+  {
+   "episode": 38,
+   "kills": 1,
+   "shots": 21,
+   "tics": 316,
+   "accuracy": 0.048,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 39,
+   "kills": 2,
+   "shots": 26,
+   "tics": 416,
+   "accuracy": 0.077,
+   "wall_s": 1.4
+  },
+  {
+   "episode": 40,
+   "kills": 1,
+   "shots": 8,
+   "tics": 328,
+   "accuracy": 0.125,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 41,
+   "kills": 1,
+   "shots": 26,
+   "tics": 380,
+   "accuracy": 0.038,
+   "wall_s": 1.3
+  },
+  {
+   "episode": 42,
+   "kills": 1,
+   "shots": 25,
+   "tics": 370,
+   "accuracy": 0.04,
+   "wall_s": 1.3
+  },
+  {
+   "episode": 43,
+   "kills": 4,
+   "shots": 26,
+   "tics": 572,
+   "accuracy": 0.154,
+   "wall_s": 1.9
+  },
+  {
+   "episode": 44,
+   "kills": 2,
+   "shots": 13,
+   "tics": 412,
+   "accuracy": 0.154,
+   "wall_s": 1.4
+  },
+  {
+   "episode": 45,
+   "kills": 5,
+   "shots": 26,
+   "tics": 472,
+   "accuracy": 0.192,
+   "wall_s": 1.6
+  },
+  {
+   "episode": 46,
+   "kills": 0,
+   "shots": 7,
+   "tics": 304,
+   "accuracy": 0.0,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 47,
+   "kills": 3,
+   "shots": 26,
+   "tics": 448,
+   "accuracy": 0.115,
+   "wall_s": 1.5
+  },
+  {
+   "episode": 48,
+   "kills": 4,
+   "shots": 23,
+   "tics": 497,
+   "accuracy": 0.174,
+   "wall_s": 1.7
+  },
+  {
+   "episode": 49,
+   "kills": 2,
+   "shots": 25,
+   "tics": 464,
+   "accuracy": 0.08,
+   "wall_s": 1.5
+  }
+ ],
+ "summary": {
+  "kills": 1.72,
+  "kills_sd": 1.2,
+  "shots": 17.9,
+  "survival_s": 11.04,
+  "accuracy": 0.113
+ },
+ "seed": 0
+}

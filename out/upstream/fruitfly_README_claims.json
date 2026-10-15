@@ -1,0 +1,89 @@
+{
+ "source": "webergithub/fruitfly-lab README.md @ 8c27fe8",
+ "claims": [
+  {
+   "line": 9,
+   "text": "The same 3,963-neuron circuit also plays Doom (ViZDoom *defend_the_center*). With its real wiring it scores 10.2 kills per episode; with the wiring scrambled it scores 0.7."
+  },
+  {
+   "line": 31,
+   "text": "| Subgraph / 子图 | 3,963 neurons, 354,879 connections (38% inhibitory). Paths with ≥ 5 synapses, ≤ 2 hops from LC10a and from 5 steering DNs (DNa01/02/03/04/11). |"
+  },
+  {
+   "line": 32,
+   "text": "| Synapse weight / 突触权重 | synapse count × sign (predicted neurotransmitter) × 0.275 mV, delay 1.8 ms |"
+  },
+  {
+   "line": 33,
+   "text": "| Neuron / 神经元 | v_rest −52 mV, threshold −45 mV, membrane τ 20 ms, synaptic τ 5 ms, refractory 2.2 ms, step 0.1 ms |"
+  },
+  {
+   "line": 34,
+   "text": "| Web game / 网页 | Three.js scene; the LIF network runs in a Web Worker at 1× real time; live layer map of all 3,963 neurons and a 3D point cloud of 139,248 FlyWire soma positions |"
+  },
+  {
+   "line": 35,
+   "text": "| Doom | ViZDoom; each game tic (1/35 s) = 286 simulation steps; numba kernel |"
+  },
+  {
+   "line": 43,
+   "text": "3. **Readout (engineered, fixed)** — `steer = (DNa02_R − DNa02_L) + (AOTU019_R − AOTU019_L)`; fire when both AOTU019 exceed a threshold. Thresholds come from a single azimuth calibration sweep (turn 130.9, fire 95.7)."
+  },
+  {
+   "line": 51,
+   "text": "| Stimulus | Model | DNa02 L (Hz) | DNa02 R (Hz) | Direction |"
+  },
+  {
+   "line": 53,
+   "text": "| Left eye | Full brain (139k neurons, Brian2) | 105.6 | 0.0 | same side ✓ |"
+  },
+  {
+   "line": 54,
+   "text": "| Left eye | Subgraph (3,963) | 103.8 | 0.0 | same side ✓ |"
+  },
+  {
+   "line": 55,
+   "text": "| Left eye | Subgraph, scrambled | 21.0 | 0.2 | weak |"
+  },
+  {
+   "line": 56,
+   "text": "| Right eye | Full brain | 0.0 | 58.8 | same side ✓ |"
+  },
+  {
+   "line": 57,
+   "text": "| Right eye | Subgraph | 0.0 | 4.0 | same side, weak |"
+  },
+  {
+   "line": 58,
+   "text": "| Right eye | Subgraph, scrambled | 46.0 | 0.0 | **wrong side** |"
+  },
+  {
+   "line": 64,
+   "text": "| Oracle: turn to the true enemy bearing (no brain) / 上限 | 11.5 ± 3.5 | 0.35 |"
+  },
+  {
+   "line": 65,
+   "text": "| **Real connectome / 真实连接组** | **10.2 ± 4.5** | — |"
+  },
+  {
+   "line": 66,
+   "text": "| AOTU025 silenced / 敲除 AOTU025 | 5.5 ± 5.0 | 0.048 |"
+  },
+  {
+   "line": 67,
+   "text": "| Scrambled wiring, own calibration / 打乱接线 | 0.7 ± 0.7 | 0.002 |"
+  },
+  {
+   "line": 68,
+   "text": "| Random buttons / 随机按键 | 0.9 ± 0.3 | 0.002 |"
+  },
+  {
+   "line": 83,
+   "text": "| `fly-aim/` | Web game (static site): `index.html`, `js/lif-worker.js` (LIF in a Web Worker), `js/neural-panel.js` (live circuit map, 3D brain), `data/` (circuit + calibration) |"
+  },
+  {
+   "line": 86,
+   "text": "| `doom/` | `fly_doom.py` (7 conditions), `analyze.py` (stats), `live_demo.py` (visible window + recording) |"
+  }
+ ]
+}

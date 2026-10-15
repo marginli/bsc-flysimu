@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PART 1 兩個專案在做什麼｜果蠅模擬重現</title>
+<link rel="stylesheet" href="assets/flysimu.css">
+</head>
+<body>
+<div class="crumb"><a href="https://marginli.github.io/bsc-topics/">BSC 專題課程</a> ／ <a href="index.html">果蠅模擬重現</a> ／ PART 1</div>
+<header class="hero">
+  <p class="eyebrow">PART 1</p>
+  <h1>兩個專案在做什麼</h1>
+  <p class="subtitle">一份連線體要變成一個會玩遊戲的模型，中間要接上四個零件；只有其中一個來自資料</p>
+</header>
+
+<div class="wrap">
+
+  <div class="pager top">
+    <a href="index.html">← 課程首頁</a>
+    <a href="part2-setup.html">PART 2　準備環境與資料 →</a>
+  </div>
+
+  <nav class="toc">
+    <h2>本頁章節</h2>
+    <ol>
+      <li><a href="#s1">四個零件</a></li>
+      <li><a href="#s2">神經元方程式：漏電整合發放</a></li>
+      <li><a href="#s3">從全腦切出一段迴路</a></li>
+      <li><a href="#s4">接進遊戲、接出動作</a></li>
+      <li><a href="#s5">七種大腦：對照組</a></li>
+      <li><a href="#s6">fly-blackjack：會學習的蕈狀體</a></li>
+      <li><a href="#s7">總表：哪些來自資料、哪些是人為設定</a></li>
+    </ol>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s1"><span class="pt">1</span>四個零件</h2>
+
+  <p><b>連線體</b>（connectome）是一張清單：一顆腦裡每一顆神經元、它連到哪些神經元、每一條連結有幾個突觸。它本身是靜態的，不會動。要讓它「玩遊戲」，兩個專案都接上了同樣的四個零件：</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>零件</th><th>它回答的問題</th><th>來自資料，還是人為設定</th></tr>
+    <tr><td>① 連線體</td><td>誰連到誰、連得多強</td><td><b>資料</b>（電子顯微鏡重建）</td></tr>
+    <tr><td>② 神經元方程式</td><td>一顆神經元收到輸入之後怎麼反應</td><td>人為設定（借用已發表的模型）</td></tr>
+    <tr><td>③ 輸入編碼</td><td>遊戲畫面怎麼變成神經元的輸入</td><td>人為設定</td></tr>
+    <tr><td>④ 讀出規則</td><td>哪些神經元的活動、怎麼換成按鍵</td><td>人為設定</td></tr>
+  </table>
+  </div>
+
+  <div class="plain"><b>白話：</b>連線體像一張電路板的佈線圖。佈線圖是真的量出來的，但這塊板子要接什麼電源（輸入）、從哪個接腳讀訊號（讀出）、每個零件的電氣特性是什麼（方程式），都是做模型的人決定的。所以看到「果蠅大腦玩遊戲」的示範，第一個要問的是：<b>四個零件裡，哪幾個是資料、哪幾個是人選的。</b></div>
+
+  <p>這一頁先用 fruitfly-lab 把四個零件逐一講完（第 2 到 5 節），再看 fly-blackjack 換了哪幾個（第 6 節），最後兩個專案並排成一張總表（第 7 節）。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s2"><span class="pt">2</span>神經元方程式：漏電整合發放</h2>
+
+  <p>fruitfly-lab 的每一顆神經元都用<b>漏電整合發放模型</b>（leaky integrate-and-fire，簡稱 LIF）模擬，參數照抄 Shiu 等人 2024 年在 <i>Nature</i> 發表的果蠅全腦模型。這個模型只追蹤一個量：神經元的<b>膜電位</b>（細胞內外的電壓差，單位 mV）。</p>
+
+  <div class="formula">τ<sub>m</sub> · dV/dt = −(V − V<sub>rest</sub>) + g(t)　　當 V 超過 V<sub>th</sub>：送出一個<b>放電</b>（spike），V 拉回 V<sub>rest</sub></div>
+
+  <div class="plain"><b>白話：</b>膜電位像一個底部有小洞的水桶。上游神經元每放電一次，就往桶裡倒一點水（g 是倒進來的量，興奮性突觸倒正的、抑制性突觸倒負的）；洞會讓水慢慢漏回原本的高度（V<sub>rest</sub>）。水位一旦超過一條刻度（V<sub>th</sub>），這顆神經元就放電一次、把訊號傳給下游，然後桶子倒空重來。<b>放電率</b>就是每秒放電幾次，單位 Hz。</div>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>參數</th><th>值</th><th>意思</th></tr>
+    <tr><td>V<sub>rest</sub></td><td>−52 mV</td><td>靜止膜電位，也是放電後拉回的值</td></tr>
+    <tr><td>V<sub>th</sub></td><td>−45 mV</td><td>放電閾值</td></tr>
+    <tr><td>τ<sub>m</sub></td><td>20 ms</td><td>膜時間常數：漏得多快</td></tr>
+    <tr><td>突觸時間常數</td><td>5 ms</td><td>一次輸入在 g 裡留多久</td></tr>
+    <tr><td>不反應期</td><td>2.2 ms</td><td>放電後這段時間內不會再放電</td></tr>
+    <tr><td>每個突觸的權重</td><td>0.275 mV</td><td>一條連結的強度 ＝ 突觸數 × 正負號 × 0.275 mV；正負號由預測的神經傳導物質決定</td></tr>
+    <tr><td>傳遞延遲</td><td>1.8 ms</td><td>上游放電到下游收到的時間</td></tr>
+    <tr><td>模擬時間步長</td><td>0.1 ms</td><td>電腦每 0.1 ms 更新一次所有神經元</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">參數出自 fruitfly-lab README 第 32–33 行（引用 Shiu et al. 2024, <i>Nature</i>）；程式在 <code>flycircuit/lif.py</code>。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s3"><span class="pt">3</span>從全腦切出一段迴路</h2>
+
+  <p>FlyWire v783 是一隻雌果蠅全腦的連線體，有 <b>138,639</b> 顆神經元、<b>15,091,983</b> 條連結。fruitfly-lab 不模擬整顆腦，而是切出其中一段已經被研究清楚的<b>視覺追蹤迴路</b>。切出來的這一小塊叫<b>子圖</b>（subgraph）。</p>
+
+  <p>迴路的起點是 <b>LC10a</b>：一群偵測「視野裡小而移動的物體」的視覺神經元，左眼 115 顆、右眼 119 顆。終點是五種控制轉向的<b>下行神經元</b>（descending neuron：從腦往下送訊號到腹神經索、控制身體動作的神經元），其中最重要的是 <b>DNa02</b>。中間經過兩種神經元：</p>
+
+  <ul>
+    <li><b>AOTU019</b>：抑制性（GABA），投射到<b>對側</b>，負責中央視野。</li>
+    <li><b>AOTU025</b>：興奮性（乙醯膽鹼），投射到<b>同側</b>，負責外圍視野。</li>
+  </ul>
+
+  <figure class="fig">
+    <svg viewBox="0 0 460 300" role="img" aria-label="迴路示意圖：左右 LC10a 各接到同側的 AOTU019 與 AOTU025（突觸權重約 +355 到 +438 mV）；AOTU025 興奮同側 DNa02（+46、+42）；AOTU019 抑制對側 DNa02（−59、−33）。">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5a6b7b"/></marker>
+        <marker id="br" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M5,0 L5,10" stroke="#5a6b7b" stroke-width="3"/></marker>
+      </defs>
+      <g fill="none" stroke="#5a6b7b" stroke-width="2">
+        <path d="M113,72 L87,128" marker-end="url(#ar)"/><path d="M135,72 L148,126" marker-end="url(#ar)"/>
+        <path d="M347,72 L373,128" marker-end="url(#ar)"/><path d="M325,72 L312,126" marker-end="url(#ar)"/>
+        <path d="M154,170 L151,226" marker-end="url(#ar)"/><path d="M306,170 L309,226" marker-end="url(#ar)"/>
+        <path d="M94,160 L289,241" stroke-dasharray="5 4" marker-end="url(#br)"/><path d="M366,160 L171,241" stroke-dasharray="5 4" marker-end="url(#br)"/>
+      </g>
+      <g font-family="Menlo,Consolas,monospace" font-size="10" fill="#5a6b7b">
+        <text x="92" y="100" text-anchor="end">+355</text><text x="148" y="100">+376</text>
+        <text x="368" y="100">+438</text><text x="312" y="100" text-anchor="end">+378</text>
+        <text x="146" y="202" text-anchor="end">+46</text><text x="314" y="202">+42</text>
+        <text x="132" y="176">−59</text><text x="328" y="176" text-anchor="end">−33</text>
+      </g>
+      <g stroke="#1b2733" stroke-width="1.2">
+        <circle cx="125" cy="50" r="22" fill="#dbe7fb"/><circle cx="335" cy="50" r="22" fill="#fbe9d3"/>
+        <circle cx="75" cy="150" r="20" fill="#dbe7fb"/><circle cx="155" cy="150" r="20" fill="#dbe7fb"/>
+        <circle cx="305" cy="150" r="20" fill="#fbe9d3"/><circle cx="385" cy="150" r="20" fill="#fbe9d3"/>
+        <circle cx="150" cy="250" r="20" fill="#dbe7fb"/><circle cx="310" cy="250" r="20" fill="#fbe9d3"/>
+      </g>
+      <g font-family="Menlo,Consolas,monospace" font-size="11" fill="#1b2733" text-anchor="middle">
+        <text x="125" y="54">LC10a</text><text x="335" y="54">LC10a</text>
+        <text x="75" y="125" text-anchor="end" dx="-10">AOTU019</text><text x="155" y="125" text-anchor="start" dx="12">AOTU025</text>
+        <text x="305" y="125" text-anchor="end" dx="-12">AOTU025</text><text x="385" y="125" text-anchor="start" dx="10">AOTU019</text>
+        <text x="150" y="288">DNa02</text><text x="310" y="288">DNa02</text>
+        <text x="125" y="18">left (115 cells)</text><text x="335" y="18">right (119 cells)</text>
+      </g>
+    </svg>
+    <figcaption><b>圖 1　子圖裡的主幹。</b>藍色是左半腦、橘色是右半腦；實線箭頭是興奮，虛線加短槓是抑制。數字是兩群神經元之間所有連結的權重加總（突觸數 × 正負號 × 0.275 mV），只畫加總絕對值 30 以上的連結。子圖其餘 3,955 顆神經元沒有畫出來。
+    <span class="figsrc">權重由 <code>out/demo_data.json</code> 的 <code>circuit.edges</code> 而來（從作者的 <code>circuit/edges.bin</code> 加總）。</span></figcaption>
+  </figure>
+
+  <p>切法是一條規則：只看突觸數 5 個以上的連結，從 LC10a 往下游走最多 2 步、從那五種下行神經元往上游走最多 2 步，兩邊都走得到的神經元留下來，再加上起點與終點。結果是 <b>3,963 顆神經元、354,879 條連結</b>，其中 38% 是抑制性連結。子圖內部的連結不論強弱全部保留。</p>
+
+  <div class="plain"><b>白話：</b>像在一張全國地圖上，只留下「從甲城出發兩站以內到得了、而且離乙城兩站以內」的所有車站，再把這些車站之間的所有路線都畫上。留下來的是一張小地圖，但小地圖裡的每一條路都是真的。</div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s4"><span class="pt">4</span>接進遊戲、接出動作</h2>
+
+  <p>遊戲是 <b>ViZDoom</b>（把經典射擊遊戲 Doom 包成研究用環境的套件）的 <i>defend_the_center</i> 關卡：玩家站在圓形場地中央，只能左轉、右轉、開火，敵人從四周走過來。遊戲每秒更新 35 次，每一次叫一<b>格</b>（tic）。模型在每一格之間模擬 286 個 0.1 ms 的步長，剛好是 1/35 秒。</p>
+
+  <h3>輸入編碼：遊戲畫面怎麼變成 LC10a 的輸入</h3>
+  <p>模型<b>沒有</b>看遊戲畫面的像素。ViZDoom 會直接回報畫面上每個物體的位置；程式把最近的敵人換算成「在果蠅視野裡的方位角」（−90° 是最左、+90° 是最右），再依方位角給對應那一側的 LC10a 隨機的輸入放電，最高每秒 150 次。敵人在正前方 ±6° 以內時，兩側 LC10a 同時受刺激（這一塊叫雙眼重疊區）。</p>
+
+  <h3>讀出規則：神經元的放電怎麼變成按鍵</h3>
+  <div class="formula">轉向訊號 ＝ (DNa02<sub>右</sub> − DNa02<sub>左</sub>) ＋ (AOTU019<sub>右</sub> − AOTU019<sub>左</sub>)</div>
+  <div class="plain"><b>白話：</b>把右半腦兩顆神經元的放電率加起來、減掉左半腦的。結果是正的、而且超過一條門檻，就按「右轉」；負的、超過門檻，就按「左轉」。另外，<b>左右兩顆 AOTU019 的放電率都超過另一條門檻時，按「開火」</b>。畫面上沒有敵人、整個迴路也安靜時，固定按右轉，讓視野轉起來找敵人。</div>
+
+  <p>兩條門檻叫<b>閾值</b>，用一次<b>校準</b>決定之後就固定不動：把一個假想敵人依序放在 −90° 到 +90° 共 17 個方位，記錄迴路在每個方位的反應，再依規則算出轉向閾值 130.93、開火閾值 95.68。校準只做一次，之後玩遊戲時迴路的接線、參數、閾值都不會改變——<b>整個過程沒有任何訓練或學習</b>。</p>
+
+  <p class="figsrc">輸入編碼與讀出規則出自 fruitfly-lab 的 <code>doom/fly_doom.py</code> 與 README 第 35、40–43 行；閾值在 <code>out/fruitfly/local_doom_vizdoom130/calibration_fly.json</code>（17 個方位的 <code>rows</code> 與 <code>cal</code>）。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s5"><span class="pt">5</span>七種大腦：對照組</h2>
+
+  <p>只看「完整迴路每局打死幾隻」說明不了什麼——也許隨便一個網路接上同樣的輸入與讀出也打得到。所以作者準備了七個條件，每個條件玩 10 <b>局</b>（episode：從開始到玩家死亡為一局），用同一組<b>亂數種子</b>（seed：讓隨機過程每次都產生同一串隨機數的起始值；種子相同，敵人出現的順序就相同）。</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>條件代號</th><th>大腦是什麼</th><th>它回答的問題</th></tr>
+    <tr><td><code>fly</code></td><td>完整接線</td><td>主角</td></tr>
+    <tr><td><code>scrambled</code></td><td>打亂接線，沿用完整迴路的閾值</td><td>接線的「誰連到誰」重不重要</td></tr>
+    <tr><td><code>scrambled_cal</code></td><td>打亂接線，用打亂後的迴路自己校準閾值</td><td>同上，但排除「閾值不適合」這個解釋</td></tr>
+    <tr><td><code>lesion</code></td><td>損毀左右 AOTU019 與 AOTU025</td><td>這兩種神經元是否必要</td></tr>
+    <tr><td><code>lesion025</code></td><td>只損毀左右 AOTU025</td><td>外圍視野那條路的貢獻</td></tr>
+    <tr><td><code>random</code></td><td>不用大腦，每格隨機按鍵</td><td>最低分</td></tr>
+    <tr><td><code>oracle</code></td><td>不用大腦，直接照敵人方位轉向、對準就開火</td><td>這套按鍵規則能拿到的最高分</td></tr>
+  </table>
+  </div>
+
+  <p><b>打亂接線</b>的做法是：每顆神經元送出幾條連結、收到幾條連結、正負號都保持不變，只把「連到誰」隨機重排（這種打亂叫度保持打亂，「度」就是一顆神經元的連結數）。<b>損毀</b>是讓指定的神經元在整場模擬裡都不放電。</p>
+
+  <p class="figsrc">七個條件的定義出自 fruitfly-lab <code>doom/fly_doom.py</code> 的檔頭說明與 <code>make_policy()</code>。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s6"><span class="pt">6</span>fly-blackjack：會學習的蕈狀體</h2>
+
+  <p>fly-blackjack 的 repo 裡有好幾個實驗，本課重現其中四個。它和 fruitfly-lab 有兩個根本的差別：</p>
+
+  <ol>
+    <li><b>資料不同。</b>它用 MaleCNS v1.0：一隻雄果蠅的腦加腹神經索的連線體。</li>
+    <li><b>神經元方程式不同。</b>它不模擬放電，每顆神經元只有一個沒有單位的活動量，用一個平滑的 S 形函數（tanh）從輸入算出來。作者在 README 明寫：這些數字「不是放電率，也不是膜電位」。</li>
+  </ol>
+
+  <h3>實驗一　Dino：只有讀出在學</h3>
+  <p>從連線體挑 80 顆神經元（32 顆視覺、32 顆中間、16 顆下行），把遊戲的 8 個觀測值接到 32 顆視覺神經元上，再接一個 243 個參數的小型讀出網路決定「跑／跳／蹲」。<b>只有讀出網路會被訓練</b>，訓練方法叫 <b>CEM</b>（cross-entropy method：隨機產生一批參數、留下表現最好的幾組、照它們的平均與分散程度再抽下一批，重複幾十代）。對照組是「同一個訓練好的讀出，但迴路輸出換成 0」。</p>
+
+  <h3>實驗二　蕈狀體制約學習</h3>
+  <p><b>蕈狀體</b>（mushroom body）是果蠅形成氣味記憶的腦區。作者從 MaleCNS 切出四種神經元：</p>
+  <div class="tblwrap">
+  <table>
+    <tr><th>神經元</th><th>顆數</th><th>角色</th></tr>
+    <tr><td>投射神經元（PN）</td><td>682</td><td>把觸角葉的氣味訊號送進蕈狀體</td></tr>
+    <tr><td>Kenyon 細胞（KC）</td><td>1,200（路徑上共 3,811 顆，取其中 1,200）</td><td>每種氣味只活化少數幾顆，形成這種氣味的「代碼」</td></tr>
+    <tr><td>蕈狀體輸出神經元（MBON）</td><td>97</td><td>把蕈狀體的判斷送出去，影響趨近或迴避</td></tr>
+    <tr><td>多巴胺神經元（DAN，PAM 與 PPL1 兩群）</td><td>332</td><td>送出獎賞或懲罰訊號</td></tr>
+  </table>
+  </div>
+  <p>學習規則是：<b>一顆 KC 在活化的同時，它連到的 MBON 收到多巴胺，這條 KC→MBON 的連結就減弱。</b>每顆 MBON 標成「趨近」或「迴避」，依據是它主要接收哪一群多巴胺神經元的輸入（作者分成 56 顆趨近、41 顆迴避）。一種氣味的<b>好惡值</b>（valence）就是把所有 MBON 的活動依標記加總。</p>
+  <p>實驗做法：給一種氣味時同時電擊（懲罰），另一種氣味不電擊，重複 20 次。<b>學習指數</b>＝被懲罰氣味的好惡值改變量，減掉沒被懲罰氣味的改變量。負得愈多，代表果蠅愈討厭被懲罰的那個氣味。另外用 <b>T-maze</b>（讓 100 隻模擬果蠅在兩種氣味之間選邊）算偏好指數：(選安全氣味的隻數 − 選被懲罰氣味的隻數) ÷ 總隻數。</p>
+
+  <h3>實驗三　覓食：蕈狀體接上移動</h3>
+  <p>同一個蕈狀體接到一個會移動的果蠅上：場地裡有兩個氣味源，一個有食物、一個會電擊。<b>蕈狀體在一局之內自己學</b>哪個氣味危險；控制移動的讀出則事先用 CEM 訓練好，而且它只看得到蕈狀體的判斷，看不到氣味本身是什麼。每局 90 秒，計算被電擊幾次、吃到幾次食物。</p>
+
+  <h3>實驗四　21 點</h3>
+  <p>沒有任何讀出網路。每一個「手上點數＋莊家明牌＋候選動作（要牌／停牌／加倍）」都編碼成一組投射神經元的輸入，像一種氣味；果蠅比較三種候選動作的好惡值，選最高的那個。一手牌結束後，贏了就對這手做過的選擇送獎賞多巴胺、輸了送懲罰多巴胺。比較的標準是<b>基本策略</b>（21 點每一種牌面的最佳動作表，共 260 格）。</p>
+
+  <p class="figsrc">fly-blackjack 的細胞數與 MBON 標記出自 <code>out/blackjack/logs/bj2_extract_run1.log</code>；其餘設定出自 fly-blackjack README（<code>out/upstream/blackjack_README.md</code>）與 <code>flybrain/mb/</code> 底下的 <code>model.py</code>、<code>experiment.py</code>、<code>tmaze.py</code>、<code>embodied.py</code>、<code>blackjack.py</code>。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s7"><span class="pt">7</span>總表：哪些來自資料、哪些是人為設定</h2>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>零件</th><th>fruitfly-lab</th><th>fly-blackjack</th></tr>
+    <tr><td>① 連線體</td><td><b>資料</b>：FlyWire v783 的子圖，3,963 顆、354,879 條連結</td><td><b>資料</b>：MaleCNS v1.0 的 80 顆（Dino）或蕈狀體四群（其餘三個實驗）</td></tr>
+    <tr><td>② 神經元方程式</td><td>LIF，參數借自 Shiu 等人 2024</td><td>tanh 活動量，不放電；學習率、遺忘速度由作者設定</td></tr>
+    <tr><td>③ 輸入編碼</td><td>遊戲回報的敵人方位 → LC10a 隨機放電</td><td>遊戲觀測值或牌面 → 指定的輸入神經元</td></tr>
+    <tr><td>④ 讀出規則</td><td>固定公式、校準一次的兩個閾值</td><td>Dino 與覓食：CEM 訓練的讀出網路；21 點：直接選好惡值最高的動作</td></tr>
+    <tr><td>有沒有學習</td><td><b>沒有</b></td><td>Dino：只有讀出被訓練；蕈狀體三個實驗：<b>有</b>，KC→MBON 連結依多巴胺改變</td></tr>
+  </table>
+  </div>
+
+  <p class="figsrc">表中數字的出處同第 2、3、6 節。</p>
+
+  <p>兩個作者都在 README 裡列了同樣意思的清單，也都寫明他們的模型不是「上傳了一隻果蠅」。上面這張〈總表〉是後面四個 PART 的地圖：<a href="part3-fruitfly.html">PART 3</a>、<a href="part4-blackjack.html">PART 4</a> 檢查的是「照這四個零件組起來，能不能得到作者的數字」；<a href="part5-checks.html">PART 5</a> 則開始動零件 ④——換一種讀法，看結論還站不站得住。</p>
+
+  <div class="pager">
+    <a href="index.html">← 課程首頁</a>
+    <a href="part2-setup.html">PART 2　準備環境與資料 →</a>
+  </div>
+
+</div>
+<div class="foot">BSC 腦空間體研究中心 · 專題課程 果蠅模擬重現 · 教材由 Claude Code 產生　·　<a href="index.html">回課程首頁</a></div>
+</body>
+</html>

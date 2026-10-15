@@ -1,0 +1,985 @@
+{
+ "LC10a_L": {
+  "DNa02_L": {
+   "rate_full": 109.6,
+   "drive_in_subgraph": 53105.0,
+   "drive_outside": -52.6,
+   "top_missing": [
+    {
+     "id": "720575940628441862",
+     "type": "DNge026_L",
+     "syn": -9,
+     "rate_hz": 3.2,
+     "drive": -28.8,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940626812218",
+     "type": "CB3749_L",
+     "syn": -2,
+     "rate_hz": 10.6,
+     "drive": -21.2,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940630291767",
+     "type": "DNge046_L",
+     "syn": -2,
+     "rate_hz": 6.2,
+     "drive": -12.4,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940644615716",
+     "type": "MBON31_L",
+     "syn": -19,
+     "rate_hz": 0.6,
+     "drive": -11.4,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940659019649",
+     "type": "LAL171,LAL172_R",
+     "syn": 18,
+     "rate_hz": 0.6,
+     "drive": 10.8,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940614186449",
+     "type": "DNg44_L",
+     "syn": -1,
+     "rate_hz": 9.0,
+     "drive": -9.0,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940645239844",
+     "type": "LAL173,LAL174_L",
+     "syn": 12,
+     "rate_hz": 0.6,
+     "drive": 7.2,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940613461043",
+     "type": "CB0045_L",
+     "syn": 9,
+     "rate_hz": 0.6,
+     "drive": 5.4,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940619675200",
+     "type": "LAL144a_L",
+     "syn": 6,
+     "rate_hz": 0.6,
+     "drive": 3.6,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940621468404",
+     "type": "CB0045_R",
+     "syn": 15,
+     "rate_hz": 0.2,
+     "drive": 3.0,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940619636615",
+     "type": "PS124_L",
+     "syn": 1,
+     "rate_hz": 0.2,
+     "drive": 0.2,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 3
+    }
+   ]
+  },
+  "DNa02_R": {
+   "rate_full": 0.0,
+   "drive_in_subgraph": -35293.8,
+   "drive_outside": 29.2,
+   "top_missing": [
+    {
+     "id": "720575940645716771",
+     "type": "LAL171,LAL172_L",
+     "syn": 44,
+     "rate_hz": 0.6,
+     "drive": 26.4,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940644615716",
+     "type": "MBON31_L",
+     "syn": -14,
+     "rate_hz": 0.6,
+     "drive": -8.4,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940613461043",
+     "type": "CB0045_L",
+     "syn": 10,
+     "rate_hz": 0.6,
+     "drive": 6.0,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940620346417",
+     "type": "LAL144a_R",
+     "syn": 10,
+     "rate_hz": 0.6,
+     "drive": 6.0,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940607451081",
+     "type": "DNge101_L",
+     "syn": -2,
+     "rate_hz": 1.8,
+     "drive": -3.6,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940607155890",
+     "type": "MBON26_R",
+     "syn": 4,
+     "rate_hz": 0.4,
+     "drive": 1.6,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940621468404",
+     "type": "CB0045_R",
+     "syn": 6,
+     "rate_hz": 0.2,
+     "drive": 1.2,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    }
+   ]
+  }
+ },
+ "LC10a_R": {
+  "DNa02_L": {
+   "rate_full": 0.0,
+   "drive_in_subgraph": -11105.0,
+   "drive_outside": 262.8,
+   "top_missing": [
+    {
+     "id": "720575940621468404",
+     "type": "CB0045_R",
+     "syn": 15,
+     "rate_hz": 16.6,
+     "drive": 249.0,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940619636615",
+     "type": "PS124_L",
+     "syn": 1,
+     "rate_hz": 16.8,
+     "drive": 16.8,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940630291767",
+     "type": "DNge046_L",
+     "syn": -2,
+     "rate_hz": 3.2,
+     "drive": -6.4,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940644615716",
+     "type": "MBON31_L",
+     "syn": -19,
+     "rate_hz": 0.2,
+     "drive": -3.8,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940659019649",
+     "type": "LAL171,LAL172_R",
+     "syn": 18,
+     "rate_hz": 0.2,
+     "drive": 3.6,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940645239844",
+     "type": "LAL173,LAL174_L",
+     "syn": 12,
+     "rate_hz": 0.2,
+     "drive": 2.4,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940619675200",
+     "type": "LAL144a_L",
+     "syn": 6,
+     "rate_hz": 0.2,
+     "drive": 1.2,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    }
+   ]
+  },
+  "DNa02_R": {
+   "rate_full": 61.6,
+   "drive_in_subgraph": 20501.8,
+   "drive_outside": -84.4,
+   "top_missing": [
+    {
+     "id": "720575940640696027",
+     "type": "CB3749_R",
+     "syn": -6,
+     "rate_hz": 17.2,
+     "drive": -103.2,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940621468404",
+     "type": "CB0045_R",
+     "syn": 6,
+     "rate_hz": 16.6,
+     "drive": 99.6,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940604088288",
+     "type": "AVLP016_R",
+     "syn": -11,
+     "rate_hz": 5.4,
+     "drive": -59.4,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940637587813",
+     "type": "CB2695_R",
+     "syn": -6,
+     "rate_hz": 7.8,
+     "drive": -46.8,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940606112940",
+     "type": "DNg13_R",
+     "syn": 1,
+     "rate_hz": 41.0,
+     "drive": 41.0,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 2
+    },
+    {
+     "id": "720575940628844712",
+     "type": "DNg44_R",
+     "syn": -2,
+     "rate_hz": 19.0,
+     "drive": -38.0,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940622168052",
+     "type": "CB0901_R",
+     "syn": 2,
+     "rate_hz": 9.8,
+     "drive": 19.6,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 2
+    },
+    {
+     "id": "720575940645716771",
+     "type": "LAL171,LAL172_L",
+     "syn": 44,
+     "rate_hz": 0.2,
+     "drive": 8.8,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940610995410",
+     "type": "CB0195_R",
+     "syn": -1,
+     "rate_hz": 3.6,
+     "drive": -3.6,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940644615716",
+     "type": "MBON31_L",
+     "syn": -14,
+     "rate_hz": 0.2,
+     "drive": -2.8,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940620346417",
+     "type": "LAL144a_R",
+     "syn": 10,
+     "rate_hz": 0.2,
+     "drive": 2.0,
+     "weak_edge_to_dn": false,
+     "strong_hops_from_lc": 3
+    },
+    {
+     "id": "720575940606149321",
+     "type": "AVLP076_R",
+     "syn": -1,
+     "rate_hz": 1.8,
+     "drive": -1.8,
+     "weak_edge_to_dn": true,
+     "strong_hops_from_lc": 3
+    }
+   ]
+  }
+ },
+ "step2_sub_vs_full": {
+  "LC10a_L": {
+   "dn": "DNa02_L",
+   "dn_sub_hz": 93.2,
+   "dn_full_hz": 109.6,
+   "sum_d_drive": 16206.4,
+   "top": [
+    {
+     "id": "720575940623533749",
+     "type": "PS049_L",
+     "syn": -353,
+     "full_hz": 74.8,
+     "sub_hz": 87.2,
+     "d_drive": 4377.2,
+     "its_drive_in_sub": 23237.0,
+     "its_drive_outside": -1.8,
+     "its_top_outside": [
+      "SAD076_L 0Hz×-60",
+      "CB0581_R 7Hz×3",
+      "LAL171,LAL172_R 1Hz×4"
+     ]
+    },
+    {
+     "id": "720575940620842111",
+     "type": "PS013_L",
+     "syn": 178,
+     "full_hz": 103.6,
+     "sub_hz": 125.6,
+     "d_drive": -3916.0,
+     "its_drive_in_sub": 39156.0,
+     "its_drive_outside": -42.6,
+     "its_top_outside": [
+      "CB3749_L 11Hz×-3",
+      "CB0689_L 1Hz×-8",
+      "DNge026_L 3Hz×-1"
+     ]
+    },
+    {
+     "id": "720575940611385806",
+     "type": "LAL018_L",
+     "syn": 183,
+     "full_hz": 69.0,
+     "sub_hz": 49.8,
+     "d_drive": 3513.6,
+     "its_drive_in_sub": 19259.4,
+     "its_drive_outside": 76.0,
+     "its_top_outside": [
+      "CB0581_R 7Hz×5",
+      "LAL171,LAL172_R 1Hz×40",
+      "LAL173,LAL174_L 1Hz×18"
+     ]
+    },
+    {
+     "id": "720575940614570415",
+     "type": "PS059_L",
+     "syn": -116,
+     "full_hz": 87.2,
+     "sub_hz": 105.2,
+     "d_drive": 2088.0,
+     "its_drive_in_sub": 28114.2,
+     "its_drive_outside": 653.8,
+     "its_top_outside": [
+      "CB0581_R 7Hz×101",
+      "MTe47_L 21Hz×-1",
+      "CB0045_R 0Hz×54"
+     ]
+    },
+    {
+     "id": "720575940619549598",
+     "type": "PS059_L",
+     "syn": -104,
+     "full_hz": 88.0,
+     "sub_hz": 106.4,
+     "d_drive": 1913.6,
+     "its_drive_in_sub": 28724.6,
+     "its_drive_outside": 727.2,
+     "its_top_outside": [
+      "CB0581_R 7Hz×111",
+      "PS124_R 11Hz×8",
+      "MTe47_L 21Hz×-4"
+     ]
+    },
+    {
+     "id": "720575940617243393",
+     "type": "LAL046_L",
+     "syn": -139,
+     "full_hz": 14.6,
+     "sub_hz": 2.2,
+     "d_drive": -1723.6,
+     "its_drive_in_sub": 3869.4,
+     "its_drive_outside": 8.4,
+     "its_top_outside": [
+      "LAL144a_L 1Hz×20",
+      "DNge026_L 3Hz×-1",
+      "SAD076_L 0Hz×-1"
+     ]
+    },
+    {
+     "id": "720575940639182424",
+     "type": "AOTU025_L",
+     "syn": 167,
+     "full_hz": 153.4,
+     "sub_hz": 163.2,
+     "d_drive": -1636.6,
+     "its_drive_in_sub": 77890.2,
+     "its_drive_outside": -15.8,
+     "its_top_outside": [
+      "LNO2_L 16Hz×-1",
+      "LAL171,LAL172_L 1Hz×1",
+      "MeTu4c_L 0Hz×1"
+     ]
+    },
+    {
+     "id": "720575940606726834",
+     "type": "LAL081_L",
+     "syn": 93,
+     "full_hz": 16.8,
+     "sub_hz": 1.2,
+     "d_drive": 1450.8,
+     "its_drive_in_sub": 4118.8,
+     "its_drive_outside": 14.8,
+     "its_top_outside": [
+      "LAL171,LAL172_R 1Hz×15",
+      "cL16_L 4Hz×1",
+      "MBON26_R 0Hz×3"
+     ]
+    },
+    {
+     "id": "720575940623554796",
+     "type": "AOTU015b_L",
+     "syn": 56,
+     "full_hz": 59.2,
+     "sub_hz": 34.8,
+     "d_drive": 1366.4,
+     "its_drive_in_sub": 15191.2,
+     "its_drive_outside": -15.8,
+     "its_top_outside": [
+      "CB0584_R 16Hz×-1",
+      "SMP041_L 0Hz×-1",
+      "VES051,VES052_L 0Hz×-2"
+     ]
+    },
+    {
+     "id": "720575940641553805",
+     "type": "LAL027_L",
+     "syn": 49,
+     "full_hz": 53.2,
+     "sub_hz": 26.8,
+     "d_drive": 1293.6,
+     "its_drive_in_sub": 13638.6,
+     "its_drive_outside": 0.0,
+     "its_top_outside": [
+      "LC33_L 0Hz×-1",
+      "CL258_L 0Hz×3",
+      "SMP312_L 0Hz×13"
+     ]
+    }
+   ]
+  },
+  "LC10a_R": {
+   "dn": "DNa02_R",
+   "dn_sub_hz": 4.4,
+   "dn_full_hz": 61.6,
+   "sum_d_drive": 38486.4,
+   "top": [
+    {
+     "id": "720575940618058048",
+     "type": "PS049_R",
+     "syn": -378,
+     "full_hz": 89.8,
+     "sub_hz": 115.2,
+     "d_drive": 9601.2,
+     "its_drive_in_sub": 32714.4,
+     "its_drive_outside": 6.2,
+     "its_top_outside": [
+      "CB2695_R 8Hz×-2",
+      "cL16_R 13Hz×1",
+      "PPM1201_R 9Hz×1"
+     ]
+    },
+    {
+     "id": "720575940616012061",
+     "type": "AOTU025_R",
+     "syn": 154,
+     "full_hz": 121.0,
+     "sub_hz": 61.2,
+     "d_drive": 9209.2,
+     "its_drive_in_sub": 47750.4,
+     "its_drive_outside": 0.0,
+     "its_top_outside": [
+      "LT55_R 0Hz×-1",
+      "LAL094_L 0Hz×-1",
+      "CB0945_R 0Hz×2"
+     ]
+    },
+    {
+     "id": "720575940620686964",
+     "type": "LAL018_R",
+     "syn": 185,
+     "full_hz": 36.6,
+     "sub_hz": 1.6,
+     "d_drive": 6475.0,
+     "its_drive_in_sub": 8932.6,
+     "its_drive_outside": -48.8,
+     "its_top_outside": [
+      "CB2695_R 8Hz×-5",
+      "AVLP016_R 5Hz×-2",
+      "LAL171,LAL172_L 0Hz×36"
+     ]
+    },
+    {
+     "id": "720575940607982428",
+     "type": "PS013_R",
+     "syn": 162,
+     "full_hz": 108.6,
+     "sub_hz": 133.8,
+     "d_drive": -4082.4,
+     "its_drive_in_sub": 43556.4,
+     "its_drive_outside": -10.8,
+     "its_top_outside": [
+      "SPS100f_R 13Hz×1",
+      "CB0195_R 4Hz×-3",
+      "CB2695_R 8Hz×-1"
+     ]
+    },
+    {
+     "id": "720575940612603289",
+     "type": "DNg75_R",
+     "syn": 70,
+     "full_hz": 34.4,
+     "sub_hz": 6.8,
+     "d_drive": 1932.0,
+     "its_drive_in_sub": 5391.4,
+     "its_drive_outside": 1474.2,
+     "its_top_outside": [
+      "CB0045_R 17Hz×134",
+      "PS124_L 17Hz×66",
+      "CB2825_R 12Hz×-75"
+     ]
+    },
+    {
+     "id": "720575940640325429",
+     "type": "DNa06_R",
+     "syn": 59,
+     "full_hz": 79.8,
+     "sub_hz": 48.8,
+     "d_drive": 1829.0,
+     "its_drive_in_sub": 22604.4,
+     "its_drive_outside": 2397.4,
+     "its_top_outside": [
+      "PS124_L 17Hz×131",
+      "PS124_R 6Hz×144",
+      "CB0045_R 17Hz×52"
+     ]
+    },
+    {
+     "id": "720575940619681006",
+     "type": "PS059_R",
+     "syn": -180,
+     "full_hz": 100.4,
+     "sub_hz": 108.6,
+     "d_drive": 1476.0,
+     "its_drive_in_sub": 37038.2,
+     "its_drive_outside": 266.8,
+     "its_top_outside": [
+      "CB0045_R 17Hz×7",
+      "DNge033_R 69Hz×1",
+      "PS124_L 17Hz×4"
+     ]
+    },
+    {
+     "id": "720575940627094696",
+     "type": "LAL027_R",
+     "syn": 54,
+     "full_hz": 34.2,
+     "sub_hz": 8.4,
+     "d_drive": 1393.2,
+     "its_drive_in_sub": 8502.6,
+     "its_drive_outside": -13.0,
+     "its_top_outside": [
+      "AVLP016_R 5Hz×-2",
+      "cML01_R 2Hz×-1",
+      "SMP555,SMP556_R 0Hz×1"
+     ]
+    },
+    {
+     "id": "720575940612227880",
+     "type": "AOTU015b_R",
+     "syn": 57,
+     "full_hz": 25.4,
+     "sub_hz": 1.0,
+     "d_drive": 1390.8,
+     "its_drive_in_sub": 6054.0,
+     "its_drive_outside": 0.2,
+     "its_top_outside": [
+      "SMP555,SMP556_R 0Hz×1",
+      "CL157_R 0Hz×4",
+      "SMP143,SMP149_R 0Hz×1"
+     ]
+    },
+    {
+     "id": "720575940637210334",
+     "type": "LAL081_R",
+     "syn": 99,
+     "full_hz": 26.4,
+     "sub_hz": 13.0,
+     "d_drive": 1326.6,
+     "its_drive_in_sub": 5353.2,
+     "its_drive_outside": 243.0,
+     "its_top_outside": [
+      "CB0655_L 13Hz×20",
+      "AVLP016_R 5Hz×-6",
+      "PLP177_R 10Hz×1"
+     ]
+    }
+   ]
+  }
+ },
+ "step3_outside_drive": {
+  "LC10a_L": {
+   "total_outside_drive": -34296.0,
+   "top": [
+    {
+     "id": "720575940622523508",
+     "type": "Li31_R",
+     "outside_drive": -10048.6,
+     "full_hz": 0.0,
+     "sub_hz": 0.0,
+     "from_": [
+      "cL21_L 38Hz×-263",
+      "MTe47_L 21Hz×-2",
+      "MTe47_L 21Hz×-1"
+     ]
+    },
+    {
+     "id": "720575940605494560",
+     "type": "SAD043_L",
+     "outside_drive": 6977.2,
+     "full_hz": 24.6,
+     "sub_hz": 0.0,
+     "from_": [
+      "LPT54_L 19Hz×343",
+      "PLP132_R 6Hz×115",
+      "PLP142_L 10Hz×-7"
+     ]
+    },
+    {
+     "id": "720575940644968215",
+     "type": "CB0202_R",
+     "outside_drive": 4262.8,
+     "full_hz": 7.2,
+     "sub_hz": 0.0,
+     "from_": [
+      "DNg16_R 26Hz×144",
+      "DNg16_L 26Hz×40",
+      "CB0534_R 10Hz×-17"
+     ]
+    },
+    {
+     "id": "720575940626162890",
+     "type": "PS265_L",
+     "outside_drive": -3704.2,
+     "full_hz": 10.0,
+     "sub_hz": 0.0,
+     "from_": [
+      "PS124_R 11Hz×193",
+      "PS279_R 8Hz×-238",
+      "PS279_R 8Hz×-233"
+     ]
+    },
+    {
+     "id": "720575940626783065",
+     "type": "AVLP016_L",
+     "outside_drive": 3633.4,
+     "full_hz": 12.4,
+     "sub_hz": 0.0,
+     "from_": [
+      "CL361_L 12Hz×293",
+      "PLP142_L 13Hz×-2",
+      "AVLP290b_L 13Hz×2"
+     ]
+    },
+    {
+     "id": "720575940621835174",
+     "type": "CB0202_L",
+     "outside_drive": 3555.6,
+     "full_hz": 6.2,
+     "sub_hz": 0.0,
+     "from_": [
+      "DNg16_L 26Hz×79",
+      "DNg16_R 26Hz×69",
+      "DNg52_L 3Hz×-50"
+     ]
+    },
+    {
+     "id": "720575940624902729",
+     "type": "PLP132_L",
+     "outside_drive": 3211.4,
+     "full_hz": 15.0,
+     "sub_hz": 0.0,
+     "from_": [
+      "LPT54_L 19Hz×166",
+      "PLP132_R 6Hz×19",
+      "cL16_L 4Hz×4"
+     ]
+    },
+    {
+     "id": "720575940625992781",
+     "type": "LPT42_Nod4_L",
+     "outside_drive": -2866.4,
+     "full_hz": 0.0,
+     "sub_hz": 0.0,
+     "from_": [
+      "PLP142_L 10Hz×-159",
+      "PLP142_L 13Hz×-97",
+      "LPT54_L 19Hz×4"
+     ]
+    },
+    {
+     "id": "720575940624986919",
+     "type": "DNa06_L",
+     "outside_drive": 2739.6,
+     "full_hz": 90.4,
+     "sub_hz": 99.8,
+     "from_": [
+      "PS124_R 11Hz×143",
+      "CB0581_R 7Hz×229",
+      "CB3749_L 11Hz×-18"
+     ]
+    },
+    {
+     "id": "720575940637308605",
+     "type": "DNb06_L",
+     "outside_drive": -2733.0,
+     "full_hz": 27.2,
+     "sub_hz": 40.2,
+     "from_": [
+      "PS279_R 8Hz×-136",
+      "PS279_R 8Hz×-111",
+      "PS279_R 9Hz×-54"
+     ]
+    },
+    {
+     "id": "720575940615948610",
+     "type": "CB0215_L",
+     "outside_drive": -2711.6,
+     "full_hz": 9.2,
+     "sub_hz": 0.0,
+     "from_": [
+      "PS279_R 8Hz×-133",
+      "PS279_R 9Hz×-109",
+      "PS279_R 8Hz×-110"
+     ]
+    },
+    {
+     "id": "720575940625441003",
+     "type": "AVLP449_L",
+     "outside_drive": 2545.2,
+     "full_hz": 16.0,
+     "sub_hz": 15.6,
+     "from_": [
+      "AVLP290b_L 13Hz×113",
+      "AVLP290b_L 13Hz×94",
+      "MTe47_L 21Hz×-2"
+     ]
+    }
+   ]
+  },
+  "LC10a_R": {
+   "total_outside_drive": -12419.4,
+   "top": [
+    {
+     "id": "720575940626162890",
+     "type": "PS265_L",
+     "outside_drive": -19230.6,
+     "full_hz": 0.4,
+     "sub_hz": 0.0,
+     "from_": [
+      "PS279_R 41Hz×-238",
+      "PS279_R 38Hz×-181",
+      "PS279_R 30Hz×-233"
+     ]
+    },
+    {
+     "id": "720575940628307026",
+     "type": "Am1_R",
+     "outside_drive": -14718.8,
+     "full_hz": 0.0,
+     "sub_hz": 0.0,
+     "from_": [
+      "VCH_L 11Hz×-728",
+      "DCH_L 8Hz×-768",
+      "cML01_R 2Hz×-73"
+     ]
+    },
+    {
+     "id": "720575940615948610",
+     "type": "CB0215_L",
+     "outside_drive": -11999.4,
+     "full_hz": 0.0,
+     "sub_hz": 0.0,
+     "from_": [
+      "PS279_R 41Hz×-110",
+      "PS279_R 38Hz×-109",
+      "PS279_R 30Hz×-133"
+     ]
+    },
+    {
+     "id": "720575940637308605",
+     "type": "DNb06_L",
+     "outside_drive": -11048.4,
+     "full_hz": 0.0,
+     "sub_hz": 0.0,
+     "from_": [
+      "PS279_R 41Hz×-136",
+      "PS279_R 30Hz×-111",
+      "PS279_R 38Hz×-54"
+     ]
+    },
+    {
+     "id": "720575940624986919",
+     "type": "DNa06_L",
+     "outside_drive": 9434.6,
+     "full_hz": 3.8,
+     "sub_hz": 0.0,
+     "from_": [
+      "CB0581_R 23Hz×229",
+      "PS124_L 17Hz×114",
+      "CB0045_R 17Hz×85"
+     ]
+    },
+    {
+     "id": "720575940614730914",
+     "type": "DNg75_L",
+     "outside_drive": 6784.2,
+     "full_hz": 0.0,
+     "sub_hz": 0.0,
+     "from_": [
+      "CB0045_R 17Hz×159",
+      "CB0581_R 23Hz×107",
+      "PS124_L 17Hz×112"
+     ]
+    },
+    {
+     "id": "720575940622523508",
+     "type": "Li31_R",
+     "outside_drive": -6624.4,
+     "full_hz": 0.0,
+     "sub_hz": 0.0,
+     "from_": [
+      "cL21_L 25Hz×-263",
+      "OA-AL2i2_L 0Hz×269",
+      "OA-AL2i1_L 3Hz×6"
+     ]
+    },
+    {
+     "id": "720575940632962786",
+     "type": "DNa16_L",
+     "outside_drive": 6013.6,
+     "full_hz": 0.0,
+     "sub_hz": 0.0,
+     "from_": [
+      "CB0581_R 23Hz×135",
+      "PS124_L 17Hz×139",
+      "PS124_R 6Hz×42"
+     ]
+    },
+    {
+     "id": "720575940616980737",
+     "type": "SAD043_R",
+     "outside_drive": 4684.8,
+     "full_hz": 18.4,
+     "sub_hz": 0.0,
+     "from_": [
+      "LPT54_R 10Hz×339",
+      "PLP132_R 9Hz×120",
+      "PLP177_R 10Hz×18"
+     ]
+    },
+    {
+     "id": "720575940615723314",
+     "type": "PVLP076_R",
+     "outside_drive": -4639.0,
+     "full_hz": 20.8,
+     "sub_hz": 36.8,
+     "from_": [
+      "PVLP010_R 19Hz×-244",
+      "MTe18_R 4Hz×-145",
+      "PLP132_R 9Hz×33"
+     ]
+    },
+    {
+     "id": "720575940611206514",
+     "type": "PS174_L",
+     "outside_drive": -4271.2,
+     "full_hz": 0.0,
+     "sub_hz": 0.0,
+     "from_": [
+      "PS279_R 41Hz×-55",
+      "PS279_R 30Hz×-37",
+      "PS279_R 38Hz×-22"
+     ]
+    },
+    {
+     "id": "720575940644968215",
+     "type": "CB0202_R",
+     "outside_drive": 4067.6,
+     "full_hz": 3.8,
+     "sub_hz": 0.0,
+     "from_": [
+      "DNg16_R 32Hz×144",
+      "DNg16_L 17Hz×40",
+      "CB0534_R 18Hz×-17"
+     ]
+    }
+   ]
+  }
+ }
+}

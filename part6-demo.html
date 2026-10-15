@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PART 6 逐格看迴路怎麼打｜果蠅模擬重現</title>
+<link rel="stylesheet" href="assets/flysimu.css">
+<style>
+/* 播放台：只在這一頁用，顏色一律取 flysimu.css 的變數（左半腦 --blue、右半腦 --amber、擊殺 --red） */
+.rig{border:1px solid var(--border);border-radius:var(--radius);padding:14px;background:var(--bg);display:flex;flex-direction:column;gap:12px;margin:18px 0}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tab{font:inherit;font-size:14px;border:1px solid var(--border);background:var(--panel);color:var(--ink);padding:4px 14px;border-radius:999px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tab:focus-visible,.pbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.stage{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:14px}
+@media (max-width:800px){.stage{grid-template-columns:minmax(0,1fr)}}
+.vbox{position:relative;background:#000;border-radius:8px;overflow:hidden;aspect-ratio:4/3;max-width:100%}
+.vbox video{width:100%;height:100%;display:block;image-rendering:pixelated}
+.hud{position:absolute;left:10px;top:6px;right:10px;display:flex;justify-content:space-between;font-family:Menlo,Consolas,monospace;font-size:13px;color:#fff;text-shadow:0 1px 2px #000;pointer-events:none}
+.hud b{font-size:20px}
+.ctl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px}
+.pbtn{font:inherit;font-size:13px;border:1px solid var(--border);background:var(--panel);color:var(--ink);padding:3px 11px;border-radius:6px;cursor:pointer}
+.pbtn.main{background:var(--ink);color:#fff;border-color:var(--ink);min-width:70px}
+.pbtn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.ctl input[type=range]{flex:1;min-width:110px;accent-color:var(--ink)}
+.brain svg,.fv svg{width:100%;height:auto;display:block}
+.readout{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:center;font-size:13px}
+.readout .lab{color:var(--soft)}
+.meter{position:relative;height:13px;background:var(--panel);border:1px solid var(--border);border-radius:3px;overflow:hidden}
+.meter .fill{position:absolute;top:0;bottom:0}
+.meter .th{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--red)}
+.meter .mid{position:absolute;top:0;bottom:0;left:50%;width:1px;background:var(--faint)}
+.mono{font-family:Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--soft)}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{font-family:Menlo,Consolas,monospace;font-size:12px;padding:1px 9px;border-radius:999px;border:1px solid var(--border);color:var(--faint)}
+.chip.on{color:#fff;border-color:transparent}
+.chip.on.l{background:var(--blue)} .chip.on.r{background:var(--amber)} .chip.on.f{background:var(--red)} .chip.on.s{background:var(--soft)}
+.tl canvas{width:100%;height:240px;display:block;cursor:pointer}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--soft)}
+.sw{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:4px}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+@media (max-width:720px){.trio{grid-template-columns:minmax(0,1fr)}}
+.cell .cap{display:flex;justify-content:space-between;gap:8px;font-size:13.5px;margin-top:4px}
+.cell .big{font-family:Menlo,Consolas,monospace;font-size:18px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="crumb"><a href="https://marginli.github.io/bsc-topics/">BSC 專題課程</a> ／ <a href="index.html">果蠅模擬重現</a> ／ PART 6</div>
+<header class="hero">
+  <p class="eyebrow">PART 6</p>
+  <h1>逐格看迴路怎麼打</h1>
+  <p class="subtitle">重現時錄下的 Doom 畫面，與 8 組神經元的放電率逐格對齊；把 PART 3 與 PART 5 講的現象直接在畫面上找出來</p>
+</header>
+
+<div class="wrap">
+
+  <div class="pager top">
+    <a href="part5-checks.html">← PART 5　作者沒做的檢查</a>
+    <a href="index.html">回課程首頁 →</a>
+  </div>
+
+  <nav class="toc">
+    <h2>本頁章節</h2>
+    <ol>
+      <li><a href="#s1">這些影片是什麼</a></li>
+      <li><a href="#s2">播放台</a></li>
+      <li><a href="#s3">三種大腦並排</a></li>
+      <li><a href="#s4">在畫面上找三件事</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="s1"><span class="pt">1</span>這些影片是什麼</h2>
+
+  <p>三段影片都是種子 0 的第 0 局，分別用完整接線（<code>fly</code>）、損毀 AOTU025（<code>lesion025</code>）、打亂接線並各自校準（<code>scrambled_cal</code>）三種大腦玩。擊殺數分別是 7、2、0，和 <a href="part3-fruitfly.html#s7">PART 3 第 7 節</a>表上第 0 局的數字相同——影片就是重現時實際跑出來的那一局。</p>
+  <p>錄影時同時記下每一格（1/35 秒）的四組神經元放電率（左右各一，共 8 組）、遊戲回報的敵人方位、以及按了哪些鍵。網頁播放時只是重播這些紀錄，<b>不會在瀏覽器裡重新模擬</b>：神經元模型與遊戲引擎都是 Python 套件，瀏覽器跑不了。</p>
+
+  <p class="figsrc">擊殺數 7、2、0 與第 0 局的對照：<code>out/fruitfly/local_doom_vizdoom130/</code> 各條件 JSON 的 <code>episodes[0]</code>。</p>
+
+  <h2 id="s2"><span class="pt">2</span>播放台</h2>
+
+  <div class="rig">
+    <div class="tabs" role="tablist" aria-label="大腦">
+      <button class="tab" role="tab" id="tab-fly" data-p="fly" aria-selected="true">完整接線</button>
+      <button class="tab" role="tab" id="tab-lesion025" data-p="lesion025" aria-selected="false">損毀 AOTU025</button>
+      <button class="tab" role="tab" id="tab-scrambled_cal" data-p="scrambled_cal" aria-selected="false">打亂接線（各自校準）</button>
+    </div>
+    <div class="stage">
+      <div>
+        <div class="vbox">
+          <video id="vid" muted playsinline preload="auto" src="assets/demo/fly.mp4"></video>
+          <div class="hud"><span>t = <span id="hudT">0.0</span> s</span><span>kills <b id="hudK">0</b></span></div>
+        </div>
+        <div class="fv"><svg id="fv" viewBox="0 0 400 44" role="img" aria-label="果蠅視野中的敵人方位"></svg></div>
+        <div class="ctl">
+          <button class="pbtn main" id="play">▶ 播放</button>
+          <button class="pbtn" id="back" aria-label="上一格">◀ 格</button>
+          <button class="pbtn" id="fwd" aria-label="下一格">格 ▶</button>
+          <input type="range" id="scrub" min="0" max="480" value="0" aria-label="時間">
+          <span role="group" aria-label="速度">
+            <button class="pbtn" data-r="0.25" aria-pressed="false">¼×</button>
+            <button class="pbtn" data-r="0.5" aria-pressed="false">½×</button>
+            <button class="pbtn" data-r="1" aria-pressed="true">1×</button>
+          </span>
+        </div>
+      </div>
+      <div class="brain">
+        <svg id="circ" viewBox="0 0 460 300" role="img" aria-label="迴路圖：節點亮度隨放電率改變"></svg>
+        <div class="readout">
+          <span class="lab">轉向訊號</span>
+          <div class="meter"><div class="mid"></div><div class="fill" id="steerF"></div><div class="th" id="thL"></div><div class="th" id="thR"></div></div>
+          <span></span><span class="mono" id="steerV"></span>
+          <span class="lab">開火條件</span>
+          <div class="meter"><div class="fill" id="fireF" style="background:var(--ink);opacity:.7"></div><div class="th" id="fireT"></div></div>
+          <span></span><span class="mono" id="fireV"></span>
+          <span class="lab">本格按鍵</span>
+          <div class="chips"><span class="chip l" id="cL">左轉</span><span class="chip r" id="cR">右轉</span><span class="chip f" id="cF">開火</span><span class="chip s" id="cS">搜尋</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="tl"><canvas id="tl" aria-label="四組神經元放電率的時間序列；點一下跳到該時間"></canvas></div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--blue)"></i>左半腦</span>
+      <span><i class="sw" style="background:var(--amber)"></i>右半腦</span>
+      <span><i class="sw" style="background:var(--red)"></i>擊殺</span>
+      <span>灰底：畫面上有敵人</span>
+      <span>點曲線可以跳到那個時間</span>
+    </div>
+  </div>
+  <p class="figsrc">影片與逐格紀錄由 <code>scripts/record_demo.py</code> 錄製、<code>scripts/build_data.py</code> 整理成 <code>assets/demo/data.json</code>。迴路圖的連線與權重同 <a href="part1-what.html#s3">PART 1 圖 1</a>；節點裡的數字是那一格的放電率（Hz），亮度上限是 250 Hz。視野條上的圓點是遊戲回報的敵人方位，深灰是 ±6° 雙眼重疊區，淺灰是 DNa02 不放電的 ±30°。「搜尋」是畫面上沒有敵人、迴路也安靜時固定按的右轉。</p>
+
+  <h2 id="s3"><span class="pt">3</span>三種大腦並排</h2>
+  <p>同一個種子、同一張地圖、同一套讀出規則，只差在大腦。按一次播放，三局一起開始，各自打到玩家死亡為止。</p>
+  <div class="ctl"><button class="pbtn main" id="trioPlay">▶ 三個一起播放</button><button class="pbtn" id="trioReset">回到開頭</button></div>
+  <div class="trio" id="trio"></div>
+
+  <h2 id="s4"><span class="pt">4</span>在畫面上找三件事</h2>
+  <p>用播放台的 ¼× 慢放或逐格前進，在「完整接線」那一局找：</p>
+  <ol>
+    <li><b>敵人從左邊出現時</b>，視野條上出現藍點，LC10a 左先亮、接著 AOTU019 左亮，轉向訊號往左超過閾值，按「左轉」。這是 <a href="part1-what.html#s4">PART 1 第 4 節</a>的讀出規則在運作。</li>
+    <li><b>敵人轉到正中間時</b>，兩側 AOTU019 一起亮、開火條件的長條越過紅線，按「開火」；這時看迴路圖最下面，<b>兩顆 DNa02 都是 0</b>。這就是 <a href="part5-checks.html#s4">PART 5 第 4 節</a>的發現：正前方的瞄準與開火完全不經過下行神經元。</li>
+    <li><b>敵人出現在畫面邊緣時</b>（大約第 4.2 秒，從右側 +83° 出現），AOTU025 右與 DNa02 右才亮起來。切到「損毀 AOTU025」那一局，這條路是暗的（迴路圖上打紅叉），所以邊緣的敵人比較難被轉回中央——這就是它 50 局平均只有 4.92 的原因（<a href="part5-checks.html#s2">PART 5 第 2 節</a>）。</li>
+  </ol>
+  <p>再切到「打亂接線」那一局：迴路圖上的連線已經不代表這個大腦（打亂後的接線畫不出來，圖上保留原本的接線並調淡），放電的模式與敵人的位置對不起來。</p>
+
+  <p class="figsrc">第 4.2 秒、+83° 的敵人：<code>assets/demo/data.json</code> 裡 <code>episodes.fly</code> 第 146 格的 <code>e</code>（<code>out/demo_data.json</code> 同一份）。</p>
+
+  <div class="pager">
+    <a href="part5-checks.html">← PART 5　作者沒做的檢查</a>
+    <a href="index.html">回課程首頁 →</a>
+  </div>
+
+</div>
+<div class="foot">BSC 腦空間體研究中心 · 專題課程 果蠅模擬重現 · 教材由 Claude Code 產生　·　<a href="index.html">回課程首頁</a></div>
+
+<script>
+const PANEL=["LC10a_L","LC10a_R","AOTU019_L","AOTU019_R","AOTU025_L","AOTU025_R","DNa02_L","DNa02_R"];
+const NAMES={fly:"完整接線",lesion025:"損毀 AOTU025",scrambled_cal:"打亂接線（各自校準）"};
+const SCALE=250,FPS=35,$=s=>document.querySelector(s),NS="http://www.w3.org/2000/svg";
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e}
+let D,P="fly",idx=0,nodeEls={},tlBase=null;
+const cal=p=>D.cal[p==="scrambled_cal"?"scrambled":"fly"].cal;
+const POS={LC10a_L:[125,50],LC10a_R:[335,50],AOTU019_L:[75,150],AOTU025_L:[155,150],AOTU025_R:[305,150],AOTU019_R:[385,150],DNa02_L:[150,250],DNa02_R:[310,250]};
+const LAB={LC10a_L:[0,-30,"middle"],LC10a_R:[0,-30,"middle"],AOTU019_L:[-22,-22,"end"],AOTU019_R:[22,-22,"start"],AOTU025_L:[22,-22,"start"],AOTU025_R:[-22,-22,"end"],DNa02_L:[0,36,"middle"],DNa02_R:[0,36,"middle"]};
+function drawCircuit(){
+  const s=$("#circ");s.innerHTML="";const defs=el("defs",{},s);
+  const m1=el("marker",{id:"arr",viewBox:"0 0 10 10",refX:"9",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto"},defs);el("path",{d:"M0,0 L10,5 L0,10 z",fill:css("--soft")},m1);
+  const m2=el("marker",{id:"bar",viewBox:"0 0 10 10",refX:"5",refY:"5",markerWidth:"8",markerHeight:"8",orient:"auto"},defs);el("path",{d:"M5,0 L5,10",stroke:css("--soft"),"stroke-width":"3"},m2);
+  const R=n=>n.startsWith("LC10a")?22:20;
+  for(const e of D.circuit.edges.filter(e=>Math.abs(e.w_mv)>=30)){
+    const [x1,y1]=POS[e.from],[x2,y2]=POS[e.to],dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,inh=e.w_mv<0;
+    const a=[x1+ux*R(e.from),y1+uy*R(e.from)],b=[x2-ux*(R(e.to)+3),y2-uy*(R(e.to)+3)];
+    el("path",{d:`M${a[0]},${a[1]} L${b[0]},${b[1]}`,fill:"none",stroke:css("--soft"),"stroke-width":2,"stroke-dasharray":inh?"5 4":"","marker-end":inh?"url(#bar)":"url(#arr)",opacity:P==="scrambled_cal"?.25:1},s);
+  }
+  for(const [x,a,t,c] of [[8,"start","left","--blue"],[452,"end","right","--amber"]]){const h=el("text",{x,y:16,"text-anchor":a,"font-size":12,"font-weight":"700",fill:css(c),"font-family":"Menlo,Consolas,monospace"},s);h.textContent=t}
+  nodeEls={};
+  for(const n of PANEL){
+    const [x,y]=POS[n],col=css(n.endsWith("_L")?"--blue":"--amber"),[lx,ly,la]=LAB[n],g=el("g",{},s);
+    const c=el("circle",{cx:x,cy:y,r:R(n),fill:col,"fill-opacity":.08,stroke:css("--ink"),"stroke-width":1.2},g);
+    const nm=el("text",{x:x+lx,y:y+ly,"text-anchor":la,"font-size":11,fill:css("--ink"),"font-family":"Menlo,Consolas,monospace"},g);nm.textContent=n.split("_")[0];
+    const hz=el("text",{x,y:y+4,"text-anchor":"middle","font-size":12,"font-weight":"700",fill:css("--ink"),"font-family":"Menlo,Consolas,monospace"},g);
+    if(P==="lesion025"&&n.startsWith("AOTU025")){el("line",{x1:x-14,y1:y-14,x2:x+14,y2:y+14,stroke:css("--red"),"stroke-width":2.5},g);el("line",{x1:x+14,y1:y-14,x2:x-14,y2:y+14,stroke:css("--red"),"stroke-width":2.5},g)}
+    nodeEls[n]={c,hz};
+  }
+}
+function drawFlyView(e){
+  const s=$("#fv");s.innerHTML="";const X=az=>200+az/90*190;
+  el("rect",{x:X(-30),y:4,width:X(30)-X(-30),height:24,fill:css("--panel")},s);
+  el("rect",{x:X(-6),y:4,width:X(6)-X(-6),height:24,fill:css("--border")},s);
+  el("line",{x1:10,y1:28,x2:390,y2:28,stroke:css("--faint")},s);
+  for(const a of [-90,-45,0,45,90]){const t=el("text",{x:X(a),y:41,"text-anchor":"middle","font-size":10,fill:css("--soft"),"font-family":"Menlo,Consolas,monospace"},s);t.textContent=(a>0?"+":"")+a+"°"}
+  for(const az of e)el("circle",{cx:X(az),cy:16,r:6,fill:css(az<0?"--blue":"--amber"),stroke:css("--ink"),"stroke-width":1},s);
+}
+const tl=$("#tl"),ROWS=[["LC10a","LC10a (visual input)"],["AOTU019","AOTU019 (central field)"],["AOTU025","AOTU025 (peripheral field)"],["DNa02","DNa02 (descending, steering)"]];
+function drawTimeline(){
+  const ep=D.episodes[P],dpr=window.devicePixelRatio||1,W=tl.clientWidth,H=240;tl.width=W*dpr;tl.height=H*dpr;
+  const off=document.createElement("canvas");off.width=tl.width;off.height=tl.height;const g=off.getContext("2d");g.scale(dpr,dpr);
+  const pad=8,top=4,rowH=(H-top-18)/4,n=ep.n,N=Math.max(n,481),X=i=>pad+i/(N-1)*(W-2*pad);
+  g.font="11px Menlo,Consolas,monospace";
+  for(let i=0;i<n;i++)if(ep.e[i].length){g.fillStyle=css("--panel");g.fillRect(X(i),top,X(i+1)-X(i)+.5,rowH*4)}
+  ROWS.forEach(([grp,lab],r)=>{const y0=top+r*rowH,yb=y0+rowH-4;g.strokeStyle=css("--border");g.beginPath();g.moveTo(pad,yb+.5);g.lineTo(W-pad,yb+.5);g.stroke();
+    for(const [sf,col] of [["_L","--blue"],["_R","--amber"]]){const v=ep[grp+sf];g.strokeStyle=css(col);g.lineWidth=1.6;g.beginPath();for(let i=0;i<n;i++){const y=yb-Math.min(v[i],SCALE)/SCALE*(rowH-14);i?g.lineTo(X(i),y):g.moveTo(X(i),y)}g.stroke()}
+    g.fillStyle=css("--soft");g.fillText(lab,pad+4,y0+11)});
+  g.fillStyle=css("--red");for(let i=1;i<n;i++)if(ep.k[i]>ep.k[i-1])g.fillRect(X(i)-1,top,2,rowH*4);
+  g.fillStyle=css("--soft");for(let t=0;t<=N/FPS;t+=2)g.fillText(t+"s",Math.min(X(t*FPS),W-pad-18),H-4);
+  tlBase={off,X,N,dpr,top,rowH};paintPlayhead();
+}
+function paintPlayhead(){if(!tlBase)return;const g=tl.getContext("2d");g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,tl.width,tl.height);g.drawImage(tlBase.off,0,0);g.scale(tlBase.dpr,tlBase.dpr);g.fillStyle=css("--ink");g.fillRect(tlBase.X(idx)-1,0,2,tlBase.top+tlBase.rowH*4)}
+tl.addEventListener("click",ev=>{if(!tlBase)return;const r=tl.getBoundingClientRect();seek(Math.round((ev.clientX-r.left-8)/(r.width-16)*(tlBase.N-1)))});
+const vid=$("#vid");
+function show(i){
+  const ep=D.episodes[P];idx=Math.max(0,Math.min(ep.n-1,i));
+  $("#hudT").textContent=(idx/FPS).toFixed(1);$("#hudK").textContent=ep.k[idx];$("#scrub").value=idx;
+  for(const n of PANEL){const v=ep[n][idx];nodeEls[n].c.setAttribute("fill-opacity",(.08+.82*Math.min(v,SCALE)/SCALE).toFixed(2));nodeEls[n].hz.textContent=Math.round(v)}
+  const c=cal(P),st=(ep.DNa02_R[idx]-ep.DNa02_L[idx])+(ep.AOTU019_R[idx]-ep.AOTU019_L[idx]),half=Math.max(300,c.turn_th*2.2),pos=v=>50+Math.max(-1,Math.min(1,v/half))*50;
+  const f=$("#steerF"),p=pos(st);f.style.left=Math.min(50,p)+"%";f.style.width=Math.abs(p-50)+"%";f.style.background=css(st<0?"--blue":"--amber");
+  $("#thL").style.left=pos(-c.turn_th)+"%";$("#thR").style.left=pos(c.turn_th)+"%";
+  $("#steerV").textContent=`R − L = ${st>=0?"+":""}${st.toFixed(1)}　閾值 ±${c.turn_th}`;
+  const mn=Math.min(ep.AOTU019_L[idx],ep.AOTU019_R[idx]);$("#fireF").style.width=Math.min(mn,SCALE)/SCALE*100+"%";$("#fireT").style.left=c.fire_th/SCALE*100+"%";
+  $("#fireV").textContent=`min(AOTU019 L, R) = ${mn.toFixed(1)} Hz　閾值 ${c.fire_th}`;
+  const a=ep.a[idx],search=!ep.e[idx].length&&a==="010";
+  $("#cL").classList.toggle("on",a[0]==="1");$("#cR").classList.toggle("on",a[1]==="1"&&!search);$("#cF").classList.toggle("on",a[2]==="1");$("#cS").classList.toggle("on",search);
+  drawFlyView(ep.e[idx]);paintPlayhead();
+}
+const frameOf=t=>Math.floor(t*FPS+1e-3);
+function loop(){show(frameOf(vid.currentTime));if(!vid.paused&&!vid.ended)requestAnimationFrame(loop)}
+function setPlay(){$("#play").textContent=vid.paused||vid.ended?"▶ 播放":"❚❚ 暫停"}
+function seek(i){vid.pause();vid.currentTime=(i+.5)/FPS;show(i);setPlay()}
+$("#play").onclick=()=>{if(vid.paused||vid.ended){if(vid.ended||idx>=D.episodes[P].n-1)vid.currentTime=0;vid.play().then(()=>{setPlay();requestAnimationFrame(loop)}).catch(()=>{})}else{vid.pause();setPlay()}};
+vid.addEventListener("pause",setPlay);vid.addEventListener("ended",()=>{setPlay();show(D.episodes[P].n-1)});
+$("#back").onclick=()=>seek(idx-1);$("#fwd").onclick=()=>seek(idx+1);$("#scrub").oninput=e=>seek(+e.target.value);
+document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{vid.playbackRate=+b.dataset.r;document.querySelectorAll("[data-r]").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+function selectCond(p){P=p;document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.p===p));
+  const r=vid.playbackRate;vid.pause();vid.src="assets/demo/"+p+".mp4";vid.playbackRate=r;vid.load();$("#scrub").max=D.episodes[p].n-1;drawCircuit();drawTimeline();show(0);setPlay()}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>selectCond(t.dataset.p));
+const trioV={};
+function buildTrio(){for(const p of ["fly","lesion025","scrambled_cal"]){const ep=D.episodes[p],c=document.createElement("div");c.className="cell";
+  c.innerHTML=`<div class="vbox"><video muted playsinline preload="auto" src="assets/demo/${p}.mp4"></video></div><div class="cap"><span>${NAMES[p]}</span><span>擊殺 <span class="big">0</span> / ${ep.kills}</span></div><div class="chips"><span class="chip l">左轉</span><span class="chip r">右轉</span><span class="chip f">開火</span></div>`;
+  $("#trio").appendChild(c);trioV[p]={v:c.querySelector("video"),k:c.querySelector(".big"),ch:c.querySelectorAll(".chip"),ep}}}
+function trioTick(){let any=false;for(const p in trioV){const {v,k,ch,ep}=trioV[p],i=Math.min(ep.n-1,frameOf(v.currentTime)),a=ep.a[i];k.textContent=ep.k[i];
+  ch[0].classList.toggle("on",a[0]==="1");ch[1].classList.toggle("on",a[1]==="1");ch[2].classList.toggle("on",a[2]==="1");if(!v.paused&&!v.ended)any=true}
+  if(any)requestAnimationFrame(trioTick);else $("#trioPlay").textContent="▶ 三個一起播放"}
+$("#trioPlay").onclick=()=>{const vs=Object.values(trioV).map(o=>o.v);if(vs.some(v=>!v.paused&&!v.ended)){vs.forEach(v=>v.pause());$("#trioPlay").textContent="▶ 三個一起播放";return}
+  if(vs.every(v=>v.ended))vs.forEach(v=>v.currentTime=0);Promise.all(vs.filter(v=>!v.ended).map(v=>v.play())).then(()=>{$("#trioPlay").textContent="❚❚ 暫停";requestAnimationFrame(trioTick)}).catch(()=>{})};
+$("#trioReset").onclick=()=>{Object.values(trioV).forEach(o=>{o.v.pause();o.v.currentTime=0});$("#trioPlay").textContent="▶ 三個一起播放";setTimeout(trioTick,60)};
+fetch("assets/demo/data.json").then(r=>r.json()).then(d=>{D=d;buildTrio();selectCond("fly");setTimeout(trioTick,300);new ResizeObserver(()=>drawTimeline()).observe(tl)});
+</script>
+</body>
+</html>

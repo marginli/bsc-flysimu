@@ -1,0 +1,11 @@
+[fly] ep0: kills=15 shots=24 survived=22.3s wall=4.4s
+[fly] ep1: kills=5 shots=10 survived=10.0s wall=1.9s
+[fly] ep2: kills=7 shots=17 survived=12.5s wall=2.5s
+[fly] ep3: kills=3 shots=10 survived=9.0s wall=1.7s
+[fly] ep4: kills=13 shots=26 survived=25.7s wall=5.6s
+[fly] ep5: kills=10 shots=26 survived=24.9s wall=4.9s
+[fly] ep6: kills=2 shots=6 survived=7.8s wall=1.5s
+[fly] ep7: kills=4 shots=7 survived=9.1s wall=1.8s
+[fly] ep8: kills=3 shots=6 survived=7.6s wall=1.4s
+[fly] ep9: kills=3 shots=11 survived=9.7s wall=1.9s
+[fly] 平均击杀 6.5 ± 4.62，存活 13.87s，命中率 0.44

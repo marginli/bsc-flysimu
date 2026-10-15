@@ -1,0 +1,14 @@
+{
+ "stored_agreement": 0.5307692307692308,
+ "stored_units_per_hand": -0.1786,
+ "same_edges": true,
+ "python_agreement": 0.5192307692307693,
+ "spots": {
+  "hit": 97,
+  "stand": 149,
+  "double": 14,
+  "chart_hit_matched": "51/115",
+  "chart_stand_matched": "83/106",
+  "chart_double_matched": "1/39"
+ }
+}

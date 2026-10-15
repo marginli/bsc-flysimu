@@ -1,0 +1,49 @@
+gen   0  train     45.1  val    164.5  best    164.5
+gen   1  train     70.4  val    164.5  best    164.5
+gen   2  train     83.2  val    164.5  best    164.5
+gen   3  train     78.8  val     70.0  best    164.5
+gen   4  train    107.4  val     53.5  best    164.5
+gen   5  train    100.6  val    164.5  best    164.5
+gen   6  train    108.9  val    177.9  best    177.9
+gen   7  train    217.7  val    165.3  best    177.9
+gen   8  train    169.1  val    177.9  best    177.9
+gen   9  train     87.7  val    121.8  best    177.9
+gen  10  train    210.2  val    177.9  best    177.9
+gen  11  train    133.9  val    177.9  best    177.9
+gen  12  train    126.8  val    178.0  best    178.0
+gen  13  train    217.7  val    217.7  best    217.7
+gen  14  train    217.7  val    217.7  best    217.7
+gen  15  train    217.7  val    217.7  best    217.7
+gen  16  train    217.7  val    183.2  best    217.7
+gen  17  train    217.7  val    217.7  best    217.7
+gen  18  train    217.7  val    217.7  best    217.7
+gen  19  train    217.7  val    217.7  best    217.7
+gen  20  train    217.7  val    217.7  best    217.7
+gen  21  train    217.7  val    195.9  best    217.7
+gen  22  train    217.7  val    217.7  best    217.7
+gen  23  train    217.7  val    217.7  best    217.7
+gen  24  train    217.7  val    217.7  best    217.7
+gen  25  train    217.7  val    217.7  best    217.7
+gen  26  train    217.7  val    217.7  best    217.7
+gen  27  train    217.7  val    217.7  best    217.7
+gen  28  train    217.7  val    217.7  best    217.7
+gen  29  train    217.7  val    190.4  best    217.7
+gen  30  train    217.7  val    162.0  best    217.7
+gen  31  train    217.7  val    217.7  best    217.7
+gen  32  train    217.7  val    217.7  best    217.7
+gen  33  train    217.7  val    217.7  best    217.7
+gen  34  train    217.7  val    217.7  best    217.7
+gen  35  train    217.7  val    217.7  best    217.7
+gen  36  train    217.7  val    217.7  best    217.7
+gen  37  train    217.7  val    217.7  best    217.7
+gen  38  train    217.7  val    214.5  best    217.7
+gen  39  train    217.7  val    217.7  best    217.7
+
+trained in 98.1s, validation 217.7 -> ../results/bj1_checkpoint.json
+
+controller                          survived/50  mean seconds  mean score
+--------------------------------------------------------------------------
+connectome + trained readout                 45         29.12       210.7
+SAME readout, circuit silenced                0          3.48        18.7
+untrained readout                             0          2.26        11.8
+uniform random actions                        0          2.43        12.7

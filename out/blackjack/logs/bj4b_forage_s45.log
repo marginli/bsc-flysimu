@@ -1,0 +1,35 @@
+gen   0 train    1153.7 val     406.0 best     406.0
+gen   1 train     791.9 val     406.0 best     406.0
+gen   2 train     163.8 val    -352.6 best     406.0
+gen   3 train     304.1 val    1183.4 best    1183.4
+gen   4 train     566.8 val    1183.4 best    1183.4
+gen   5 train    2181.9 val    1183.4 best    1183.4
+gen   6 train     401.5 val    -265.0 best    1183.4
+gen   7 train     693.1 val    1352.8 best    1352.8
+gen   8 train     435.2 val     589.7 best    1352.8
+gen   9 train     286.0 val    -353.8 best    1352.8
+gen  10 train    -201.5 val      -8.2 best    1352.8
+gen  11 train    5206.4 val     949.8 best    1352.8
+gen  12 train     658.0 val     160.3 best    1352.8
+gen  13 train    1049.0 val     -92.8 best    1352.8
+gen  14 train    1809.6 val     337.5 best    1352.8
+gen  15 train    3203.4 val     337.5 best    1352.8
+gen  16 train     313.7 val    2942.2 best    2942.2
+gen  17 train    3962.2 val    1197.7 best    2942.2
+gen  18 train    2445.9 val     178.9 best    2942.2
+gen  19 train    1437.6 val     268.2 best    2942.2
+gen  20 train    1323.0 val    1360.7 best    2942.2
+gen  21 train    1813.3 val     922.5 best    2942.2
+gen  22 train    3572.0 val    2436.9 best    2942.2
+gen  23 train    3966.0 val    2606.1 best    2942.2
+gen  24 train    1941.6 val    2189.4 best    2942.2
+gen  25 train    1576.8 val    1355.7 best    2942.2
+gen  26 train    2438.5 val    2350.4 best    2942.2
+gen  27 train    3059.6 val    1592.2 best    2942.2
+gen  28 train    1058.5 val     -87.6 best    2942.2
+gen  29 train    4206.3 val    2021.1 best    2942.2
+gen  30 train    4206.9 val    1436.9 best    2942.2
+gen  31 train    2441.1 val    1850.2 best    2942.2
+s45 learning shocks 3.85  food 5.47
+s45 dopamine cut shocks 7.50  food 5.25
+s45 plasticity off shocks 7.50  food 5.25

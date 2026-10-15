@@ -1,0 +1,1 @@
+ffl_brian: pyarrow pinned <18 because pyarrow>=18 wheels require numpy>=2 while brian2 2.9 needs numpy<2 (author's uv env did not hit this, uv picks compatible versions)

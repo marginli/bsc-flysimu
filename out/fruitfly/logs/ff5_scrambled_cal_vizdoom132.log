@@ -1,0 +1,11 @@
+[scrambled_cal] ep0: kills=0 shots=5 survived=6.5s wall=1.3s
+[scrambled_cal] ep1: kills=1 shots=5 survived=8.5s wall=1.6s
+[scrambled_cal] ep2: kills=0 shots=0 survived=9.0s wall=1.7s
+[scrambled_cal] ep3: kills=1 shots=1 survived=9.5s wall=1.8s
+[scrambled_cal] ep4: kills=0 shots=5 survived=7.9s wall=1.3s
+[scrambled_cal] ep5: kills=1 shots=13 survived=9.0s wall=1.7s
+[scrambled_cal] ep6: kills=2 shots=7 survived=9.6s wall=2.0s
+[scrambled_cal] ep7: kills=1 shots=7 survived=10.3s wall=2.0s
+[scrambled_cal] ep8: kills=2 shots=6 survived=8.3s wall=2.7s
+[scrambled_cal] ep9: kills=1 shots=6 survived=9.3s wall=2.6s
+[scrambled_cal] 平均击杀 0.9 ± 0.74，存活 8.79s，命中率 0.221

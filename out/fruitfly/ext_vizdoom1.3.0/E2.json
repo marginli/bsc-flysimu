@@ -1,0 +1,163 @@
+{
+ "per_scramble": [
+  {
+   "scramble_seed": 100,
+   "cal": {
+    "turn_th": 40.46,
+    "fire_th": 8.44,
+    "quiet_th": 5.0
+   },
+   "kills": [
+    1,
+    1,
+    1,
+    1,
+    2
+   ]
+  },
+  {
+   "scramble_seed": 101,
+   "cal": {
+    "turn_th": 47.58,
+    "fire_th": 5.23,
+    "quiet_th": 5.0
+   },
+   "kills": [
+    1,
+    1,
+    1,
+    2,
+    2
+   ]
+  },
+  {
+   "scramble_seed": 102,
+   "cal": {
+    "turn_th": 88.86,
+    "fire_th": 1.0,
+    "quiet_th": 5.0
+   },
+   "kills": [
+    0,
+    2,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "scramble_seed": 103,
+   "cal": {
+    "turn_th": 48.72,
+    "fire_th": 1.0,
+    "quiet_th": 5.0
+   },
+   "kills": [
+    1,
+    0,
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "scramble_seed": 104,
+   "cal": {
+    "turn_th": 89.55,
+    "fire_th": 1.0,
+    "quiet_th": 5.0
+   },
+   "kills": [
+    1,
+    1,
+    2,
+    1,
+    1
+   ]
+  },
+  {
+   "scramble_seed": 105,
+   "cal": {
+    "turn_th": 13.08,
+    "fire_th": 1.0,
+    "quiet_th": 5.0
+   },
+   "kills": [
+    1,
+    1,
+    1,
+    0,
+    2
+   ]
+  },
+  {
+   "scramble_seed": 106,
+   "cal": {
+    "turn_th": 20.51,
+    "fire_th": 4.31,
+    "quiet_th": 5.0
+   },
+   "kills": [
+    1,
+    1,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "scramble_seed": 107,
+   "cal": {
+    "turn_th": 30.94,
+    "fire_th": 12.13,
+    "quiet_th": 5.0
+   },
+   "kills": [
+    1,
+    3,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "scramble_seed": 108,
+   "cal": {
+    "turn_th": 30.96,
+    "fire_th": 18.99,
+    "quiet_th": 5.0
+   },
+   "kills": [
+    1,
+    3,
+    1,
+    2,
+    2
+   ]
+  },
+  {
+   "scramble_seed": 109,
+   "cal": {
+    "turn_th": 68.43,
+    "fire_th": 3.2,
+    "quiet_th": 5.0
+   },
+   "kills": [
+    2,
+    1,
+    2,
+    1,
+    1
+   ]
+  }
+ ],
+ "summary": {
+  "n": 50,
+  "mean": 1.16,
+  "sd": 0.71,
+  "ci95": [
+   0.96,
+   1.36
+  ]
+ }
+}

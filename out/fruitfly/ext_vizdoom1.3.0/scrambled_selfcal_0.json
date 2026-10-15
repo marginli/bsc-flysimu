@@ -1,0 +1,53 @@
+{
+ "policy": "scrambled_selfcal_0",
+ "episodes": [
+  {
+   "episode": 0,
+   "kills": 1,
+   "shots": 3,
+   "tics": 306,
+   "accuracy": 0.333,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 1,
+   "kills": 1,
+   "shots": 3,
+   "tics": 372,
+   "accuracy": 0.333,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 2,
+   "kills": 1,
+   "shots": 3,
+   "tics": 284,
+   "accuracy": 0.333,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 3,
+   "kills": 1,
+   "shots": 4,
+   "tics": 272,
+   "accuracy": 0.25,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 4,
+   "kills": 2,
+   "shots": 5,
+   "tics": 276,
+   "accuracy": 0.4,
+   "wall_s": 0.9
+  }
+ ],
+ "summary": {
+  "kills": 1.2,
+  "kills_sd": 0.45,
+  "shots": 3.6,
+  "survival_s": 8.63,
+  "accuracy": 0.33
+ },
+ "seed": 1000
+}

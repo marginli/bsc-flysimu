@@ -1,0 +1,38 @@
+author learning shocks 3.85  food 5.47
+author dopamine cut shocks 7.50  food 5.25
+author plasticity off shocks 7.50  food 5.25
+gen   0 train     943.1 val     446.3 best     446.3
+gen   1 train     833.5 val     446.3 best     446.3
+gen   2 train     202.5 val    -312.6 best     446.3
+gen   3 train     193.5 val    -320.2 best     446.3
+gen   4 train     -61.6 val    -227.5 best     446.3
+gen   5 train     196.0 val    -314.0 best     446.3
+gen   6 train     695.4 val     -59.1 best     446.3
+gen   7 train     188.3 val    -313.6 best     446.3
+gen   8 train     328.1 val     446.3 best     446.3
+gen   9 train     581.0 val    -314.0 best     446.3
+gen  10 train     -64.3 val     283.5 best     446.3
+gen  11 train     449.0 val    -311.9 best     446.3
+gen  12 train    -308.8 val    -314.0 best     446.3
+gen  13 train     328.2 val    -480.0 best     446.3
+gen  14 train     448.2 val     531.8 best     531.8
+gen  15 train     447.8 val    -314.1 best     531.8
+gen  16 train    -180.5 val    -314.0 best     531.8
+gen  17 train     198.2 val    -223.4 best     531.8
+gen  18 train    1971.6 val    -135.0 best     531.8
+gen  19 train     838.8 val     364.1 best     531.8
+gen  20 train      73.3 val    -306.7 best     531.8
+gen  21 train      78.5 val     531.8 best     531.8
+gen  22 train     210.7 val    -478.2 best     531.8
+gen  23 train    1718.9 val    -133.2 best     531.8
+gen  24 train     829.3 val    -394.7 best     531.8
+gen  25 train    1457.5 val    -135.6 best     531.8
+gen  26 train     199.5 val     364.0 best     531.8
+gen  27 train     832.9 val     447.1 best     531.8
+gen  28 train    -424.6 val    -478.8 best     531.8
+gen  29 train    1471.2 val     364.9 best     531.8
+gen  30 train     702.5 val     364.0 best     531.8
+gen  31 train    1715.6 val     364.5 best     531.8
+retrained learning shocks 1.93  food 1.27
+retrained dopamine cut shocks 1.88  food 1.25
+retrained plasticity off shocks 1.88  food 1.25

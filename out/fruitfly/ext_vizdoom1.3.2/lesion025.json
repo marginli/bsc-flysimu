@@ -1,0 +1,413 @@
+{
+ "policy": "lesion025",
+ "episodes": [
+  {
+   "episode": 0,
+   "kills": 2,
+   "shots": 2,
+   "tics": 316,
+   "accuracy": 1.0,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 1,
+   "kills": 3,
+   "shots": 10,
+   "tics": 320,
+   "accuracy": 0.3,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 2,
+   "kills": 3,
+   "shots": 3,
+   "tics": 308,
+   "accuracy": 1.0,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 3,
+   "kills": 1,
+   "shots": 1,
+   "tics": 284,
+   "accuracy": 1.0,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 4,
+   "kills": 2,
+   "shots": 9,
+   "tics": 288,
+   "accuracy": 0.222,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 5,
+   "kills": 6,
+   "shots": 14,
+   "tics": 378,
+   "accuracy": 0.429,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 6,
+   "kills": 2,
+   "shots": 3,
+   "tics": 258,
+   "accuracy": 0.667,
+   "wall_s": 0.8
+  },
+  {
+   "episode": 7,
+   "kills": 4,
+   "shots": 5,
+   "tics": 320,
+   "accuracy": 0.8,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 8,
+   "kills": 3,
+   "shots": 5,
+   "tics": 290,
+   "accuracy": 0.6,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 9,
+   "kills": 2,
+   "shots": 4,
+   "tics": 346,
+   "accuracy": 0.5,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 10,
+   "kills": 4,
+   "shots": 6,
+   "tics": 314,
+   "accuracy": 0.667,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 11,
+   "kills": 2,
+   "shots": 9,
+   "tics": 358,
+   "accuracy": 0.222,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 12,
+   "kills": 1,
+   "shots": 9,
+   "tics": 282,
+   "accuracy": 0.111,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 13,
+   "kills": 2,
+   "shots": 5,
+   "tics": 292,
+   "accuracy": 0.4,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 14,
+   "kills": 15,
+   "shots": 26,
+   "tics": 931,
+   "accuracy": 0.577,
+   "wall_s": 3.2
+  },
+  {
+   "episode": 15,
+   "kills": 4,
+   "shots": 8,
+   "tics": 312,
+   "accuracy": 0.5,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 16,
+   "kills": 4,
+   "shots": 7,
+   "tics": 376,
+   "accuracy": 0.571,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 17,
+   "kills": 3,
+   "shots": 10,
+   "tics": 310,
+   "accuracy": 0.3,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 18,
+   "kills": 6,
+   "shots": 12,
+   "tics": 356,
+   "accuracy": 0.5,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 19,
+   "kills": 2,
+   "shots": 4,
+   "tics": 274,
+   "accuracy": 0.5,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 20,
+   "kills": 10,
+   "shots": 21,
+   "tics": 747,
+   "accuracy": 0.476,
+   "wall_s": 2.6
+  },
+  {
+   "episode": 21,
+   "kills": 4,
+   "shots": 8,
+   "tics": 354,
+   "accuracy": 0.5,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 22,
+   "kills": 4,
+   "shots": 5,
+   "tics": 326,
+   "accuracy": 0.8,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 23,
+   "kills": 5,
+   "shots": 7,
+   "tics": 362,
+   "accuracy": 0.714,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 24,
+   "kills": 2,
+   "shots": 3,
+   "tics": 308,
+   "accuracy": 0.667,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 25,
+   "kills": 3,
+   "shots": 3,
+   "tics": 268,
+   "accuracy": 1.0,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 26,
+   "kills": 2,
+   "shots": 9,
+   "tics": 290,
+   "accuracy": 0.222,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 27,
+   "kills": 3,
+   "shots": 5,
+   "tics": 284,
+   "accuracy": 0.6,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 28,
+   "kills": 4,
+   "shots": 8,
+   "tics": 438,
+   "accuracy": 0.5,
+   "wall_s": 1.5
+  },
+  {
+   "episode": 29,
+   "kills": 1,
+   "shots": 3,
+   "tics": 256,
+   "accuracy": 0.333,
+   "wall_s": 0.8
+  },
+  {
+   "episode": 30,
+   "kills": 2,
+   "shots": 2,
+   "tics": 280,
+   "accuracy": 1.0,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 31,
+   "kills": 4,
+   "shots": 4,
+   "tics": 342,
+   "accuracy": 1.0,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 32,
+   "kills": 2,
+   "shots": 3,
+   "tics": 268,
+   "accuracy": 0.667,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 33,
+   "kills": 3,
+   "shots": 10,
+   "tics": 270,
+   "accuracy": 0.3,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 34,
+   "kills": 2,
+   "shots": 3,
+   "tics": 262,
+   "accuracy": 0.667,
+   "wall_s": 0.8
+  },
+  {
+   "episode": 35,
+   "kills": 3,
+   "shots": 9,
+   "tics": 312,
+   "accuracy": 0.333,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 36,
+   "kills": 1,
+   "shots": 2,
+   "tics": 284,
+   "accuracy": 0.5,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 37,
+   "kills": 4,
+   "shots": 7,
+   "tics": 368,
+   "accuracy": 0.571,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 38,
+   "kills": 2,
+   "shots": 3,
+   "tics": 272,
+   "accuracy": 0.667,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 39,
+   "kills": 3,
+   "shots": 5,
+   "tics": 340,
+   "accuracy": 0.6,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 40,
+   "kills": 4,
+   "shots": 5,
+   "tics": 372,
+   "accuracy": 0.8,
+   "wall_s": 1.3
+  },
+  {
+   "episode": 41,
+   "kills": 8,
+   "shots": 13,
+   "tics": 516,
+   "accuracy": 0.615,
+   "wall_s": 1.7
+  },
+  {
+   "episode": 42,
+   "kills": 11,
+   "shots": 17,
+   "tics": 640,
+   "accuracy": 0.647,
+   "wall_s": 2.1
+  },
+  {
+   "episode": 43,
+   "kills": 14,
+   "shots": 22,
+   "tics": 922,
+   "accuracy": 0.636,
+   "wall_s": 3.0
+  },
+  {
+   "episode": 44,
+   "kills": 5,
+   "shots": 7,
+   "tics": 346,
+   "accuracy": 0.714,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 45,
+   "kills": 2,
+   "shots": 2,
+   "tics": 270,
+   "accuracy": 1.0,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 46,
+   "kills": 6,
+   "shots": 12,
+   "tics": 416,
+   "accuracy": 0.5,
+   "wall_s": 1.3
+  },
+  {
+   "episode": 47,
+   "kills": 3,
+   "shots": 3,
+   "tics": 312,
+   "accuracy": 1.0,
+   "wall_s": 1.0
+  },
+  {
+   "episode": 48,
+   "kills": 2,
+   "shots": 2,
+   "tics": 234,
+   "accuracy": 1.0,
+   "wall_s": 0.7
+  },
+  {
+   "episode": 49,
+   "kills": 6,
+   "shots": 17,
+   "tics": 493,
+   "accuracy": 0.353,
+   "wall_s": 1.7
+  }
+ ],
+ "summary": {
+  "kills": 3.92,
+  "kills_sd": 3.02,
+  "shots": 7.44,
+  "survival_s": 10.32,
+  "accuracy": 0.605
+ },
+ "seed": 0
+}

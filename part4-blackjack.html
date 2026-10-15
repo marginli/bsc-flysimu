@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PART 4 重現 fly-blackjack｜果蠅模擬重現</title>
+<link rel="stylesheet" href="assets/flysimu.css">
+</head>
+<body>
+<div class="crumb"><a href="https://marginli.github.io/bsc-topics/">BSC 專題課程</a> ／ <a href="index.html">果蠅模擬重現</a> ／ PART 4</div>
+<header class="hero">
+  <p class="eyebrow">PART 4</p>
+  <h1>重現 fly-blackjack</h1>
+  <p class="subtitle">多數數字逐位相同；對不上的兩處，一處靠讀作者的策略檔找到原因，另一處是作者自己的三份資料說法不一</p>
+</header>
+
+<div class="wrap">
+
+  <div class="pager top">
+    <a href="part3-fruitfly.html">← PART 3　重現 fruitfly-lab</a>
+    <a href="part5-checks.html">PART 5　作者沒做的檢查 →</a>
+  </div>
+
+  <nav class="toc">
+    <h2>本頁章節</h2>
+    <ol>
+      <li><a href="#s1">結論：五個步驟的成績</a></li>
+      <li><a href="#s2">BJ1　Dino：四列全部相同</a></li>
+      <li><a href="#s3">BJ2　切出蕈狀體：md5 相同，README 的兩個連結數對不上</a></li>
+      <li><a href="#s4">BJ3　制約學習：學習指數相同</a></li>
+      <li><a href="#s5">BJ4　覓食：README 少寫了一個參數</a></li>
+      <li><a href="#s6">BJ5　21 點：勝率對上，學到的策略對不上</a></li>
+    </ol>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s1"><span class="pt">1</span>結論：五個步驟的成績</h2>
+
+  <p>判定標準的三種分法見 <a href="part3-fruitfly.html#s1">PART 3 第 1 節</a>。fly-blackjack 的每個實驗都固定了亂數種子，所以本課事先訂的標準是：作者附的結果要逐位相同；需要重新訓練的步驟（CEM 訓練，見 <a href="part1-what.html#s6">PART 1 第 6 節</a>）不要求數字一樣，只要求「形狀相同」——學習組明顯好過對照組。</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>步驟</th><th>做什麼</th><th>判定標準</th><th>結果</th></tr>
+    <tr><td>BJ1</td><td>Dino：訓練讀出並跑 50 個保留關卡</td><td>訓練組明顯高於三個對照</td><td><b>四列數字與 README 逐位相同</b></td></tr>
+    <tr><td>BJ2</td><td>下載資料、切出蕈狀體，跑兩次</td><td>細胞數、連結數與 README 相同；兩次 md5 相同</td><td>細胞數相同、md5 相同；<b>README 寫的兩個連結數與作者 repo 裡的檔案不一致</b>（文件錯誤，不影響結果）</td></tr>
+    <tr><td>BJ3</td><td>制約學習與 T-maze</td><td>與 README 的表相同</td><td><b>學習指數相同</b>；三個對照組的 T-maze 位移本機 +0.03、README +0.00</td></tr>
+    <tr><td>BJ4</td><td>覓食</td><td>作者的策略：逐位相同；重新訓練：形狀相同</td><td>作者的策略<b>逐位相同</b>；照 README 重新訓練<b>形狀不同</b>；改用作者策略檔記錄的參數重新訓練，<b>逐位相同</b>（已找到原因）</td></tr>
+    <tr><td>BJ5</td><td>21 點 30,000 手</td><td>勝率約 −16%、與基本策略一致約 52%</td><td><b>勝率對上</b>（−14.8%）；<b>一致率對不上</b>（45.3%），作者的三份資料彼此也不一致</td></tr>
+  </table>
+  </div>
+
+  <p class="figsrc">每一列的數字出處見下面對應的小節。</p>
+
+  <p>BJ1–BJ5 是本課自己編的代號。作者的 repo 用的是 <code>python -m flybrain.…</code> 指令，其中覓食與 21 點兩個實驗沒有命令列入口，下載包的 <code>blackjack/scripts/</code> 補了兩支小程式去呼叫作者的函式（不改作者的程式）。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s2"><span class="pt">2</span>BJ1　Dino：四列全部相同</h2>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>控制方式</th><th>完成關卡（50 關）</th><th>平均存活秒數</th><th>平均分數</th></tr>
+    <tr><td>連線體 ＋ 訓練過的讀出</td><td>45</td><td>29.12</td><td>210.7</td></tr>
+    <tr><td>同一個讀出，迴路輸出換成 0</td><td>0</td><td>3.48</td><td>18.7</td></tr>
+    <tr><td>沒訓練的讀出</td><td>0</td><td>2.26</td><td>11.8</td></tr>
+    <tr><td>隨機按鍵</td><td>0</td><td>2.43</td><td>12.7</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">本機與 README 第 42–47 行逐位相同。本機輸出在 <code>out/blackjack/logs/bj1_train.log</code>。</p>
+
+  <p>第二列是作者在 README 特別強調的對照：讀出一模一樣，只是把迴路送給它的活動換成 0。這一列完成 0 關，代表讀出確實在用迴路算出來的東西，而不是自己背下了關卡。作者也明說這個示範<b>不能</b>證明果蠅的接線比同樣大小的隨機網路好——要證明那件事，需要用打亂接線的網路以同樣的訓練量再比一次。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s3"><span class="pt">3</span>BJ2　切出蕈狀體：md5 相同，README 的兩個連結數對不上</h2>
+
+  <p>作者的 <code>flybrain.mb.fetch</code> 從 connectome_data_prep 下載 MaleCNS 的預處理矩陣，<code>flybrain.mb.extract</code> 從裡面切出蕈狀體四群神經元。README 宣稱切法在任何電腦上都逐位相同，所以本課跑兩次、比對輸出檔 <code>data/mb_circuit.npz</code> 的 md5：</p>
+
+<pre><code>32dc49359f237250162ed33dcb5da93c  data/mb_circuit.npz
+32dc49359f237250162ed33dcb5da93c  data/mb_circuit.npz</code></pre>
+  <p class="figsrc">兩次相同。輸出在 <code>out/blackjack/logs/bj2_md5.txt</code>。</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>項目</th><th>README</th><th>作者 repo 裡的 <code>data/mb_manifest.json</code></th><th>本機</th></tr>
+    <tr><td>細胞數 PN／KC／MBON／DAN</td><td>682／1,200／97／332</td><td>682／1,200／97／332</td><td>682／1,200／97／332</td></tr>
+    <tr><td>PN→KC 連結</td><td><b>22,586</b></td><td>7,182</td><td>7,182</td></tr>
+    <tr><td>KC→MBON 連結</td><td><b>61,210</b></td><td>18,183</td><td>18,183</td></tr>
+    <tr><td>DAN→MBON 連結</td><td>3,123</td><td>3,123</td><td>3,123</td></tr>
+    <tr><td>MBON 趨近／迴避</td><td>56／41</td><td>56／41</td><td>56／41</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">作者的 manifest 收在 <code>out/upstream/blackjack_mb_manifest_committed.json</code>，本機的在 <code>out/blackjack/logs/bj2_extract_run1.log</code>。</p>
+
+  <p>本機與作者 commit 進 repo 的 manifest 完全相同，只有 README 的兩個數字不一樣。用全部 3,811 顆 KC 切出的電路（<a href="part5-checks.html#s7">PART 5</a> 的加做檢查存下的）有 22,581 條 PN→KC、57,823 條 KC→MBON：前者接近 README，後者也不相等。README 那兩個數字是怎麼來的，從程式裡對不出來。它們不影響任何實驗結果——實驗讀的是 <code>mb_circuit.npz</code>，而那個檔案逐位相同。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s4"><span class="pt">4</span>BJ3　制約學習：學習指數相同</h2>
+
+  <p>學習指數與 T-maze 偏好指數的定義見 <a href="part1-what.html#s6">PART 1 第 6 節</a>。12 個種子、每個 20 次訓練：</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>條件</th><th>學習指數（README）</th><th>本機</th><th>T-maze 位移（README）</th><th>本機</th></tr>
+    <tr><td>連線體 ＋ 可塑性</td><td>−1.30</td><td>−1.301</td><td>+0.80</td><td>+0.800</td></tr>
+    <tr><td>關掉可塑性</td><td>0.00</td><td>0.000</td><td>+0.00</td><td>+0.030</td></tr>
+    <tr><td>切斷多巴胺</td><td>0.00</td><td>0.000</td><td>+0.00</td><td>+0.030</td></tr>
+    <tr><td>氣味與電擊不同時出現</td><td>0.00</td><td>0.000</td><td>+0.00</td><td>+0.030</td></tr>
+    <tr><td>KC→MBON 打亂</td><td>−1.23</td><td>−1.232</td><td>+0.83</td><td>+0.825</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">本機輸出在 <code>out/blackjack/logs/bj3_experiment.log</code>、<code>bj3_tmaze.log</code>。</p>
+
+  <p>T-maze 的<b>位移</b>是訓練後的偏好指數減掉訓練前的。三個對照組的學習指數是 0（模型完全沒變），但本機的 T-maze 位移是 +0.03 而不是 README 的 +0.00。原因在 T-maze 的做法：每次讓 100 隻模擬果蠅<b>依機率</b>選邊，訓練前、訓練後各抽一次，兩次抽到的隨機數不同，所以模型沒變、位移也不會剛好是 0。本機的 +0.03 是作者的程式照原樣跑出來的；README 的 +0.00 怎麼得到，程式裡查不到。訓練前的偏好指數本機 +0.147、README +0.15，訓練後 +0.947、README +0.95，兩者相同。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s5"><span class="pt">5</span>BJ4　覓食：README 少寫了一個參數</h2>
+
+  <p>覓食實驗分兩段：控制移動的讀出先用 CEM 訓練好（作者把訓練好的參數存在 <code>policies/forage.json</code>），再讓果蠅在場地裡跑 90 秒、40 個種子，算平均被電擊幾次。三個條件：學習、切斷多巴胺、關掉可塑性。</p>
+
+  <figure class="fig">
+    <img src="assets/p4-forage-shocks.png" alt="三組長條圖，縱軸是每 90 秒被電擊次數。作者附的策略：學習 3.85、切斷多巴胺 7.50、關掉可塑性 7.50。照 README 指令重新訓練：1.93、1.88、1.88，三者幾乎一樣。改用 seconds=45 重新訓練：3.85、7.50、7.50，與作者相同。">
+    <figcaption><b>圖 1　三種策略下的電擊次數。</b>A 組：作者附的策略，與 README 逐位相同。B 組：照 README 的指令重新訓練，學習組與兩個對照組幾乎一樣。C 組：把訓練長度改成 45 秒重新訓練，三個數字都與作者相同。
+    <span class="figsrc">由 <code>scripts/make_figures.py</code> 從 <code>out/blackjack/bj4_forage.json</code> 與 <code>bj4b_forage_s45_eval.json</code> 畫出。</span></figcaption>
+  </figure>
+
+  <p>B 組的問題不只是數字不同：學習組 1.93、切斷多巴胺 1.88，<b>學習沒有帶來任何好處</b>，形狀就不對了。再看食物：B 組每 90 秒只吃到約 1.3 次（作者約 5.5 次），也就是這個策略幾乎不去找氣味源，蕈狀體學到什麼都派不上用場。</p>
+
+  <p>原因寫在作者自己的策略檔裡。<code>policies/forage.json</code> 除了訓練好的參數，還記錄了訓練時的設定：</p>
+
+<pre><code>{
+ "task": "forage",
+ "seed": 20260913,
+ "seconds": 45.0,
+ "validation": 2942.240450387357
+}</code></pre>
+  <p class="figsrc">策略檔裡除了參數本身以外的欄位，收在 <code>out/upstream/blackjack_forage_policy_meta.json</code>。</p>
+
+  <p>訓練時每一回合是 <b>45 秒</b>；而 README 的指令 <code>train(generations=32)</code> 沒有指定這個參數，會用程式裡的預設值 <b>40 秒</b>。把指令改成 <code>train(generations=32, seconds=45.0)</code> 重新訓練：訓練的驗證分數是 2942.24，和策略檔記錄的值一樣；三個條件的電擊與食物數也都與作者逐位相同（C 組）。</p>
+
+  <div class="fixed"><b>已找到原因：</b>README 第 308 行的訓練指令少寫了 <code>seconds=45.0</code>。下載包的 <code>blackjack/scripts/bj4b_forage_s45.py</code> 補上這個參數，重新訓練的結果與作者附的策略逐位相同。<code>bj4_forage.py</code> 保留照 README 原樣的訓練，作為對照。</div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s6"><span class="pt">6</span>BJ5　21 點：勝率對上，學到的策略對不上</h2>
+
+  <p>作者在 <code>flybrain/mb/blackjack.py</code> 的檔尾用註解寫了實驗設定：3 個種子、每個 30,000 手、對照組先跑。<b>勝率</b>在這裡指平均每手的淨輸贏（以一注為單位，−0.15 就是平均每手輸 0.15 注），取最後 2,000 手。</p>
+
+  <figure class="fig">
+    <img src="assets/p4-blackjack-curve.png" alt="21 點學習曲線：橫軸是累積手數 0 到 30,000，縱軸是每 2,000 手的平均每手輸贏。連線體加多巴胺從 −0.25 升到約 −0.15，貼近永遠停牌的 −0.158；切斷多巴胺、關掉學習、未訓練三條都停在 −0.45 到 −0.49 之間，接近隨機出牌的 −0.445。基本策略是 −0.014。">
+    <figcaption><b>圖 2　四個條件的學習曲線（3 個種子平均）。</b>只有「連線體 ＋ 多巴胺」那一條會上升；它停在「永遠停牌」那條參考線附近。灰色虛線是三種固定策略的期望值：照基本策略打、永遠停牌、隨機。
+    <span class="figsrc">由 <code>scripts/make_figures.py</code> 從 <code>out/blackjack/bj5_blackjack_30000.json</code> 畫出。</span></figcaption>
+  </figure>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>條件</th><th>作者的勝率</th><th>本機（3 種子）</th><th>平均</th></tr>
+    <tr><td>未訓練</td><td>−45%</td><td>−0.448／−0.469／−0.523</td><td>−0.480</td></tr>
+    <tr><td>關掉學習（探索照常遞減）</td><td>−45% → −45%</td><td>−0.439／−0.470／−0.515</td><td>−0.475</td></tr>
+    <tr><td>切斷多巴胺（探索照常遞減）</td><td>−46% → −47%</td><td>−0.439／−0.470／−0.515</td><td>−0.475</td></tr>
+    <tr><td>連線體 ＋ 多巴胺</td><td>−45% → −16%</td><td>−0.150／−0.164／−0.129</td><td><b>−0.148</b></td></tr>
+  </table>
+  </div>
+  <p class="figsrc">作者的值出自 <code>blackjack.py</code> 檔尾註解（收在 <code>out/upstream/blackjack_py_RESULT_comment.txt</code>）；本機在 <code>out/blackjack/bj5_blackjack_30000.json</code>。</p>
+
+  <p><b>勝率的改善重現了</b>，而且只出現在有多巴胺的那一組。但作者還宣稱了「它學到什麼策略」：與基本策略的一致率，以及它在 260 格裡各選了什麼。這一部分，作者自己留下的三份資料就互相矛盾：</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>來源</th><th>與基本策略一致</th><th>260 格裡的選擇</th></tr>
+    <tr><td>README</td><td>52%</td><td>幾乎都停牌，只在 10、11 點要牌</td></tr>
+    <tr><td><code>blackjack.py</code> 檔尾註解</td><td>48.1%</td><td>停牌約 227 格、加倍 0 格</td></tr>
+    <tr><td>作者附的大腦檔 <code>data/brain_seed.json</code>（檔內記錄）</td><td>53.1%</td><td>—</td></tr>
+    <tr><td>同一個大腦檔，載入作者的 Python 模型重新評分</td><td>51.9%</td><td>要牌 97、停牌 149、加倍 14</td></tr>
+    <tr><td>本機重跑（種子 0）</td><td>43.8%</td><td>要牌 6、停牌 214、加倍 40</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">大腦檔的評分由 <code>blackjack/scripts/bj5b_author_brain.py</code> 算出（<code>out/blackjack/bj5b_author_brain.json</code>）；本機三個種子的平均一致率是 45.3%。</p>
+
+  <p>作者附的大腦一致率約 52%，和 README 相符，但它要牌 97 格，不是註解說的「幾乎全部停牌」；同一份程式、同一個種子在本機重跑，又是第三種結果。所以這一步的結論要分開講：<b>「有多巴胺才會變好」可以重現；「學到什麼策略、一致率多少」從公開的程式碼重現不出來。</b>最直接的解釋是附的大腦檔由另一個版本或另一組設定的程式產生，但作者沒有記錄，本課無法確認。</p>
+
+  <div class="note"><b>這一頁帶走的事：</b>README 是作者對結果的摘要，不是結果本身。這一頁兩處對不上，<b>真正的資訊都在 repo 的其他檔案裡</b>——策略檔記錄的訓練長度、manifest 記錄的連結數、大腦檔記錄的一致率。重現時遇到對不上，先找作者留下的輸出檔，再回頭判斷 README 寫的是哪一個版本。</div>
+
+  <div class="pager">
+    <a href="part3-fruitfly.html">← PART 3　重現 fruitfly-lab</a>
+    <a href="part5-checks.html">PART 5　作者沒做的檢查 →</a>
+  </div>
+
+</div>
+<div class="foot">BSC 腦空間體研究中心 · 專題課程 果蠅模擬重現 · 教材由 Claude Code 產生　·　<a href="index.html">回課程首頁</a></div>
+</body>
+</html>

@@ -1,0 +1,1198 @@
+{
+ "X1_50_seeds": {
+  "none": {
+   "n": 50,
+   "mean": -1.3773391033650628,
+   "sd": 0.33061201055880346,
+   "ci95": [
+    -1.4689800772513393,
+    -1.2856981294787864
+   ]
+  },
+  "shuffled": {
+   "n": 50,
+   "mean": -1.386875745239918,
+   "sd": 0.3892639542925672,
+   "ci95": [
+    -1.4947742084866098,
+    -1.2789772819932264
+   ]
+  },
+  "none_first12": {
+   "n": 12,
+   "mean": -1.3014266688568241,
+   "sd": 0.33865263297831644,
+   "ci95": [
+    -1.4930374338923946,
+    -1.1098159038212536
+   ]
+  }
+ },
+ "X2_dan_mbon_shuffled": {
+  "per_permutation": [
+   {
+    "n": 12,
+    "mean": -0.3106953549861835,
+    "sd": 0.21538127261585766,
+    "ci95": [
+     -0.43255878199488973,
+     -0.18883192797747728
+    ]
+   },
+   {
+    "n": 12,
+    "mean": -0.2776311643194021,
+    "sd": 0.18300609250311642,
+    "ci95": [
+     -0.3811766087540176,
+     -0.1740857198847866
+    ]
+   },
+   {
+    "n": 12,
+    "mean": -0.4374446398504736,
+    "sd": 0.18294148129374313,
+    "ci95": [
+     -0.5409535270519472,
+     -0.33393575264899994
+    ]
+   },
+   {
+    "n": 12,
+    "mean": -0.15152720896639782,
+    "sd": 0.22444109140577545,
+    "ci95": [
+     -0.2785167110159289,
+     -0.024537706916866714
+    ]
+   },
+   {
+    "n": 12,
+    "mean": -0.3516744169281416,
+    "sd": 0.18638921784579632,
+    "ci95": [
+     -0.4571340447235096,
+     -0.2462147891327736
+    ]
+   },
+   {
+    "n": 12,
+    "mean": -0.28516398100966317,
+    "sd": 0.2642180100018026,
+    "ci95": [
+     -0.4346593934249654,
+     -0.13566856859436097
+    ]
+   },
+   {
+    "n": 12,
+    "mean": -0.21874518496354764,
+    "sd": 0.2193829606795694,
+    "ci95": [
+     -0.3428727801394348,
+     -0.0946175897876605
+    ]
+   },
+   {
+    "n": 12,
+    "mean": -0.1868263955985753,
+    "sd": 0.17121638374397113,
+    "ci95": [
+     -0.2837011843379462,
+     -0.08995160685920442
+    ]
+   },
+   {
+    "n": 12,
+    "mean": -0.39014972977286405,
+    "sd": 0.2008444074548233,
+    "ci95": [
+     -0.5037881510279517,
+     -0.2765113085177764
+    ]
+   },
+   {
+    "n": 12,
+    "mean": -0.44242263756238237,
+    "sd": 0.20847999215400068,
+    "ci95": [
+     -0.5603812975613305,
+     -0.32446397756343426
+    ]
+   }
+  ],
+  "mean_of_means": -0.30522807139576313
+ },
+ "X3_kc_subsets": {
+  "n_live_kc": 3811,
+  "variants": {
+   "all_live_kc": {
+    "n_kc": 3811,
+    "full": {
+     "n": 12,
+     "mean": -1.2101495889778957,
+     "sd": 0.3301606808800247,
+     "ci95": [
+      -1.3969555798001698,
+      -1.0233435981556216
+     ]
+    },
+    "dopamine_cut": {
+     "n": 12,
+     "mean": 0.0,
+     "sd": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "random1200_0": {
+    "n_kc": 1200,
+    "full": {
+     "n": 12,
+     "mean": -1.3174543972640465,
+     "sd": 0.2702234496113284,
+     "ci95": [
+      -1.4703477070110071,
+      -1.1645610875170858
+     ]
+    },
+    "dopamine_cut": {
+     "n": 12,
+     "mean": 0.0,
+     "sd": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "random1200_1": {
+    "n_kc": 1200,
+    "full": {
+     "n": 12,
+     "mean": -1.242773186897127,
+     "sd": 0.315419760313378,
+     "ci95": [
+      -1.4212387167512899,
+      -1.0643076570429642
+     ]
+    },
+    "dopamine_cut": {
+     "n": 12,
+     "mean": 0.0,
+     "sd": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "random1200_2": {
+    "n_kc": 1200,
+    "full": {
+     "n": 12,
+     "mean": -1.3111406078106054,
+     "sd": 0.2539287231229649,
+     "ci95": [
+      -1.4548143081276266,
+      -1.1674669074935842
+     ]
+    },
+    "dopamine_cut": {
+     "n": 12,
+     "mean": 0.0,
+     "sd": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "random1200_3": {
+    "n_kc": 1200,
+    "full": {
+     "n": 12,
+     "mean": -1.4264731084988362,
+     "sd": 0.45688927817271663,
+     "ci95": [
+      -1.6849825532868505,
+      -1.167963663710822
+     ]
+    },
+    "dopamine_cut": {
+     "n": 12,
+     "mean": 0.0,
+     "sd": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "random1200_4": {
+    "n_kc": 1200,
+    "full": {
+     "n": 12,
+     "mean": -1.3419413044449022,
+     "sd": 0.2430024951762449,
+     "ci95": [
+      -1.4794329093285827,
+      -1.2044496995612217
+     ]
+    },
+    "dopamine_cut": {
+     "n": 12,
+     "mean": 0.0,
+     "sd": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    }
+   }
+  }
+ },
+ "X4_mbon_valence": {
+  "rule": "Aso et al. 2014 eLife：麩胺酸 MBON 活化促迴避（−1），乙醯膽鹼／GABA 促趨近（+1）；簡化規則，有已知例外",
+  "crosstab": {
+   "acetylcholine|-1": 12,
+   "acetylcholine|+1": 38,
+   "gaba|-1": 13,
+   "gaba|+1": 8,
+   "glutamate|-1": 16,
+   "glutamate|+1": 10
+  },
+  "judged": 97,
+  "agree": 62,
+  "disagree": [
+   {
+    "type": "MBON21",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON26",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON22",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON22",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON24",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON24",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON09",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON09",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON09",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON25-like",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON25",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON34",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON25-like",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON25-like",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON34",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON25",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON30",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON30",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON27",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON27",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON29",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON09",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON21",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON29",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON26",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON25-like",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   }
+  ],
+  "cells": [
+   {
+    "type": "MBON01",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON06",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON14",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON05",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON35",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON11",
+    "nt": "gaba",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON20",
+    "nt": "gaba",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON31",
+    "nt": "gaba",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON21",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON20",
+    "nt": "gaba",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON26",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON11",
+    "nt": "gaba",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON32",
+    "nt": "gaba",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON15",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON33",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON31",
+    "nt": "gaba",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON14",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON22",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON06",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON13",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON07",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON22",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON12",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON12",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON18",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON07",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON24",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON14",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON24",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON07",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON09",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON09",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON14",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON23",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON09",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON28",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON19",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON28",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON17",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON15-like",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON19",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON19",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON15",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON15-like",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON17",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON15-like",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON19",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON15",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON25-like",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON25",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON34",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON25-like",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON25-like",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON15-like",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON34",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON25",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON35",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON18",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON23",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON30",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON17-like",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON17-like",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON13",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON30",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON27",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON07",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON27",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON32",
+    "nt": "gaba",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON12",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON05",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON03",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON29",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON01",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON16",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON15",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON12",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON03",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON02",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON02",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON33",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON09",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON21",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON29",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON26",
+    "nt": "acetylcholine",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON04",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON04",
+    "nt": "glutamate",
+    "author": -1,
+    "nt_rule": -1,
+    "agree": true
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON25-like",
+    "nt": "glutamate",
+    "author": 1,
+    "nt_rule": -1,
+    "agree": false
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   },
+   {
+    "type": "MBON16",
+    "nt": "acetylcholine",
+    "author": 1,
+    "nt_rule": 1,
+    "agree": true
+   },
+   {
+    "type": "MBON10",
+    "nt": "gaba",
+    "author": -1,
+    "nt_rule": 1,
+    "agree": false
+   }
+  ]
+ }
+}

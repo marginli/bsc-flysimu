@@ -1,0 +1,93 @@
+{
+ "policy": "oracle",
+ "episodes": [
+  {
+   "episode": 0,
+   "kills": 10,
+   "shots": 26,
+   "tics": 585,
+   "accuracy": 0.385,
+   "wall_s": 0.8
+  },
+  {
+   "episode": 1,
+   "kills": 12,
+   "shots": 26,
+   "tics": 708,
+   "accuracy": 0.462,
+   "wall_s": 0.7
+  },
+  {
+   "episode": 2,
+   "kills": 11,
+   "shots": 26,
+   "tics": 800,
+   "accuracy": 0.423,
+   "wall_s": 0.9
+  },
+  {
+   "episode": 3,
+   "kills": 10,
+   "shots": 26,
+   "tics": 542,
+   "accuracy": 0.385,
+   "wall_s": 0.7
+  },
+  {
+   "episode": 4,
+   "kills": 13,
+   "shots": 26,
+   "tics": 792,
+   "accuracy": 0.5,
+   "wall_s": 1.2
+  },
+  {
+   "episode": 5,
+   "kills": 15,
+   "shots": 26,
+   "tics": 882,
+   "accuracy": 0.577,
+   "wall_s": 1.1
+  },
+  {
+   "episode": 6,
+   "kills": 5,
+   "shots": 16,
+   "tics": 296,
+   "accuracy": 0.312,
+   "wall_s": 0.5
+  },
+  {
+   "episode": 7,
+   "kills": 14,
+   "shots": 26,
+   "tics": 742,
+   "accuracy": 0.538,
+   "wall_s": 2.9
+  },
+  {
+   "episode": 8,
+   "kills": 10,
+   "shots": 26,
+   "tics": 724,
+   "accuracy": 0.385,
+   "wall_s": 1.4
+  },
+  {
+   "episode": 9,
+   "kills": 19,
+   "shots": 26,
+   "tics": 880,
+   "accuracy": 0.731,
+   "wall_s": 1.5
+  }
+ ],
+ "summary": {
+  "kills": 11.9,
+  "kills_sd": 3.73,
+  "shots": 25.0,
+  "survival_s": 19.86,
+  "accuracy": 0.47
+ },
+ "seed": 0
+}

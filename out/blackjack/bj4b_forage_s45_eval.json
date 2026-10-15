@@ -1,0 +1,15 @@
+{
+ "learning": {
+  "shocks": 3.85,
+  "food": 5.475
+ },
+ "dopamine cut": {
+  "shocks": 7.5,
+  "food": 5.25
+ },
+ "plasticity off": {
+  "shocks": 7.5,
+  "food": 5.25
+ },
+ "validation": 2942.240450387357
+}

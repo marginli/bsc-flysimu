@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PART 2 準備環境與資料｜果蠅模擬重現</title>
+<link rel="stylesheet" href="assets/flysimu.css">
+</head>
+<body>
+<div class="crumb"><a href="https://marginli.github.io/bsc-topics/">BSC 專題課程</a> ／ <a href="index.html">果蠅模擬重現</a> ／ PART 2</div>
+<header class="hero">
+  <p class="eyebrow">PART 2</p>
+  <h1>準備環境與資料</h1>
+  <p class="subtitle">三個指令就能從零跑完兩個專案；這一頁講清楚每個指令背後固定了哪些版本、為什麼要固定</p>
+</header>
+
+<div class="wrap">
+
+  <div class="pager top">
+    <a href="part1-what.html">← PART 1　兩個專案在做什麼</a>
+    <a href="part3-fruitfly.html">PART 3　重現 fruitfly-lab →</a>
+  </div>
+
+  <nav class="toc">
+    <h2>本頁章節</h2>
+    <ol>
+      <li><a href="#s1">三個指令</a></li>
+      <li><a href="#s2">需要什麼</a></li>
+      <li><a href="#s3">下載包裡有什麼</a></li>
+      <li><a href="#s4">四個環境</a></li>
+      <li><a href="#s5">三個要固定版本的地方</a></li>
+      <li><a href="#s6">一個會讓結果悄悄改變的陷阱</a></li>
+      <li><a href="#s7">跑完之後怎麼看</a></li>
+    </ol>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s1"><span class="pt">1</span>三個指令</h2>
+
+  <p>下載 <a href="downloads/flysimu-code.zip">flysimu-code.zip</a>，解壓縮到一個空資料夾，在那個資料夾裡開終端機，依序執行：</p>
+
+<pre><code>bash setup_envs.sh              # 建四個 conda 環境（只需一次）
+bash fruitfly_lab/run_all.sh    # fruitfly-lab：FF1–FF6、ViZDoom 1.3.2 對照、加做檢查 E1–E4
+bash blackjack/run_all.sh       # fly-blackjack：BJ1–BJ5、加做檢查 X1–X4</code></pre>
+
+  <p>本課在一台 Linux、12 核 CPU 的電腦上，從解壓縮開始實測：建四個環境 54 秒，fruitfly-lab 14 分 34 秒，fly-blackjack 21 分 54 秒（兩個同時跑）。建環境那一項是在沒有同名環境的情況下另外實測的，而且這台電腦已經有套件的下載快取；在新電腦上第一次建，會因為要下載套件而更久。兩個 <code>run_all.sh</code> 互不相干，可以同時開兩個終端機各跑一個。</p>
+  <p class="figsrc">實測時間出自 <code>out/porttest.json</code>（下載包解到空資料夾後的完整執行紀錄）。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s2"><span class="pt">2</span>需要什麼</h2>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>項目</th><th>說明</th></tr>
+    <tr><td>作業系統</td><td>Linux 或 macOS。fruitfly-lab 的作者在 macOS 上跑、本課在 Linux 上跑，兩邊逐局相同（<a href="part3-fruitfly.html#s7">PART 3 第 7 節</a>）</td></tr>
+    <tr><td><b>conda</b></td><td>Anaconda 或 Miniconda。conda 是一個管理「Python 環境」的工具：每個環境有自己的一份 Python 與套件，彼此不會互相干擾</td></tr>
+    <tr><td>git、curl</td><td>用來下載兩個專案的程式碼與資料</td></tr>
+    <tr><td>網路與硬碟</td><td>跑完後下載的程式碼與資料共約 570 MB，四個環境共約 2,879 MB</td></tr>
+    <tr><td>GPU</td><td>不需要</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">硬碟用量出自 <code>out/porttest.json</code>。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s3"><span class="pt">3</span>下載包裡有什麼</h2>
+
+  <p>下載包<b>只有本課自己寫的程式</b>。兩個被重現的專案由 <code>run_all.sh</code> 從 GitHub 取得，並切換到固定的版本——fruitfly-lab 沒有授權檔，所以它的任何檔案都不能由本課散布（<a href="index.html">首頁</a>〈出處〉）。</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>檔案</th><th>做什麼</th></tr>
+    <tr><td><code>setup_envs.sh</code></td><td>建四個 conda 環境，套件版本照本課實跑時固定</td></tr>
+    <tr><td><code>fruitfly_lab/run_all.sh</code></td><td>取得 fruitfly-lab 與 Shiu 的全腦模型、下載 FlyWire 註解檔，依序跑 FF1–FF6、ViZDoom 1.3.2 對照、E1–E4。另外下載了 FlyWire 官方的連線表 <code>proofread_connections_783.feather</code> 的話，先設 <code>FLYWIRE_FEATHER=&lt;檔案路徑&gt;</code> 再跑，FF1 會逐條比對（<a href="part3-fruitfly.html#s3">PART 3 第 3 節</a>）</td></tr>
+    <tr><td><code>fruitfly_lab/ext/</code></td><td>FF1 的資料核對與 E1–E4 的程式。只匯入作者的程式，不修改它</td></tr>
+    <tr><td><code>blackjack/run_all.sh</code></td><td>取得 fly-blackjack、下載 MaleCNS 預處理矩陣，依序跑 BJ1–BJ5、X1–X4</td></tr>
+    <tr><td><code>blackjack/scripts/</code></td><td>作者沒有命令列入口的兩個實驗（覓食、21 點）的呼叫程式，以及 X1–X4</td></tr>
+    <tr><td><code>check.py</code>、<code>expected.json</code></td><td><b>驗收</b>：逐項比對你跑出來的數字與本課實跑的結果（第 7 節）</td></tr>
+    <tr><td><code>SHA256SUMS.txt</code></td><td>每個檔案的 SHA-256 指紋，用 <code>sha256sum -c SHA256SUMS.txt</code> 確認下載的檔案沒有損壞</td></tr>
+  </table>
+  </div>
+
+  <p class="figsrc">兩個 repo 的版本與下載來源寫在下載包的 <code>fruitfly_lab/run_all.sh</code>、<code>blackjack/run_all.sh</code>。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s4"><span class="pt">4</span>四個環境</h2>
+
+  <p>兩個專案需要的套件版本互相衝突，所以分成四個環境。<code>setup_envs.sh</code> 一次建好：</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>環境名稱</th><th>Python</th><th>關鍵套件</th><th>給誰用</th></tr>
+    <tr><td><code>flyplay_bj</code></td><td>3.11</td><td>numpy 2.4.6、scipy 1.17.1、pandas 3.0.6</td><td>fly-blackjack 全部</td></tr>
+    <tr><td><code>ffl_brian</code></td><td>3.11</td><td>Brian2 2.9.0、numpy 1.26.4、pyarrow 17.0.0</td><td>fruitfly-lab 的抽子圖、全腦模型（FF1–FF3、E4）</td></tr>
+    <tr><td><code>ffl_doom130</code></td><td>3.12</td><td><b>vizdoom 1.3.0</b>、numba 0.68.0</td><td>fruitfly-lab 的遊戲（FF4–FF6、E1–E3），與作者相同的版本</td></tr>
+    <tr><td><code>ffl_doom</code></td><td>3.12</td><td>vizdoom 1.3.2、numba 0.68.0</td><td>只用來做版本對照（<a href="part3-fruitfly.html#s8">PART 3 第 8 節</a>）</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">Python 版本出自 <code>out/porttest.json</code> 的 <code>python_versions</code>；完整套件清單在 <code>out/blackjack/env.txt</code> 與 <code>out/fruitfly/env_brian.txt</code>、<code>env_doom130.txt</code>、<code>env_doom.txt</code>。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s5"><span class="pt">5</span>三個要固定版本的地方</h2>
+
+  <h3>一、程式碼：固定到某一個 commit</h3>
+  <p>GitHub 上的專案會一直更新。<b>commit</b> 是專案每一次存檔的版本編號；<code>run_all.sh</code> 取得程式碼之後會切到本課用的那一版（fruitfly-lab <code>8c27fe8</code>、fly-blackjack <code>004b2e3</code>）。作者日後改了程式，你跑出來的仍然是本課的那一版。Shiu 的全腦模型 repo 取最新版，因為 fruitfly-lab 只讀它附的連線表，而那份連線表在 FF1 會逐條核對。</p>
+
+  <h3>二、遊戲引擎：ViZDoom 1.3.0</h3>
+  <p>不指定版本的 <code>pip install vizdoom</code> 會裝到 1.3.2。兩個版本只差一個小版號，但遊戲本身的隨機抽樣不同，同一組種子下每一局的分數都會變，連不使用神經網路的條件也一樣（<a href="part3-fruitfly.html#s8">PART 3 第 8 節</a>）。所以主要的環境固定在作者用的 1.3.0，另開一個 1.3.2 的環境只做對照。</p>
+
+  <h3>三、Brian2、numpy 與 pyarrow 的版本衝突</h3>
+  <p>Shiu 的全腦模型用 Brian2 2.9，它需要 numpy 2 以前的版本；而讀連線表要用的 pyarrow 從 18 版開始需要 numpy 2 以後的版本。兩者同時裝最新版會衝突，所以 <code>ffl_brian</code> 把 pyarrow 固定在 17。fruitfly-lab 的 README 用另一個安裝工具 uv、只註明「Brian2 2.9 需要 numpy 2 以前的版本」；本課用 pip 照同一份套件清單安裝時遇到這個衝突。</p>
+  <p class="figsrc">衝突的說明記在 <code>out/fruitfly/env_notes.txt</code>。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s6"><span class="pt">6</span>一個會讓結果悄悄改變的陷阱</h2>
+
+  <p>如果你曾經用 <code>pip install --user</code> 裝過套件，它們會被放在家目錄的 <code>~/.local</code> 底下；而 Python 預設會把這個資料夾也加進搜尋範圍——<b>包括 conda 環境裡同一個版本的 Python</b>。結果是：你以為在用環境裡固定好的 numpy 2.4.6，實際上載入的可能是 <code>~/.local</code> 裡的另一個版本，而且不會有任何警告。</p>
+  <p>下載包的每一支腳本都先設定 <code>PYTHONNOUSERSITE=1</code>，讓 Python 不去讀 <code>~/.local</code>。自己在終端機裡手動執行單一步驟時，也要在指令前面加上它：</p>
+
+<pre><code>PYTHONNOUSERSITE=1 $(conda info --base)/envs/ffl_doom130/bin/python doom/fly_doom.py --policy fly --episodes 1</code></pre>
+
+  <p class="figsrc">numpy 2.4.6 是 <code>flyplay_bj</code> 環境固定的版本（<code>out/blackjack/env.txt</code>）。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s7"><span class="pt">7</span>跑完之後怎麼看</h2>
+
+  <p>每個 <code>run_all.sh</code> 跑完都會自動執行 <code>check.py</code>，逐項比對你的結果與本課實跑的結果，每一項印一行：</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>符號</th><th>意思</th></tr>
+    <tr><td>✓</td><td>對上了。判定標準依那一項而定：逐位相同，或全腦模型那幾項在 ±20% 內（三種判定標準見 <a href="part3-fruitfly.html#s1">PART 3 第 1 節</a>）</td></tr>
+    <tr><td>✗</td><td>對不上。後面會印出本次的值與預期的值</td></tr>
+    <tr><td>△</td><td>本課實跑時也對不上、頁面上已經說明的項目（目前只有一項，見 <a href="part3-fruitfly.html#s5">PART 3 第 5 節</a>），不算失敗</td></tr>
+  </table>
+  </div>
+
+  <p>本課的可攜測試（解到空資料夾、從建環境開始跑）最後兩行是：</p>
+<pre><code>fruitfly：45 項通過，0 項不符，1 項已知不符（△，本課實跑時也一樣）（共 46 項）
+blackjack：19 項通過，0 項不符（共 19 項）</code></pre>
+  <p class="figsrc">出自 <code>out/porttest.json</code>。</p>
+
+  <p>想看某一步的細節，打開那個資料夾裡的 <code>logs/</code>：每一步一個檔案，是那一步的完整終端輸出，最後幾行通常就是結果表。所有數字另外以 JSON 存在 <code>results/</code>，PART 3 到 PART 5 的每一張表都標了它對應哪一個檔案。</p>
+
+  <div class="pager">
+    <a href="part1-what.html">← PART 1　兩個專案在做什麼</a>
+    <a href="part3-fruitfly.html">PART 3　重現 fruitfly-lab →</a>
+  </div>
+
+</div>
+<div class="foot">BSC 腦空間體研究中心 · 專題課程 果蠅模擬重現 · 教材由 Claude Code 產生　·　<a href="index.html">回課程首頁</a></div>
+</body>
+</html>
