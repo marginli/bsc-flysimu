@@ -18,77 +18,78 @@
 
   <div class="intro"><dl>
     <dt>這是什麼</dt>
-    <dd>一堂「重現」的專題課。對象是兩個公開在 GitHub 上的專案，它們都把果蠅的<b>連線體</b>（connectome：一顆腦裡每一顆神經元連到哪些神經元、各有幾個突觸的完整清單）接到電腦遊戲上：<b>fruitfly-lab</b> 讓一段視覺追蹤迴路在 Doom 裡轉身、瞄準、開火；<b>fly-blackjack</b> 讓蕈狀體（果蠅負責嗅覺學習的腦區）一邊玩 21 點一邊學。</dd>
+    <dd>一堂「重現」的專題課。對象是兩個公開在 GitHub 上的專案，它們都把果蠅的<b>連線體</b>（connectome：一顆腦裡每一顆神經元連到哪些神經元、各有幾個突觸的完整清單）接到電腦遊戲上。清單本身不會動；把清單裡每一顆神經元換成一條「會放電」的方程式、照清單接起來，就成了一個會動的模型（PART 1 講這件事）。<b>fruitfly-lab</b> 從全腦切出一段視覺追蹤<b>迴路</b>（一小群互相連接、一起完成某件事的神經元），讓它在 Doom 裡轉身、瞄準、開火；<b>fly-blackjack</b> 切出蕈狀體（果蠅負責嗅覺學習的腦區），把牌面編成「氣味」送進去，讓它用學氣味好壞的方式學 21 點怎麼打。</dd>
     <dt>為什麼值得單獨開一堂</dt>
-    <dd>「果蠅大腦會玩遊戲」這類示範在網路上傳得很快，但看示範影片判斷不了它可不可信。能判斷的辦法只有一個：<b>拿到程式碼，自己重跑，逐項對照作者宣稱的數字</b>。這兩個專案都附了程式碼與對照組，所以能真的做這件事。</dd>
+    <dd>「果蠅大腦會玩遊戲」這類示範在網路上傳得很快，但看示範影片判斷不了它可不可信。能判斷的辦法只有一個：<b>拿到程式碼，自己重跑，逐項對照作者宣稱的數字</b>。這兩個專案都附了程式碼與對照組（把模型的某個零件拿掉或打亂再跑一次，看成績掉不掉），所以能真的做這件事。</dd>
     <dt>怎麼讀</dt>
     <dd>按下面六個按鈕的順序：先弄懂兩個專案在做什麼（1），把環境準備好（2），逐步重現兩個專案（3、4），再做作者沒做的檢查（5），最後在影片上逐格看迴路怎麼運作（6）。</dd>
     <dt>需要什麼基礎</dt>
-    <dd>PART 1 與 PART 6 不需要程式基礎。PART 2 到 PART 5 要會在終端機貼上指令並執行，但不需要會寫程式；所有指令都附在頁面上，也打包成<a href="downloads/flysimu-code.zip">一個下載包</a>。</dd>
+    <dd>PART 1 與 PART 6 不需要程式基礎。PART 2 到 PART 5 要會在終端機（電腦上輸入文字指令的視窗；Windows 叫命令提示字元或 PowerShell，Mac 叫終端機）貼上指令並執行，但不需要會寫程式；所有指令都附在頁面上，也打包成<a href="downloads/flysimu-code.zip">一個下載包</a>。</dd>
   </dl></div>
 
   <div class="btns">
     <a class="btn c1" href="part1-what.html">
       <span class="no">PART 1</span>
       <span class="t">兩個專案在做什麼</span>
-      <p class="s">連線體怎麼變成一個會動的模型：神經元方程式、從全腦切出一段迴路、把遊戲畫面接進去、把神經元的放電接出來。並逐項分清楚<b>哪些來自資料、哪些是人為設定</b>。</p>
+      <p class="s">連線體怎麼變成一個會動的模型：神經元方程式（神經元怎麼放電；放電是神經元之間唯一的訊號）、從全腦切出一段迴路、把遊戲畫面接進去、把神經元的放電接出來變成按鍵。並逐項分清楚<b>哪些來自資料、哪些是人為設定</b>。</p>
       <p class="m">概念為主 · 不需程式基礎 · 已完成</p>
     </a>
     <a class="btn c2" href="part2-setup.html">
       <span class="no">PART 2</span>
       <span class="t">準備環境與資料</span>
-      <p class="s">四個 conda 環境、三個要固定版本的地方，以及一個會讓結果悄悄改變的陷阱：<b>遊戲引擎換一個小版本，每一局的分數都不一樣</b>。</p>
+      <p class="s">四個互不干擾的 Python 執行環境（用 conda 這個工具建；為什麼要四個，第 4 節講）、三個要固定版本的地方，以及一個會讓結果悄悄改變的陷阱：<b>遊戲引擎換一個小版本，每一局的分數都不一樣</b>——變的是遊戲抽敵人位置的方式，不是果蠅迴路。</p>
       <p class="m">實作 · 要會用終端機 · 已完成</p>
     </a>
     <a class="btn c4" href="part3-fruitfly.html">
       <span class="no">PART 3</span>
       <span class="t">重現 fruitfly-lab</span>
-      <p class="s">六個步驟，每一步先訂「怎樣算對上」再跑。結果：<b>七個條件、每個條件 10 局，每一局的擊殺數都與作者相同</b>。</p>
+      <p class="s">六個步驟（FF1–FF6），每一步先訂「怎樣算對上」再跑。結果：<b>七種大腦（完整接線、損毀、打亂接線等七個條件）各玩 10 局，每一局的擊殺數都與作者相同</b>。</p>
       <p class="m">FF1–FF6 · 要會用終端機 · 已完成</p>
     </a>
     <a class="btn c5" href="part4-blackjack.html">
       <span class="no">PART 4</span>
       <span class="t">重現 fly-blackjack</span>
-      <p class="s">多數數字逐位相同，但有兩處要靠讀程式才對得上：<b>README 少寫了一個訓練參數</b>，以及作者自己的三份資料對「學到什麼策略」說法不一。</p>
+      <p class="s">多數數字逐位相同，但有兩處要靠讀程式才對得上：<b>README（作者寫給使用者的說明文件）少寫了訓練時的一個設定</b>，以及作者自己的三份資料對「學到什麼策略」說法不一。</p>
       <p class="m">BJ1–BJ5 · 要會用終端機 · 已完成</p>
     </a>
     <a class="btn c3" href="part5-checks.html">
       <span class="no">PART 5</span>
       <span class="t">作者沒做的檢查</span>
-      <p class="s">重現成功只代表「照作者的做法會得到作者的數字」。再往前一步：加大樣本、換一種對照、改讀別的神經元——其中一項發現，<b>正前方瞄準與開火時，腦送往身體的下行神經元完全沒參與</b>，讀的是視覺輸入之後第一站的神經元。</p>
+      <p class="s">重現成功只代表「照作者的做法會得到作者的數字」。再往前一步：加大樣本、換一種對照、改讀別的神經元——其中一項發現：果蠅腦裡把命令送往身體的「出口」神經元（下行神經元），<b>在敵人正前方、模型瞄準開火的那些時刻完全沒有放電</b>；真正決定開火的是視覺輸入之後第一站的中間神經元。作者的程式本來就是讀那一站來決定開火，但沒有說出口神經元其實沒參與。</p>
       <p class="m">八項檢查 · 要會用終端機 · 已完成</p>
     </a>
     <a class="btn c2" href="part6-demo.html">
       <span class="no">PART 6</span>
       <span class="t">逐格看迴路怎麼打</span>
-      <p class="s">把重現時錄下的 Doom 畫面與 8 組神經元的放電逐格對齊：完整接線、損毀一對神經元、打亂接線三種大腦並排播放。</p>
+      <p class="s">把重現時錄下的 Doom 畫面與 8 組神經元（迴路裡的四種神經元各分左右）的放電逐格對齊：完整接線、損毀一對神經元（讓它們整場不放電）、打亂接線三種大腦並排播放。</p>
       <p class="m">互動播放 · 不需程式基礎 · 已完成</p>
     </a>
   </div>
 
   <h2><span class="pt">先看數字</span>重現出了什麼</h2>
   <div class="statgrid">
-    <div class="stat"><div class="v">70／70</div><div class="k">fruitfly-lab：七個條件 × 10 局，每一局的擊殺數都與作者相同（ViZDoom 1.3.0）</div></div>
-    <div class="stat"><div class="v">10 局 → 50 局</div><div class="k">作者說損毀 AOTU025 這對神經元會讓果蠅打得變差，但他只跑 10 局，p = 0.048 剛好擦過 0.05 的門檻（p 是「其實沒差別、純靠運氣出現這麼大差距」的機率，愈小愈可信）。我們加到 50 局：平均擊殺 9.86 對 4.92，p &lt; 0.0001。結論是對的，證據本來不夠</div></div>
-    <div class="stat"><div class="v">少寫一個參數</div><div class="k">fly-blackjack 的覓食實驗照 README 的指令重新訓練，學習組和對照組被電的次數幾乎一樣，等於學習沒用。作者存的策略檔裡記著訓練長度是 45 秒，README 的指令沒寫，程式用了預設的 40 秒。補上這個參數，三個條件全部與作者逐位相同</div></div>
-    <div class="stat"><div class="v">作者沒驗的那一層</div><div class="k">作者說蕈狀體的學習靠「多巴胺神經元連到哪顆輸出神經元」這層接線，但他只試過打亂另一層沒影響，沒有直接打亂這一層。我們打亂了：學習指數從 −1.38 掉到 −0.31（愈負學得愈多），少了約 78%。作者的解讀是對的，只是他沒驗</div></div>
+    <div class="stat"><div class="v">70／70</div><div class="k">fruitfly-lab：七個條件 × 10 局，每一局的擊殺數都與作者相同。前提是用和作者同一版的遊戲引擎 ViZDoom 1.3.0；換一版就不同，見 PART 2</div></div>
+    <div class="stat"><div class="v">10 局 → 50 局</div><div class="k">作者說損毀 AOTU025（迴路中間的一對神經元，讓它們整場不放電）會讓果蠅打得變差，但他只跑 10 局，p = 0.048 剛好擦過 0.05 的門檻（p 是「其實沒差別、純靠運氣出現這麼大差距」的機率，愈小愈可信）。我們加到 50 局：完整接線平均擊殺 9.86、損毀後 4.92，p &lt; 0.0001。結論是對的，證據本來不夠</div></div>
+    <div class="stat"><div class="v">少寫一個參數</div><div class="k">fly-blackjack 除了 21 點還有一個覓食實驗：果蠅在場地裡走，要學會躲開會電擊的氣味。照 README 的指令重新訓練控制走路的部分，學習組和對照組被電的次數幾乎一樣，等於學習沒用。作者存的訓練結果檔裡記著「訓練時每一回合跑 45 秒」，README 的指令沒寫，程式用了預設的 40 秒；回合長度不同，訓練挑出來的參數就不同。補上這個設定，學習、切斷多巴胺、關掉可塑性三個條件全部與作者逐位相同</div></div>
+    <div class="stat"><div class="v">作者沒驗的那一層</div><div class="k">蕈狀體裡有兩層接線：氣味神經元→輸出神經元（KC→MBON，學習時被削弱的那層），以及多巴胺神經元→輸出神經元（DAN→MBON，決定懲罰訊號送到哪顆）。作者說學習靠的是後者，但他只試過打亂前者沒影響，沒有直接打亂後者。我們把 DAN→MBON 的連結終點隨機重排：學習指數（訓練後被懲罰氣味的好惡值掉了多少，減掉另一種氣味的變化；愈負學得愈多）從 −1.30 掉到 −0.31，少了約四分之三。作者的解讀是對的，只是他沒驗</div></div>
   </div>
 
-  <p class="figsrc">四個數字分別出自 <code>out/fruitfly/local_doom_vizdoom130/</code>、<code>out/fruitfly/ext_vizdoom1.3.0/E1.json</code>、<code>out/upstream/blackjack_forage_policy_meta.json</code>、<code>out/blackjack/bj_extra.json</code>，細節見 PART 3–5。</p>
+  <p class="figsrc">想自己核對的人：本課頁面上每個數字都來自本機實跑的輸出檔，收在 repo 的 <code>out/</code> 資料夾；這四格依序出自 <code>out/fruitfly/local_doom_vizdoom130/</code>、<code>out/fruitfly/ext_vizdoom1.3.0/E1.json</code>、<code>out/upstream/blackjack_forage_policy_meta.json</code>、<code>out/blackjack/bj_extra.json</code>。怎麼得到這些數字，見 PART 3–5。</p>
 
   <div class="note">
-    <b>「重現」在這堂課裡的意思：</b>用作者公開的程式碼與資料、固定在作者的版本，在另一台電腦上重跑，逐項比對作者宣稱的數字。每一項比對之前，先寫下<b>怎樣算對上</b>：有些要逐位相同，有些因為模型裡有隨機雜訊，只要求在一個誤差範圍內，有些只要求「條件之間的高低順序一樣」。判定標準在 <a href="part3-fruitfly.html">PART 3</a> 第一節講清楚。
+    <b>「重現」在這堂課裡的意思：</b>用作者公開的程式碼與資料、固定在作者的版本，在另一台電腦上重跑，逐項比對作者宣稱的數字。每一項比對之前，先寫下<b>怎樣算對上</b>：有些要逐位相同（每一個數字、每一位小數都一樣），有些因為模型裡有隨機雜訊，只要求在一個誤差範圍內，有些只要求「條件之間的高低順序一樣」。判定標準在 <a href="part3-fruitfly.html">PART 3</a> 第一節講清楚。
   </div>
 
   <h2><span class="pt">出處</span>這堂課重現的是哪兩個專案</h2>
   <div class="tblwrap">
   <table>
     <tr><th>專案</th><th>固定的版本</th><th>用的資料</th><th>授權</th></tr>
-    <tr><td><a href="https://github.com/webergithub/fruitfly-lab">webergithub/fruitfly-lab</a></td><td>commit <code>8c27fe8</code></td><td>FlyWire v783 雌果蠅全腦連線體，經 <a href="https://github.com/philshiu/Drosophila_brain_model">Shiu 等人 2024 的全腦模型</a>整理成的連線表</td><td>repo 裡沒有授權檔</td></tr>
+    <tr><td><a href="https://github.com/webergithub/fruitfly-lab">webergithub/fruitfly-lab</a></td><td>commit <code>8c27fe8</code></td><td>FlyWire v783 雌果蠅全腦連線體；用的是 <a href="https://github.com/philshiu/Drosophila_brain_model">Shiu 等人 2024 年全腦模型</a>附的連線表（從 FlyWire 整理出每一對神經元之間有幾個突觸）</td><td>repo 裡沒有授權檔</td></tr>
     <tr><td><a href="https://github.com/WilliamJones/fly-blackjack">WilliamJones/fly-blackjack</a></td><td>commit <code>004b2e3</code></td><td>MaleCNS v1.0 雄果蠅中樞神經系統連線體（經 <a href="https://github.com/YijieYin/connectome_data_prep">connectome_data_prep</a> 預處理）</td><td>MIT</td></tr>
   </table>
   </div>
-  <p>fruitfly-lab 沒有附授權檔，所以本課的下載包<b>不附它的任何檔案</b>，由學員自己從 GitHub 取得；頁面上只引用必要的短片段並標明出處。fly-blackjack 的 repo 裡還有讓果蠅身體模型走路的部分（README 的 Part two），需要另外安裝物理引擎，<b>本課沒有重現那一部分</b>。</p>
+  <p>表裡的名詞：repo 是 GitHub 上一個專案的程式碼倉庫；commit 是倉庫在某個時間點的快照，<code>8c27fe8</code> 這類代號是它的編號，固定它才能保證重跑的是同一份程式；MIT 是一種允許任何人複製、修改、散布的授權。兩個專案用的是不同的腦（一雌一雄、不同團隊重建），互不相干，本課各自只跟它自己作者的數字比。</p>
+  <p>fruitfly-lab 沒有附授權檔——沒寫明允許怎麼用，法律上預設不能轉發——所以本課的下載包<b>不附它的任何檔案</b>，由學員自己從 GitHub 取得；頁面上只引用必要的短片段並標明出處。fly-blackjack 的 repo 裡還有讓果蠅身體模型走路的部分（README 的 Part two），需要另外安裝物理引擎，<b>本課沒有重現那一部分</b>。</p>
 
   <div class="draft">
     <b>進度：六個部分都已完成。</b>所有數字都出自本機實跑的輸出（收在 <code>out/</code> 底下），所有圖都由 <code>scripts/make_figures.py</code> 從那些輸出畫出來。實跑環境：Linux、12 核 CPU、不用 GPU。

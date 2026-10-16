@@ -37,14 +37,37 @@
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s1"><span class="pt">1</span>三個指令</h2>
 
-  <p>下載 <a href="downloads/flysimu-code.zip">flysimu-code.zip</a>，解壓縮到一個空資料夾，在那個資料夾裡開終端機，依序執行：</p>
+  <p>這一頁會一直用到幾個詞，先認識一次：</p>
+  <div class="tblwrap">
+  <table>
+    <tr><th>詞</th><th>意思</th></tr>
+    <tr><td>終端機</td><td>打字下指令的視窗（macOS 叫「終端機」，Linux 叫 Terminal）。本課所有指令都是貼進去按 Enter</td></tr>
+    <tr><td>套件</td><td>別人寫好、可以直接拿來用的 Python 程式庫，例如 numpy（數值運算）、vizdoom（遊戲引擎）</td></tr>
+    <tr><td>conda、環境</td><td>conda 是管理「環境」的工具；一個環境就是一份獨立的 Python 加上它自己的套件，環境之間互不干擾。本課會建四個（第 4 節）</td></tr>
+    <tr><td>pip、uv</td><td>在一個環境裡安裝套件的工具。pip 是最常見的，uv 是較新的同類工具；本課用 conda 建環境、用 pip 裝套件</td></tr>
+    <tr><td>repo、GitHub</td><td>GitHub 是放程式碼的網站；一個 repo（repository）就是一個專案的全部檔案與它的修改歷史。commit 是其中一次存檔的編號（第 5 節）</td></tr>
+  </table>
+  </div>
+
+  <p>下載 <a href="downloads/flysimu-code.zip">flysimu-code.zip</a>（首頁〈先看數字〉下方也有同一個連結），解壓縮到一個空資料夾，在那個資料夾裡開終端機。想先確認檔案完整，可以執行 <code>sha256sum -c SHA256SUMS.txt</code>（第 3 節）；然後依序執行：</p>
 
 <pre><code>bash setup_envs.sh              # 建四個 conda 環境（只需一次）
 bash fruitfly_lab/run_all.sh    # fruitfly-lab：FF1–FF6、ViZDoom 1.3.2 對照、加做檢查 E1–E4
 bash blackjack/run_all.sh       # fly-blackjack：BJ1–BJ5、加做檢查 X1–X4</code></pre>
 
-  <p>本課在一台 Linux、12 核 CPU 的電腦上，從解壓縮開始實測：建四個環境 54 秒，fruitfly-lab 14 分 34 秒，fly-blackjack 21 分 54 秒（兩個同時跑）。建環境那一項是在沒有同名環境的情況下另外實測的，而且這台電腦已經有套件的下載快取；在新電腦上第一次建，會因為要下載套件而更久。兩個 <code>run_all.sh</code> 互不相干，可以同時開兩個終端機各跑一個。</p>
-  <p class="figsrc">實測時間出自 <code>out/porttest.json</code>（下載包解到空資料夾後的完整執行紀錄）。</p>
+  <p>三個指令裡的代號，各對應後面哪一頁的哪一步：</p>
+  <div class="tblwrap">
+  <table>
+    <tr><th>代號</th><th>意思</th><th>在哪一頁</th></tr>
+    <tr><td>FF1–FF6</td><td>重現 fruitfly-lab 的六步：資料是同一份嗎、子圖逐位相同、子圖與全腦反應一致、校準出同樣的閾值、七個條件每一局都相同、統計</td><td><a href="part3-fruitfly.html">PART 3</a></td></tr>
+    <tr><td>E1–E4</td><td>fruitfly-lab 作者沒做的四項檢查：加到 50 局、每種打亂各自校準、只讀下行神經元、右眼子圖為何偏弱</td><td><a href="part5-checks.html">PART 5</a></td></tr>
+    <tr><td>BJ1–BJ5</td><td>重現 fly-blackjack 的五步：Dino、切出蕈狀體、制約學習、覓食、21 點</td><td><a href="part4-blackjack.html">PART 4</a></td></tr>
+    <tr><td>X1–X4</td><td>fly-blackjack 作者沒做的四項檢查：加到 50 個種子、打亂哪一層接線、換 KC 選法、MBON 標記對文獻</td><td><a href="part5-checks.html">PART 5</a></td></tr>
+  </table>
+  </div>
+
+  <p>本課在一台 Linux、12 核 CPU 的電腦上，從解壓縮開始實測：建四個環境 54 秒，fruitfly-lab 14 分 34 秒，fly-blackjack 21 分 54 秒（兩個同時跑）。建環境的 54 秒要打個折：它是在一台已經下載過所有套件的電腦上測的（先把原有的四個環境改名讓開、再從零建一次，套件直接從本機快取拿）。你的電腦若是第一次建，要把四個環境的套件全部下載下來（裝好後共約 2,879 MB），時間取決於網速，請預期比 54 秒久得多。兩個 <code>run_all.sh</code> 互不相干，可以同時開兩個終端機各跑一個。</p>
+  <p class="figsrc">實測時間出自 <code>out/porttest.json</code>。這個檔和本頁其他引用的 <code>out/…</code> 都是本課實跑後存在<b>課程網站</b> repo 裡的紀錄，給你對照用；不是你跑完會在自己電腦上長出來的檔案（你的結果在 <code>results/</code>，第 7 節）。</p>
 
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s2"><span class="pt">2</span>需要什麼</h2>
@@ -53,8 +76,8 @@ bash blackjack/run_all.sh       # fly-blackjack：BJ1–BJ5、加做檢查 X1–
   <table>
     <tr><th>項目</th><th>說明</th></tr>
     <tr><td>作業系統</td><td>Linux 或 macOS。fruitfly-lab 的作者在 macOS 上跑、本課在 Linux 上跑，兩邊逐局相同（<a href="part3-fruitfly.html#s7">PART 3 第 7 節</a>）</td></tr>
-    <tr><td><b>conda</b></td><td>Anaconda 或 Miniconda。conda 是一個管理「Python 環境」的工具：每個環境有自己的一份 Python 與套件，彼此不會互相干擾</td></tr>
-    <tr><td>git、curl</td><td>用來下載兩個專案的程式碼與資料</td></tr>
+    <tr><td><b>conda</b></td><td>Anaconda 或 Miniconda 都可以（Miniconda 比較小，只含 conda 本身，建議選它）；到官方網站下載安裝程式照步驟裝。裝好後在終端機打 <code>conda --version</code>，印出版本號就表示可以用</td></tr>
+    <tr><td>git、curl</td><td>git 從 GitHub 取得程式碼，curl 下載資料檔。多數 Linux 與 macOS 已內建；打 <code>git --version</code>、<code>curl --version</code> 看有沒有印出版本號，沒有就用系統的套件管理工具安裝</td></tr>
     <tr><td>網路與硬碟</td><td>跑完後下載的程式碼與資料共約 570 MB，四個環境共約 2,879 MB</td></tr>
     <tr><td>GPU</td><td>不需要</td></tr>
   </table>
@@ -64,18 +87,18 @@ bash blackjack/run_all.sh       # fly-blackjack：BJ1–BJ5、加做檢查 X1–
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s3"><span class="pt">3</span>下載包裡有什麼</h2>
 
-  <p>下載包<b>只有本課自己寫的程式</b>。兩個被重現的專案由 <code>run_all.sh</code> 從 GitHub 取得，並切換到固定的版本——fruitfly-lab 沒有授權檔，所以它的任何檔案都不能由本課散布（<a href="index.html">首頁</a>〈出處〉）。</p>
+  <p>下載包<b>只有本課自己寫的程式</b>。兩個被重現的專案由 <code>run_all.sh</code> 從 GitHub 取得，並切換到固定的版本——fruitfly-lab 的 repo 沒有授權檔（作者沒有寫明別人可以怎麼使用），法律上預設就是不能轉發，所以它的任何檔案都不能由本課散布，只能請你的電腦自己去 GitHub 取（<a href="index.html">首頁</a>〈出處〉）。</p>
 
   <div class="tblwrap">
   <table>
     <tr><th>檔案</th><th>做什麼</th></tr>
     <tr><td><code>setup_envs.sh</code></td><td>建四個 conda 環境，套件版本照本課實跑時固定</td></tr>
-    <tr><td><code>fruitfly_lab/run_all.sh</code></td><td>取得 fruitfly-lab 與 Shiu 的全腦模型、下載 FlyWire 註解檔，依序跑 FF1–FF6、ViZDoom 1.3.2 對照、E1–E4。另外下載了 FlyWire 官方的連線表 <code>proofread_connections_783.feather</code> 的話，先設 <code>FLYWIRE_FEATHER=&lt;檔案路徑&gt;</code> 再跑，FF1 會逐條比對（<a href="part3-fruitfly.html#s3">PART 3 第 3 節</a>）</td></tr>
-    <tr><td><code>fruitfly_lab/ext/</code></td><td>FF1 的資料核對與 E1–E4 的程式。只匯入作者的程式，不修改它</td></tr>
-    <tr><td><code>blackjack/run_all.sh</code></td><td>取得 fly-blackjack、下載 MaleCNS 預處理矩陣，依序跑 BJ1–BJ5、X1–X4</td></tr>
-    <tr><td><code>blackjack/scripts/</code></td><td>作者沒有命令列入口的兩個實驗（覓食、21 點）的呼叫程式，以及 X1–X4</td></tr>
+    <tr><td><code>fruitfly_lab/run_all.sh</code></td><td>取得 fruitfly-lab 與 Shiu 等人 2024 年的全腦模型 repo（PART 1 第 2 節提過；fruitfly-lab 讀的連線表是它附的），下載 FlyWire 註解檔（每顆神經元屬於哪一種細胞類型的清單，抽子圖時靠它找出 LC10a、AOTU019 等），然後依序跑 FF1–FF6、ViZDoom 1.3.2 對照、E1–E4。<br>選擇性的一步：如果你另外下載了 FlyWire 官方的連線表 <code>proofread_connections_783.feather</code>，執行前多打一行 <code>export FLYWIRE_FEATHER=/你的路徑/proofread_connections_783.feather</code>，FF1 就會把兩份逐條比對（<a href="part3-fruitfly.html#s3">PART 3 第 3 節</a>）。不設也沒關係：FF1 只印出 Shiu 連線表的三個數字並與本課的值核對，不會失敗</td></tr>
+    <tr><td><code>fruitfly_lab/ext/</code></td><td>FF1 的資料核對與 E1–E4 的程式。它們把作者的程式當成程式庫來呼叫（匯入），不改作者任何一行</td></tr>
+    <tr><td><code>blackjack/run_all.sh</code></td><td>取得 fly-blackjack、下載 MaleCNS 連線體整理好的連結矩陣（fly-blackjack 切蕈狀體的來源，PART 1 第 6 節），依序跑 BJ1–BJ5、X1–X4</td></tr>
+    <tr><td><code>blackjack/scripts/</code></td><td>覓食與 21 點兩個實驗，作者的程式裡沒有可以直接從終端機執行的指令（沒有「命令列入口」，作者是在 Python 裡呼叫函式跑的），所以本課寫了幾支小程式去呼叫作者的函式；X1–X4 也在這裡</td></tr>
     <tr><td><code>check.py</code>、<code>expected.json</code></td><td><b>驗收</b>：逐項比對你跑出來的數字與本課實跑的結果（第 7 節）</td></tr>
-    <tr><td><code>SHA256SUMS.txt</code></td><td>每個檔案的 SHA-256 指紋，用 <code>sha256sum -c SHA256SUMS.txt</code> 確認下載的檔案沒有損壞</td></tr>
+    <tr><td><code>SHA256SUMS.txt</code></td><td>每個檔案的 SHA-256 指紋：由檔案內容算出來的一串 64 個字，內容改一個位元組就完全不同。執行 <code>sha256sum -c SHA256SUMS.txt</code> 會重算每個檔案的指紋並與這份清單比對，確認下載的檔案沒有損壞或被改過</td></tr>
   </table>
   </div>
 
@@ -84,14 +107,14 @@ bash blackjack/run_all.sh       # fly-blackjack：BJ1–BJ5、加做檢查 X1–
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s4"><span class="pt">4</span>四個環境</h2>
 
-  <p>兩個專案需要的套件版本互相衝突，所以分成四個環境。<code>setup_envs.sh</code> 一次建好：</p>
+  <p>一個 conda 環境裡同一個套件只能有一個版本，而兩個專案、甚至 fruitfly-lab 自己的兩個部分，需要的版本互相衝突（第 5 節），所以分成四個環境：fly-blackjack 一個；fruitfly-lab 的全腦模型與遊戲各一個；再加一個只為了對照遊戲引擎版本的環境。<code>setup_envs.sh</code> 一次建好：</p>
 
   <div class="tblwrap">
   <table>
     <tr><th>環境名稱</th><th>Python</th><th>關鍵套件</th><th>給誰用</th></tr>
     <tr><td><code>flyplay_bj</code></td><td>3.11</td><td>numpy 2.4.6、scipy 1.17.1、pandas 3.0.6</td><td>fly-blackjack 全部</td></tr>
     <tr><td><code>ffl_brian</code></td><td>3.11</td><td>Brian2 2.9.0、numpy 1.26.4、pyarrow 17.0.0</td><td>fruitfly-lab 的抽子圖、全腦模型（FF1–FF3、E4）</td></tr>
-    <tr><td><code>ffl_doom130</code></td><td>3.12</td><td><b>vizdoom 1.3.0</b>、numba 0.68.0</td><td>fruitfly-lab 的遊戲（FF4–FF6、E1–E3），與作者相同的版本</td></tr>
+    <tr><td><code>ffl_doom130</code></td><td>3.12</td><td><b>vizdoom 1.3.0</b>、numba 0.68.0（把神經元模擬的迴圈編譯成機器碼加速）</td><td>fruitfly-lab 的遊戲（FF4–FF6、E1–E3），與作者相同的版本</td></tr>
     <tr><td><code>ffl_doom</code></td><td>3.12</td><td>vizdoom 1.3.2、numba 0.68.0</td><td>只用來做版本對照（<a href="part3-fruitfly.html#s8">PART 3 第 8 節</a>）</td></tr>
   </table>
   </div>
@@ -101,22 +124,23 @@ bash blackjack/run_all.sh       # fly-blackjack：BJ1–BJ5、加做檢查 X1–
   <h2 id="s5"><span class="pt">5</span>三個要固定版本的地方</h2>
 
   <h3>一、程式碼：固定到某一個 commit</h3>
-  <p>GitHub 上的專案會一直更新。<b>commit</b> 是專案每一次存檔的版本編號；<code>run_all.sh</code> 取得程式碼之後會切到本課用的那一版（fruitfly-lab <code>8c27fe8</code>、fly-blackjack <code>004b2e3</code>）。作者日後改了程式，你跑出來的仍然是本課的那一版。Shiu 的全腦模型 repo 取最新版，因為 fruitfly-lab 只讀它附的連線表，而那份連線表在 FF1 會逐條核對。</p>
+  <p>GitHub 上的專案會一直更新，今天下載的和半年後下載的可能不是同一份程式。<b>commit</b> 是專案每一次存檔的版本編號（像 <code>8c27fe8</code> 這樣一串字）；<code>run_all.sh</code> 取得程式碼之後會切到本課用的那一版（fruitfly-lab <code>8c27fe8</code>、fly-blackjack <code>004b2e3</code>）。作者日後改了程式，你跑出來的仍然是本課的那一版。Shiu 的全腦模型 repo 是例外，取最新版：fruitfly-lab 只用到它附的那份連線表，而 FF1 第一步就會核對這份表的神經元數、連結數、突觸總數。本課實跑與可攜測試兩次都相同；如果日後 Shiu 更新了這份表，FF1 會印 ✗，後面所有步驟就不能再拿來和本課的數字比，到時要改回舊版再跑。</p>
 
   <h3>二、遊戲引擎：ViZDoom 1.3.0</h3>
-  <p>不指定版本的 <code>pip install vizdoom</code> 會裝到 1.3.2。兩個版本只差一個小版號，但遊戲本身的隨機抽樣不同，同一組種子下每一局的分數都會變，連不使用神經網路的條件也一樣（<a href="part3-fruitfly.html#s8">PART 3 第 8 節</a>）。所以主要的環境固定在作者用的 1.3.0，另開一個 1.3.2 的環境只做對照。</p>
+  <p>不指定版本的 <code>pip install vizdoom</code> 會裝到 1.3.2。兩個版本只差一個小版號，但遊戲本身的隨機抽樣不同，同一組種子（亂數的起點；種子相同，照理敵人的出場順序就相同）下每一局的分數都會變，連完全不用神經網路、只讀遊戲回報的敵人位置來瞄準的 oracle 條件也一樣，可見變的是遊戲本身而不是模型（<a href="part3-fruitfly.html#s8">PART 3 第 8 節</a>）。所以主要的環境固定在作者用的 1.3.0，另開一個 1.3.2 的環境只做對照。</p>
 
   <h3>三、Brian2、numpy 與 pyarrow 的版本衝突</h3>
-  <p>Shiu 的全腦模型用 Brian2 2.9，它需要 numpy 2 以前的版本；而讀連線表要用的 pyarrow 從 18 版開始需要 numpy 2 以後的版本。兩者同時裝最新版會衝突，所以 <code>ffl_brian</code> 把 pyarrow 固定在 17。fruitfly-lab 的 README 用另一個安裝工具 uv、只註明「Brian2 2.9 需要 numpy 2 以前的版本」；本課用 pip 照同一份套件清單安裝時遇到這個衝突。</p>
+  <p>這裡有三個套件：Brian2 是跑神經元方程式的模擬器，numpy 是它底下做數值運算的基礎套件，pyarrow 是讀連線表那種 <code>.feather</code> 表格檔的套件。Shiu 的全腦模型用 Brian2 2.9，它需要 numpy 2 以前的版本；而 pyarrow 從 18 版開始需要 numpy 2 以後的版本。兩者同時裝最新版會衝突，所以 <code>ffl_brian</code> 把 pyarrow 固定在 17。fruitfly-lab 的 README 用 uv 裝套件（第 1 節：uv 與 pip 是同類工具，conda 則是管環境的），只註明「Brian2 2.9 需要 numpy 2 以前的版本」；本課用 pip 照同一份套件清單安裝時遇到這個衝突。</p>
   <p class="figsrc">衝突的說明記在 <code>out/fruitfly/env_notes.txt</code>。</p>
 
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s6"><span class="pt">6</span>一個會讓結果悄悄改變的陷阱</h2>
 
-  <p>如果你曾經用 <code>pip install --user</code> 裝過套件，它們會被放在家目錄的 <code>~/.local</code> 底下；而 Python 預設會把這個資料夾也加進搜尋範圍——<b>包括 conda 環境裡同一個版本的 Python</b>。結果是：你以為在用環境裡固定好的 numpy 2.4.6，實際上載入的可能是 <code>~/.local</code> 裡的另一個版本，而且不會有任何警告。</p>
-  <p>下載包的每一支腳本都先設定 <code>PYTHONNOUSERSITE=1</code>，讓 Python 不去讀 <code>~/.local</code>。自己在終端機裡手動執行單一步驟時，也要在指令前面加上它：</p>
+  <p>如果你曾經用 <code>pip install --user</code> 裝過套件，它們會被放在家目錄（你的個人資料夾，終端機裡寫成 <code>~</code>）的 <code>~/.local</code> 底下（打 <code>ls ~/.local/lib</code>，有 <code>python3.x</code> 開頭的資料夾就表示有）；而 Python 預設會把這個資料夾也加進搜尋範圍——<b>包括 conda 環境裡同一個版本的 Python</b>。結果是：你以為在用環境裡固定好的 numpy 2.4.6，實際上載入的可能是 <code>~/.local</code> 裡的另一個版本，而且不會有任何警告。</p>
+  <p>下載包的每一支腳本都先設定 <code>PYTHONNOUSERSITE=1</code>，讓 Python 不去讀 <code>~/.local</code>。照第 1 節的三個指令跑就不必管它。只有當你想自己單獨重跑某一步、或改個參數試試時（例如只讓完整接線的大腦玩 1 局），才需要手動下指令，這時也要在前面加上它。下面這條就是例子，要在 <code>fruitfly_lab/repo/</code> 裡執行；<code>--policy fly</code> 是選「完整接線」那種大腦，<code>--episodes 1</code> 是只玩 1 局：</p>
 
 <pre><code>PYTHONNOUSERSITE=1 $(conda info --base)/envs/ffl_doom130/bin/python doom/fly_doom.py --policy fly --episodes 1</code></pre>
+  <p><code>$(conda info --base)</code> 會自動換成 conda 安裝的位置，後面接的是 <code>ffl_doom130</code> 這個環境自己的 Python；直接指定環境裡的 Python 來執行，就不必先用 <code>conda activate</code>（切換到某個環境的常見指令）。</p>
 
   <p class="figsrc">numpy 2.4.6 是 <code>flyplay_bj</code> 環境固定的版本（<code>out/blackjack/env.txt</code>）。</p>
 
@@ -129,7 +153,7 @@ bash blackjack/run_all.sh       # fly-blackjack：BJ1–BJ5、加做檢查 X1–
   <table>
     <tr><th>符號</th><th>意思</th></tr>
     <tr><td>✓</td><td>對上了。判定標準依那一項而定：逐位相同，或全腦模型那幾項在 ±20% 內（三種判定標準見 <a href="part3-fruitfly.html#s1">PART 3 第 1 節</a>）</td></tr>
-    <tr><td>✗</td><td>對不上。後面會印出本次的值與預期的值</td></tr>
+    <tr><td>✗</td><td>對不上。後面會印出本次的值與預期的值。看到它先做兩件事：打開那一步的 <code>logs/</code> 檔看最後幾行有沒有錯誤訊息（最常見是網路中斷、下載不完整）；然後重跑一次該資料夾的 <code>run_all.sh</code>。還是 ✗ 的話，對照第 5 節看是不是某個版本變了</td></tr>
     <tr><td>△</td><td>本課實跑時也對不上、頁面上已經說明的項目（目前只有一項，見 <a href="part3-fruitfly.html#s5">PART 3 第 5 節</a>），不算失敗</td></tr>
   </table>
   </div>
@@ -139,7 +163,7 @@ bash blackjack/run_all.sh       # fly-blackjack：BJ1–BJ5、加做檢查 X1–
 blackjack：19 項通過，0 項不符（共 19 項）</code></pre>
   <p class="figsrc">出自 <code>out/porttest.json</code>。</p>
 
-  <p>想看某一步的細節，打開那個資料夾裡的 <code>logs/</code>：每一步一個檔案，是那一步的完整終端輸出，最後幾行通常就是結果表。所有數字另外以 JSON 存在 <code>results/</code>，PART 3 到 PART 5 的每一張表都標了它對應哪一個檔案。</p>
+  <p>想看某一步的細節，打開 <code>fruitfly_lab/logs/</code> 或 <code>blackjack/logs/</code>（在你解壓縮的資料夾底下，各專案自己的子資料夾裡；<code>results/</code> 也在同一層）：每一步一個檔案，是那一步的完整終端輸出，最後幾行通常就是結果表。所有數字另外以 JSON 存在 <code>results/</code>，PART 3 到 PART 5 的每一張表都標了它對應哪一個檔案。</p>
 
   <div class="pager">
     <a href="part1-what.html">← PART 1　兩個專案在做什麼</a>
