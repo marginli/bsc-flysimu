@@ -94,6 +94,23 @@
 
   <p>抽子圖還需要一個<b>註解檔</b>（<code>data/flywire_annotations_783.tsv</code>，PART 2 的 <code>run_all.sh</code> 會下載）：一張表，每顆神經元一列，寫著它屬於哪個細胞型態（例如 LC10a）、在左側還是右側。作者的 <code>extract.py</code> 就是靠這張表的 <code>cell_type</code> 欄找出 LC10a 當起點、五種下行神經元當終點。這個檔案在 GitHub 上會持續更新——本課前後兩次下載的版本，<code>cell_type</code> 欄有 232 列不同。這不是證明，是一個檢查：下一步 FF2 抽出的子圖與作者逐位相同，代表這次下載的版本裡，子圖用到的那幾種細胞型態標籤沒有被改到。日後若 FF2 對不上，先懷疑註解檔又改版了，不是自己做錯。</p>
 
+  <figure class="shot">
+<pre>{
+ &quot;shiu_edges&quot;: 15091983,
+ &quot;shiu_synapses&quot;: 54492922,
+ &quot;local_rows&quot;: 16847997,
+ &quot;local_edges_after_neuropil_merge&quot;: 15091983,
+ &quot;local_synapses&quot;: 54492922,
+ &quot;shiu_neurons&quot;: 138639,
+ &quot;local_neurons&quot;: 138639,
+ &quot;only_shiu&quot;: 0,
+ &quot;only_local&quot;: 0,
+ &quot;both&quot;: 15091983,
+ &quot;count_equal_frac&quot;: 1.0
+}</pre>
+    <figcaption><b>FF1 實跑輸出。</b>上半是 Shiu 連線表（shiu_）與 FlyWire 官方檔（local_）各自的連結數、突觸數、神經元數；官方檔原本 16,847,997 列是按神經氈分開記的，按神經元對合併後與 Shiu 表同為 15,091,983 條。下半三行是逐條比對：只在其中一邊出現的連結 0 條，每一條的突觸數都相等（count_equal_frac 1.0）。<span class="figsrc">終端機輸出原文，出自 out/fruitfly/logs/ff1_conn.log。</span></figcaption>
+  </figure>
+
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s4"><span class="pt">4</span>FF2　子圖逐位相同</h2>
 
@@ -106,6 +123,20 @@
   <p class="figsrc">重新抽出與作者附的檔案，md5 完全相同。輸出在 <code>out/fruitfly/logs/ff2_md5_rerun.txt</code> 與 <code>ff2_md5_committed.txt</code>。</p>
 
   <p>抽出來的子圖：3,963 顆神經元、354,879 條連結，其中 38% 的連結是抑制性（連結的正負號由上游神經元預測的傳導物質決定，GABA 與麩胺酸為負，見 PART 1 第 2 節）。</p>
+
+  <figure class="shot">
+<pre>子图：3963 个神经元，354,879 条连接，38% 抑制性
+各层神经元数： {0: 234, 1: 359, 2: 3360, 3: 10}
+关键组： {&#x27;LC10a_L&#x27;: 115, &#x27;LC10a_R&#x27;: 119, &#x27;LC10d_L&#x27;: 92, &#x27;LC10d_R&#x27;: 95, &#x27;AOTU019_L&#x27;: 1, &#x27;AOTU019_R&#x27;: 1, &#x27;AOTU025_L&#x27;: 1, &#x27;AOTU025_R&#x27;: 1, ...}
+
+$ md5sum circuit/edges.bin circuit/meta.json      # 作者 commit 進 repo 的
+7c97b8f2db09ad880be0394ba1c7e9c0  circuit/edges.bin
+25a0ca03374cd3591beacb575a441dc2  circuit/meta.json
+$ md5sum circuit/edges.bin circuit/meta.json      # 本機重新切出來的
+7c97b8f2db09ad880be0394ba1c7e9c0  circuit/edges.bin
+25a0ca03374cd3591beacb575a441dc2  circuit/meta.json</pre>
+    <figcaption><b>FF2 實跑輸出。</b>作者的抽子圖程式印出的摘要（簡體字是作者程式的原文）：第 0 層是 234 顆 LC10a、第 3 層是 10 顆下行神經元，中間兩層是走 1 步與 2 步到得了的神經元。下面兩組 md5 是作者附的檔案與本機切出來的檔案的指紋，逐字相同。<span class="figsrc">終端機輸出原文，出自 out/fruitfly/logs/ff2_extract.log、ff2_md5_committed.txt、ff2_md5_rerun.txt。</span></figcaption>
+  </figure>
 
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s5"><span class="pt">5</span>FF3　子圖與全腦的反應方向一致</h2>
@@ -135,6 +166,18 @@
 
   <p>表裡還有一個數字會讓人問「這不就是開頭說的『和全腦差很多、不能用』嗎」：右眼刺激時，子圖的 DNa02 右只有 4.4 Hz，全腦卻有 61.6 Hz。它沒有讓 FF3 不過，是因為作者的驗證只訂了方向（同一側放電）、沒訂量級，而這裡方向是對的；作者自己也得到同樣的落差（4.0 對 58.8），在 README 標成「同側、偏弱」。但「偏弱」不是沒事：右眼那一側訊號小十幾倍，遊戲裡敵人在右邊時迴路會不會反應慢、轉錯？這個落差怎麼來、有什麼後果，放在 <a href="part5-checks.html#s5">PART 5 第 5 節</a>追。</p>
 
+  <figure class="shot">
+<pre>LC10a_R  subgraph   DNa02 L=   0.0 R=   4.4  R-L=  +4.4  AOTU019 L/R=0/242  AOTU025 L/R=0/61  (0.8s)
+LC10a_R  scrambled  DNa02 L=  45.0 R=   0.0  R-L= -45.0  AOTU019 L/R=19/34  AOTU025 L/R=0/30  (0.8s)
+&gt;&gt;&gt; Experiment:     LC10a_R
+    Output file:    .../Drosophila_brain_model/results/validate/LC10a_R.parquet
+    Excited neurons: 119
+    Elapsed time:   14 s
+LC10a_R  full_brain DNa02 L=   0.0 R=  61.6  R-L= +61.6  AOTU019 L/R=0/185  AOTU025 L/R=0/121  (15.4s)
+已保存 output/validation.json</pre>
+    <figcaption><b>FF3 實跑輸出，右眼刺激那一半。</b>三行各是一種模型刺激右眼 119 顆 LC10a 後的放電率（Hz）：子圖（0.8 秒算完）、打亂接線的子圖、以及 Shiu 全腦模型（中間四行是全腦模型自己印的進度，跑 14 秒）。看 DNa02 那一欄：子圖右邊 4.4、全腦右邊 61.6，都是右邊在放電、左邊 0，方向一致但子圖弱很多（PART 5 第 5 節追這件事）；打亂接線則變成左邊 45.0，方向反了。<span class="figsrc">終端機輸出原文，出自 out/fruitfly/logs/ff3_validate.log（路徑縮短）。</span></figcaption>
+  </figure>
+
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s6"><span class="pt">6</span>FF4　校準出同樣的閾值</h2>
 
@@ -150,6 +193,28 @@
   </table>
   </div>
   <p class="figsrc">輸出在 <code>out/fruitfly/local_doom_vizdoom130/calibration_fly.json</code> 與 <code>calibration_scrambled.json</code>。</p>
+
+  <figure class="shot">
+<pre>[fly] az= -90°  DNa02 L/R= 203.6/   0.0  AOTU019 L/R=  15.8/   0.0  steer= -219.5
+[fly] az= -75°  DNa02 L/R= 207.9/   0.0  AOTU019 L/R=  76.0/   0.0  steer= -284.0
+[fly] az= -60°  DNa02 L/R= 196.4/   0.0  AOTU019 L/R= 138.9/   0.0  steer= -335.2
+[fly] az= -45°  DNa02 L/R= 101.7/   0.0  AOTU019 L/R= 182.0/   0.0  steer= -283.7
+[fly] az= -30°  DNa02 L/R=   3.8/   0.0  AOTU019 L/R= 217.8/   0.0  steer= -221.6
+[fly] az= -20°  DNa02 L/R=   0.1/   0.0  AOTU019 L/R= 229.8/   0.0  steer= -229.9
+[fly] az= -10°  DNa02 L/R=   0.0/   0.0  AOTU019 L/R= 238.8/   0.0  steer= -238.8
+[fly] az=  -5°  DNa02 L/R=   0.0/   0.0  AOTU019 L/R= 225.5/ 199.5  steer=  -26.0
+[fly] az=  +0°  DNa02 L/R=   0.0/   0.0  AOTU019 L/R= 219.9/ 191.4  steer=  -28.6
+[fly] az=  +5°  DNa02 L/R=   0.0/   0.0  AOTU019 L/R= 225.5/ 199.5  steer=  -26.0
+[fly] az= +10°  DNa02 L/R=   0.0/   0.0  AOTU019 L/R=  16.8/ 250.0  steer= +233.3
+[fly] az= +20°  DNa02 L/R=   0.0/   0.1  AOTU019 L/R=   1.9/ 249.0  steer= +247.2
+[fly] az= +30°  DNa02 L/R=   0.0/   0.1  AOTU019 L/R=   0.0/ 240.7  steer= +240.8
+[fly] az= +45°  DNa02 L/R=   0.0/  31.0  AOTU019 L/R=   0.0/ 207.3  steer= +238.4
+[fly] az= +60°  DNa02 L/R=   0.0/ 118.6  AOTU019 L/R=   0.0/ 159.3  steer= +277.9
+[fly] az= +75°  DNa02 L/R=   0.0/ 173.1  AOTU019 L/R=   0.0/  84.9  steer= +258.0
+[fly] az= +90°  DNa02 L/R=   0.0/ 154.3  AOTU019 L/R=   0.0/   4.2  steer= +158.6
+[fly] 读出阈值：{&#x27;turn_th&#x27;: 130.93, &#x27;fire_th&#x27;: 95.68, &#x27;quiet_th&#x27;: 5.0, ...}</pre>
+    <figcaption><b>FF4 實跑輸出：校準的 17 個方位。</b>每一行是假想敵人放在一個方位（az）時，四顆神經元的平均放電率與算出來的轉向訊號（steer，右減左）。可以直接看出三件事：DNa02 在 ±30° 以內兩邊都是 0（PART 5 第 4 節的起點）；敵人從 +5° 移到 +10°，右邊 AOTU019 從 199.5 跳到 250.0、左邊從 225.5 掉到 16.8，轉向訊號因此從 −26 翻成 +233；最後一行是程式用 PART 1 第 4 節的兩條規則算出的閾值，與作者附的檔案逐位相同。<span class="figsrc">終端機輸出原文，出自 out/fruitfly/logs/ff4_calibrate.log（最後一行去掉了 Python 型別標記）。</span></figcaption>
+  </figure>
 
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s7"><span class="pt">7</span>FF5–FF6　七個條件，每一局都相同</h2>
@@ -186,6 +251,33 @@
 
   <p>逐局相同還說明了一件事：模型的神經元模擬（作者在 macOS、本課在 Linux）在兩台電腦上給出完全相同的結果。所以只要分數不同，差異只可能來自遊戲本身——第 8 節就是這種情形。</p>
 
+  <figure class="shot">
+<pre>[fly] ep0: kills=7 shots=12 survived=14.0s wall=2.7s
+[fly] ep1: kills=11 shots=22 survived=20.4s wall=3.8s
+[fly] ep2: kills=9 shots=16 survived=15.4s wall=2.9s
+[fly] ep3: kills=4 shots=5 survived=9.8s wall=1.8s
+[fly] ep4: kills=16 shots=26 survived=29.2s wall=5.8s
+[fly] ep5: kills=10 shots=26 survived=18.3s wall=3.5s
+[fly] ep6: kills=10 shots=21 survived=15.6s wall=2.9s
+[fly] ep7: kills=15 shots=23 survived=28.1s wall=3.6s
+[fly] ep8: kills=4 shots=6 survived=8.5s wall=0.9s
+[fly] ep9: kills=16 shots=26 survived=26.2s wall=3.0s
+[fly] 平均击杀 10.2 ± 4.47，存活 18.55s，命中率 0.586</pre>
+    <figcaption><b>FF5 實跑輸出：完整接線 10 局。</b>每一行一局：擊殺數、開了幾槍、活了幾秒（遊戲時間）、電腦實際算了幾秒。十局的擊殺數 7 11 9 4 16 10 10 15 4 16 與作者的 fly.json 逐局相同。<span class="figsrc">終端機輸出原文，出自 out/fruitfly/logs/ff5_fly.log（簡體字是作者程式的原文）。</span></figcaption>
+  </figure>
+
+  <div class="figpair">
+    <figure>
+      <img src="assets/p3-shot-fly-021.png" alt="Doom 遊戲畫面：敵人站在正前方遠處，手槍對準它">
+      <figcaption><span class="ab">A</span><b>完整接線，第 0 局第 21 格（0.6 秒）：敵人在正前方</b>遊戲回報敵人方位 −1.1°，兩側 LC10a 同時受刺激，AOTU019 左 132.1、右 99.4 Hz，較小的 99.4 超過開火閾值 95.68，這一格按下開火；兩顆 DNa02 都是 0。第 26 格記到第一個擊殺。</figcaption>
+    </figure>
+    <figure>
+      <img src="assets/p3-shot-fly-060.png" alt="Doom 遊戲畫面：敵人出現在畫面最右邊緣">
+      <figcaption><span class="ab">B</span><b>完整接線，第 0 局第 60 格（1.7 秒）：敵人在右邊緣</b>敵人方位 +86.1°，AOTU019 兩側幾乎為 0，改由 AOTU025 右 116.9 推動 DNa02 右 131.0 Hz，轉向訊號超過 130.93，這一格按下右轉。損毀 AOTU025 的那局在同一格 DNa02 右只有 91.4，不轉。</figcaption>
+    </figure>
+  </div>
+  <p class="figsrc">兩張是 PART 6 錄影的原始畫面（assets/demo/fly.mp4 第 21、60 幀，由 scripts/make_shots.py 抽出）；畫面上沒有疊字，格號對應的神經元數字出自 out/demo_data.json。想逐格看放電怎麼變，到 PART 6。</p>
+
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s8"><span class="pt">8</span>遊戲版本換一個小版號，分數就變了</h2>
 
@@ -214,6 +306,21 @@
   <p class="figsrc">10 局平均擊殺；p 值對完整接線。1.3.2 的結果在 <code>out/fruitfly/local_doom_vizdoom132/analysis.json</code>。</p>
 
   <p>用「形狀相同」來判定，事先列的是三組比較：① 完整接線遠高於打亂接線與隨機按鍵；② 損毀 AOTU025 低於完整接線；③ 完整接線與 <code>oracle</code> 看不出差別（作者的說法）。換成 1.3.2 之後，①、② 成立：<code>fly</code> 6.5 仍遠高於 0.0–0.9，<code>lesion025</code> 2.8 仍低於 <code>fly</code>。③ 翻了：在作者的版本下兩者看不出差別（p = 0.348，注意這只表示 10 局分不出差別，不是「一樣好」）；在 1.3.2 下 <code>oracle</code> 顯著較高（p = 0.019）。所以「果蠅迴路和完美規則看不出差別」這個說法，只在某一個遊戲版本、10 局的樣本下成立。</p>
+
+  <figure class="shot">
+<pre>[fly] ep0: kills=15 shots=24 survived=22.3s wall=4.4s
+[fly] ep1: kills=5 shots=10 survived=10.0s wall=1.9s
+[fly] ep2: kills=7 shots=17 survived=12.5s wall=2.5s
+[fly] ep3: kills=3 shots=10 survived=9.0s wall=1.7s
+[fly] ep4: kills=13 shots=26 survived=25.7s wall=5.6s
+[fly] ep5: kills=10 shots=26 survived=24.9s wall=4.9s
+[fly] ep6: kills=2 shots=6 survived=7.8s wall=1.5s
+[fly] ep7: kills=4 shots=7 survived=9.1s wall=1.8s
+[fly] ep8: kills=3 shots=6 survived=7.6s wall=1.4s
+[fly] ep9: kills=3 shots=11 survived=9.7s wall=1.9s
+[fly] 平均击杀 6.5 ± 4.62，存活 13.87s，命中率 0.44</pre>
+    <figcaption><b>同一支程式、同一組種子，換成 ViZDoom 1.3.2 的完整接線 10 局。</b>對照上一節 1.3.0 的輸出：每一局的擊殺數都不一樣了，平均從 10.2 掉到 6.5。<span class="figsrc">終端機輸出原文，出自 out/fruitfly/logs/ff5_fly_vizdoom132.log。</span></figcaption>
+  </figure>
 
   <div class="note"><b>這一節帶走的事：</b>重現時，<b>環境裡每一個會影響隨機性的套件都要固定版本</b>，不只是主程式。fruitfly-lab 的 repo 裡碰巧附了一個 ViZDoom 執行時自動產生的設定檔 <code>_vizdoom.ini</code>，第一行記著產生它的版本 1.3.0，所以這一次對得回去；沒有這一行，1.3.2 的結果會讓人以為重現失敗。</div>
 

@@ -24,6 +24,7 @@ BSC 專題課程（**重現型**，規範見 `../types/repro.md`）。對象是�
 |---|---|
 | `assets/flysimu.css` | 共用樣式，與 `VFB/assets/vfb.css`、`LPU/assets/lpu.css`、`hub/assets/bsc.css` 用同一組設計變數 |
 | `assets/*.png` | 真實資料圖，由 `scripts/make_figures.py` 產生 |
+| `assets/p3-shot-*.png` | PART 3 的遊戲實況截圖，由 `scripts/make_shots.py` 從 `assets/demo/*.mp4` 抽幀；PART 3、4 的終端機節錄（`<figure class="shot">`）直接貼 `out/*/logs/` 的原文，數字由 `number_audit.py` 對回 |
 | `assets/demo/` | PART 6 的三段錄影與逐格資料，由 `scripts/record_demo.py`、`scripts/build_data.py` 產生 |
 | `out/` | **頁面上每個數字的出處**：實跑的 JSON 與 log，由 `scripts/collect_out.py` 從本機實跑資料夾收來 |
 | `pack/` | 學員下載包的原始檔（`setup_envs.sh`、兩個 `run_all.sh`、加做檢查的程式、`check.py`、`expected.json`） |
@@ -36,6 +37,7 @@ BSC 專題課程（**重現型**，規範見 `../types/repro.md`）。對象是�
 ```
 ~/anaconda3/bin/python scripts/collect_out.py     # 實跑資料夾 → out/
 ~/anaconda3/bin/python scripts/make_figures.py    # out/ → assets/*.png
+python3 scripts/make_shots.py                     # assets/demo/*.mp4 → assets/p3-shot-*.png（PART 3 的遊戲畫面截圖）
 python3 scripts/make_expected.py                  # out/ → pack/expected.json，接著重打包 downloads/
 python3 scripts/number_audit.py                   # 頁面數字對回 out/
 python3 scripts/page_audit.py                     # 標籤平衡、連結與錨點、中英夾雜

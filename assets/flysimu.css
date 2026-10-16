@@ -226,3 +226,9 @@ a.dl:hover{background:var(--accent); color:#fff}
 
 /* 行內的長路徑（out/fruitfly/...）在手機上要能斷行，否則整頁會橫向捲動；pre 區塊仍然水平捲動 */
 :not(pre) > code{overflow-wrap:anywhere}
+
+/* ── 實況節錄：終端機輸出原文（出自 out/ 的 log）── */
+.shot{margin:22px 0}
+.shot pre{margin:0; font-size:12.8px; line-height:1.55}
+.shot figcaption{font-size:14px; color:var(--soft); line-height:1.7; margin-top:9px}
+.shot figcaption b{color:var(--ink)}

@@ -73,6 +73,25 @@
 
   <p>四列怎麼讀：第一列是完整模型。第二列是作者在 README 特別強調的對照：讀出一模一樣，只是把迴路送給它的活動換成 0。這一列完成 0 關，代表讀出確實在用迴路算出來的東西，而不是自己背下了關卡。第三、四列是兩條底線——讀出沒訓練過、或根本不看畫面亂按——告訴我們「分數多少等於什麼都沒學」。作者也明說這個示範<b>不能</b>證明果蠅的接線比同樣大小的隨機網路好——要證明那件事，需要用打亂接線的網路以同樣的訓練量再比一次。</p>
 
+  <figure class="shot">
+<pre>gen   0  train     45.1  val    164.5  best    164.5
+gen   1  train     70.4  val    164.5  best    164.5
+gen   2  train     83.2  val    164.5  best    164.5
+...
+gen  37  train    217.7  val    217.7  best    217.7
+gen  38  train    217.7  val    214.5  best    217.7
+gen  39  train    217.7  val    217.7  best    217.7
+trained in 98.1s, validation 217.7 -&gt; ../results/bj1_checkpoint.json
+
+controller                          survived/50  mean seconds  mean score
+--------------------------------------------------------------------------
+connectome + trained readout                 45         29.12       210.7
+SAME readout, circuit silenced                0          3.48        18.7
+untrained readout                             0          2.26        11.8
+uniform random actions                        0          2.43        12.7</pre>
+    <figcaption><b>BJ1 實跑輸出。</b>上半是 CEM 的 40 代（只列頭尾三代）：train 是該代最佳那組在訓練關卡的分數，val 是它在 4 個驗證關卡的分數，best 是歷來最高的 val，也就是冠軍的分數；第 0 代就有 164.5 是因為第一組候選是隨機抽的起始冠軍。整個訓練 98 秒。下半是用冠軍在 50 個保留關卡上跑的四列，就是上表的來源。<span class="figsrc">終端機輸出原文，出自 out/blackjack/logs/bj1_train.log。</span></figcaption>
+  </figure>
+
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s3"><span class="pt">3</span>BJ2　切出蕈狀體：md5 相同，README 的兩個連結數對不上</h2>
 
@@ -98,6 +117,16 @@
 
   <p>本機與作者 commit 進 repo 的 manifest 完全相同，所以切法確實可重現。對不上的只有 README 的兩個連結數。作者的程式先只留「同時接到 PN、又連到 MBON」的 KC（路徑上的 KC，共 3,811 顆），再依連結數排序、等距取 1,200 顆（PART 1 表裡的 1,200 就是這樣來的）。本課猜 README 寫的也許是不取樣、用全部 3,811 顆時的數字，就用全部 KC 切了一次（<a href="part5-checks.html#s7">PART 5</a> 的加做檢查存下的）：22,581 條 PN→KC、57,823 條 KC→MBON。如果 README 真的是全部 KC 的數字，兩個數都該吻合；結果前者只差 5 條（22,581 對 22,586）、後者差了三千多條（57,823 對 61,210），一中一不中，所以這個猜測不成立；README 那兩個數字怎麼來的，從程式裡對不出來。它們不影響任何實驗結果——實驗讀的是 <code>mb_circuit.npz</code>，而那個檔案逐位相同。</p>
 
+  <figure class="shot">
+<pre>  ok  synapses              121,933,227
+  ok  kenyon_cells                4,064
+  ok  mbons                          97
+  ok  pam                           316
+  ok  ppl1                           16
+  ok  projection_neurons            682</pre>
+    <figcaption><b>BJ2 實跑輸出：下載時的檢查。</b>下載程式對每個檔案印一行 ok 與它的筆數：MaleCNS 整理版裡有 121,933,227 個突觸、4,064 顆 KC、97 顆 MBON、316 顆 PAM、16 顆 PPL1、682 顆 PN。切出來的 1,200 顆 KC 就是從這 4,064 顆裡挑的。<span class="figsrc">終端機輸出原文，出自 out/blackjack/logs/bj2_fetch.log。</span></figcaption>
+  </figure>
+
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s4"><span class="pt">4</span>BJ3　制約學習：學習指數相同</h2>
 
@@ -120,6 +149,27 @@
   <p class="figsrc">本機輸出在 <code>out/blackjack/logs/bj3_experiment.log</code>、<code>bj3_tmaze.log</code>。</p>
 
   <p>學習指數五列全部相同（比到 README 的兩位小數）。T-maze 位移兩列相同、三列對不上：三個對照組的學習指數是 0（模型完全沒變），但本機的位移是 +0.03 而不是 README 的 +0.00。原因在 T-maze 的做法：每次讓 100 隻模擬果蠅<b>依機率</b>選邊，訓練前、訓練後各抽一次，兩次抽到的隨機數不同，所以模型沒變、位移也不會剛好是 0。三個對照組的值一模一樣，是因為它們的模型都沒變、又用同一串亂數抽選擇，抽出來的 100 個選擇自然相同。本機的 +0.03 是作者的程式照原樣跑出來的；README 的 +0.00 怎麼得到，程式裡查不到。這一格的判定是「對不上、原因在 README」：它不影響結論，因為 +0.03 是兩次抽樣的差，不是學習。訓練前的偏好指數本機 +0.147、README +0.15，訓練後 +0.947、README +0.95，兩者相同。</p>
+
+  <figure class="shot">
+<pre>ACQUISITION  (12 seeds, 20 trials, learning index = change in punished odour minus change in unpaired odour)
+
+condition                           index       sd   vs control
+----------------------------------------------------------------
+connectome + plasticity            -1.301    0.324             --
+plasticity off                      0.000    0.000        -4.0 sd
+dopamine disconnected               0.000    0.000        -4.0 sd
+KC-&gt;MBON shuffled                  -1.232    0.437        -0.2 sd
+unpaired odour and shock            0.000    0.000        -4.0 sd
+
+condition                        naive PI   trained PI     shift
+----------------------------------------------------------------
+connectome + plasticity             0.147        0.947     0.800
+plasticity off                      0.147        0.177     0.030
+dopamine disconnected               0.147        0.177     0.030
+KC-&gt;MBON shuffled                   0.107        0.932     0.825
+unpaired odour and shock            0.147        0.177     0.030</pre>
+    <figcaption><b>BJ3 實跑輸出。</b>上表是學習指數（index）與 12 個種子的標準差；下表是 T-maze 的偏好指數：訓練前（naive PI）、訓練後（trained PI）、位移（shift）。三個對照組訓練前後都是 0.147 → 0.177，位移 0.030，就是上文說的那個對不上 README 的 +0.03。<span class="figsrc">終端機輸出原文，出自 out/blackjack/logs/bj3_experiment.log、bj3_tmaze.log。</span></figcaption>
+  </figure>
 
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s5"><span class="pt">5</span>BJ4　覓食：README 少寫了一個參數</h2>
@@ -149,6 +199,25 @@
   <p>作者訓練時每一回合是 <b>45 秒</b>；而 README 第 308 行教讀者打的指令 <code>train(generations=32)</code> 沒有指定這個參數，程式就用內建的預設值 <b>40 秒</b>。回合短 5 秒，訓練出來的讀出就不一樣——CEM 挑的是在那個回合長度下分數最高的參數，回合長度變了，被挑中的參數也變了。把指令改成 <code>train(generations=32, seconds=45.0)</code> 重新訓練：訓練的驗證分數是 2942.24，和策略檔記錄的值一樣；三個條件的電擊與食物數也都與作者逐位相同（C 組）。</p>
 
   <div class="fixed"><b>已找到原因：</b>README 第 308 行的訓練指令少寫了 <code>seconds=45.0</code>。下載包的 <code>blackjack/scripts/bj4b_forage_s45.py</code> 補上這個參數，重新訓練的結果與作者附的策略逐位相同。<code>bj4_forage.py</code> 保留照 README 原樣的訓練，作為對照。</div>
+
+  <figure class="shot">
+<pre># 照 README 的指令重新訓練（每回合預設 40 秒）
+gen  29 train    1471.2 val     364.9 best     531.8
+gen  30 train     702.5 val     364.0 best     531.8
+gen  31 train    1715.6 val     364.5 best     531.8
+retrained learning shocks 1.93  food 1.27
+retrained dopamine cut shocks 1.88  food 1.25
+retrained plasticity off shocks 1.88  food 1.25
+
+# 補上 seconds=45.0 重新訓練
+gen  29 train    4206.3 val    2021.1 best    2942.2
+gen  30 train    4206.9 val    1436.9 best    2942.2
+gen  31 train    2441.1 val    1850.2 best    2942.2
+s45 learning shocks 3.85  food 5.47
+s45 dopamine cut shocks 7.50  food 5.25
+s45 plasticity off shocks 7.50  food 5.25</pre>
+    <figcaption><b>BJ4 實跑輸出：兩次重新訓練的尾段。</b>上半照 README 的指令（40 秒）：32 代後冠軍的驗證分只有 531.8，三個條件被電的次數幾乎一樣、食物只吃到 1.2 到 1.3 次。下半補上 45 秒：冠軍驗證分 2942.2，與作者策略檔裡記的 validation 相同，電擊與食物三個條件都與作者逐位相同。<span class="figsrc">終端機輸出原文，出自 out/blackjack/logs/bj4_forage.log、bj4b_forage_s45.log（各取最後六行）。</span></figcaption>
+  </figure>
 
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s6"><span class="pt">6</span>BJ5　21 點：勝率對上，學到的策略對不上</h2>
@@ -187,6 +256,17 @@
   <p class="figsrc">大腦檔的評分由 <code>blackjack/scripts/bj5b_author_brain.py</code> 算出（<code>out/blackjack/bj5b_author_brain.json</code>）；本機三個種子的平均一致率是 45.3%。</p>
 
   <p>先說表裡兩個 52%：同一個大腦檔，檔內記錄 53.1%（138 格）是作者網頁版自己算的，載入 Python 重算是 51.9%（135 格），兩套評分程式對同一份連結強度算出的格數差 3 格，原因本課沒有追。作者附的大腦一致率約 52%，和 README 相符，但它要牌 97 格，不是註解說的「幾乎全部停牌」；大腦檔標明是種子 0，本機用同一份程式、同一個種子重跑，又是第三種結果。勝率能重現、策略卻不同，並不矛盾：學會的勝率只到「永遠停牌」那條線，很多張不同的 260 格表都能打出差不多的勝率，勝率對上不代表每一格的選擇相同。所以這一步的結論要分開講：<b>「有多巴胺才會變好」可以重現；「學到什麼策略、一致率多少」從公開的程式碼重現不出來。</b>最直接的解釋是附的大腦檔由另一個版本或另一組設定的程式產生，但作者沒有記錄，本課無法確認。</p>
+
+  <figure class="shot">
+<pre>untrained greedy                   seed 0  winrate -0.447 -&gt; -0.448  agree 0.450 -&gt; 0.450  ...
+no learning + exploration decay    seed 0  winrate -0.393 -&gt; -0.439  agree 0.450 -&gt; 0.450  ...
+dopamine cut + exploration decay   seed 0  winrate -0.440 -&gt; -0.470  agree 0.450 -&gt; 0.450  ...
+connectome + dopamine              seed 0  winrate -0.259 -&gt; -0.150  agree 0.412 -&gt; 0.438  ...
+connectome + dopamine              seed 1  winrate -0.244 -&gt; -0.164  agree 0.392 -&gt; 0.446  ...
+connectome + dopamine              seed 2  winrate -0.238 -&gt; -0.129  agree 0.465 -&gt; 0.473  ...
+reference {&#x27;basic strategy&#x27;: -0.013925, &#x27;random&#x27;: -0.44475, &#x27;always stand&#x27;: -0.15835}</pre>
+    <figcaption><b>BJ5 實跑輸出。</b>每行一個條件一個種子：winrate 是前 5,000 手 → 後 5,000 手的平均淨輸贏（−0.150 就是 −15%），agree 是與基本策略的一致率。只有「connectome + dopamine」三個種子的 winrate 都往上走；三個對照組不動。最後一行是三條參考線：照基本策略打、亂按、永遠停牌。<span class="figsrc">終端機輸出原文，出自 out/blackjack/logs/bj5_blackjack.log（每行末尾的格數統計省略）。</span></figcaption>
+  </figure>
 
   <div class="note"><b>這一頁帶走的事：</b>README 是作者對結果的摘要，不是結果本身。這一頁兩處對不上，<b>真正的資訊都在 repo 的其他檔案裡</b>——策略檔記錄的訓練長度、manifest 記錄的連結數、大腦檔記錄的一致率。重現時遇到對不上，先找作者留下的輸出檔，再回頭判斷 README 寫的是哪一個版本。</div>
 
