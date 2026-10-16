@@ -69,7 +69,7 @@
   <h2><span class="pt">先看數字</span>重現出了什麼</h2>
   <div class="statgrid">
     <div class="stat"><div class="v">70／70</div><div class="k">fruitfly-lab：七個條件 × 10 局，每一局的擊殺數都與作者相同（ViZDoom 1.3.0）</div></div>
-    <div class="stat"><div class="v">9.86 對 4.92</div><div class="k">每個條件加到 50 局之後，完整迴路與損毀 AOTU025 的平均擊殺；作者只跑 10 局時 p = 0.048，50 局時 p &lt; 0.0001</div></div>
+    <div class="stat"><div class="v">10 局 → 50 局</div><div class="k">作者說損毀 AOTU025 這對神經元會讓果蠅打得變差，但他只跑 10 局，p = 0.048 剛好擦過 0.05 的門檻（p 是「其實沒差別、純靠運氣出現這麼大差距」的機率，愈小愈可信）。我們加到 50 局：平均擊殺 9.86 對 4.92，p &lt; 0.0001。結論是對的，證據本來不夠</div></div>
     <div class="stat"><div class="v">45 秒</div><div class="k">fly-blackjack 覓食實驗作者實際用的訓練長度；README 的指令用的是預設的 40 秒，照 README 重新訓練對不上</div></div>
     <div class="stat"><div class="v">−0.31</div><div class="k">把蕈狀體裡「哪顆多巴胺神經元連到哪顆輸出神經元」打亂後的學習指數（衡量學會避開被懲罰氣味的程度，愈負學得愈多；原本 −1.38）：學習靠的是這一層接線</div></div>
   </div>
