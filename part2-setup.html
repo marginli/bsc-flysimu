@@ -49,7 +49,7 @@
   </table>
   </div>
 
-  <p>下載 <a href="downloads/flydoom-code.zip">flydoom-code.zip</a>（首頁〈先看數字〉下方也有同一個連結），解壓縮到一個空資料夾，在那個資料夾裡開終端機。想先確認檔案完整，可以執行 <code>sha256sum -c SHA256SUMS.txt</code>（第 3 節）；然後依序執行：</p>
+  <p>下載 <a href="downloads/flydoom-code.zip">flydoom-code.zip</a>（首頁〈需要什麼基礎〉那一格也有同一個連結），解壓縮到一個空資料夾，在那個資料夾裡開終端機。想先確認檔案完整，可以執行 <code>sha256sum -c SHA256SUMS.txt</code>（第 3 節）；然後依序執行：</p>
 
 <pre><code>bash setup_envs.sh              # 建三個 conda 環境（只需一次）
 bash fruitfly_lab/run_all.sh    # FF1–FF6、ViZDoom 1.3.2 對照、加做檢查 E1–E4</code></pre>
@@ -102,7 +102,7 @@ bash fruitfly_lab/run_all.sh    # FF1–FF6、ViZDoom 1.3.2 對照、加做檢�
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s4"><span class="pt">4</span>三個環境</h2>
 
-  <p>一個 conda 環境裡同一個套件只能有一個版本，而 fruitfly-lab 自己的兩個部分需要的版本互相衝突（第 5 節），所以分成三個環境：全腦模型與遊戲各一個；再加一個只為了對照遊戲引擎版本的環境。<code>setup_envs.sh</code> 一次建好：</p>
+  <p>一個 conda 環境裡同一個套件只能有一個版本，而 fruitfly-lab 自己的兩個部分需要的版本互相衝突：全腦模型用的 Brian2 2.9 要 numpy 2 以前的版本（第 5 節），遊戲那一半固定的 pyarrow 26 與 numpy 2.5.4 又要 numpy 2 以後的版本，兩邊裝不進同一個環境，所以分成三個環境：全腦模型與遊戲各一個；再加一個只為了對照遊戲引擎版本的環境。<code>setup_envs.sh</code> 一次建好：</p>
 
   <div class="tblwrap">
   <table>
@@ -118,7 +118,7 @@ bash fruitfly_lab/run_all.sh    # FF1–FF6、ViZDoom 1.3.2 對照、加做檢�
   <h2 id="s5"><span class="pt">5</span>三個要固定版本的地方</h2>
 
   <h3>一、程式碼：固定到某一個 commit</h3>
-  <p>GitHub 上的專案會一直更新，今天下載的和半年後下載的可能不是同一份程式。<b>commit</b> 是專案每一次存檔的版本編號（像 <code>8c27fe8</code> 這樣一串字）；<code>run_all.sh</code> 取得程式碼之後會切到本課用的那一版（<code>8c27fe8</code>）。作者日後改了程式，你跑出來的仍然是本課的那一版。Shiu 的全腦模型 repo 是例外，取最新版：fruitfly-lab 只用到它附的那份連線表，而 FF1 第一步就會核對這份表的神經元數、連結數、突觸總數。本課實跑與可攜測試兩次都相同；如果日後 Shiu 更新了這份表，FF1 會印 ✗，後面所有步驟就不能再拿來和本課的數字比，到時要改回舊版再跑。</p>
+  <p>GitHub 上的專案會一直更新，今天下載的和半年後下載的可能不是同一份程式。<b>commit</b> 是專案每一次存檔的版本編號（像 <code>8c27fe8</code> 這樣一串字）；<code>run_all.sh</code> 取得程式碼之後會切到本課用的那一版（<code>8c27fe8</code>）。作者日後改了程式，你跑出來的仍然是本課的那一版。Shiu 的全腦模型 repo 是例外，取最新版：fruitfly-lab 只用到它附的那份連線表，而 FF1 第一步就會核對這份表的神經元數、連結數、突觸總數。本課實跑與可攜測試（把下載包解到空資料夾、從建環境開始再跑一次，第 7 節）兩次都相同；如果日後 Shiu 更新了這份表，FF1 會印 ✗，後面所有步驟就不能再拿來和本課的數字比，到時要改回舊版再跑。</p>
 
   <h3>二、遊戲引擎：ViZDoom 1.3.0</h3>
   <p>不指定版本的 <code>pip install vizdoom</code> 會裝到 1.3.2。兩個版本只差一個小版號，但遊戲本身的隨機抽樣不同，同一組種子（亂數的起點；種子相同，照理敵人的出場順序就相同）下每一局的分數都會變，連完全不用神經網路、只讀遊戲回報的敵人位置來瞄準的 oracle 條件也一樣，可見變的是遊戲本身而不是模型（<a href="part3-fruitfly.html#s8">PART 3 第 8 節</a>）。所以主要的環境固定在作者用的 1.3.0，另開一個 1.3.2 的環境只做對照。</p>
@@ -154,6 +154,7 @@ bash fruitfly_lab/run_all.sh    # FF1–FF6、ViZDoom 1.3.2 對照、加做檢�
 
   <p>本課的可攜測試（解到空資料夾、從建環境開始跑）最後一行是：</p>
 <pre><code>fruitfly：45 項通過，0 項不符，1 項已知不符（△，本課實跑時也一樣）（共 46 項）</code></pre>
+  <p class="figsrc">開頭的 fruitfly 是驗收表（<code>expected.json</code>）的分組名，這一包只有這一組。</p>
   <p class="figsrc">出自 <code>out/porttest.json</code>。</p>
 
   <p>想看某一步的細節，打開 <code>fruitfly_lab/logs/</code>（在你解壓縮的資料夾底下；<code>results/</code> 也在同一層）：每一步一個檔案，是那一步的完整終端輸出，最後幾行通常就是結果表。所有數字另外以 JSON 存在 <code>results/</code>，PART 3 與 PART 4 的每一張表都標了它對應哪一個檔案。</p>
