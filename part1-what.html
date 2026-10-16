@@ -58,7 +58,7 @@
 
   <p>fruitfly-lab 的每一顆神經元都用<b>漏電整合發放模型</b>（leaky integrate-and-fire，簡稱 LIF）模擬，參數照抄 Shiu 等人 2024 年在 <i>Nature</i> 發表的果蠅全腦模型。這個模型只追蹤一個量：神經元的<b>膜電位</b>（細胞內外的電壓差，單位 mV）。</p>
 
-  <div class="formula">τ<sub>m</sub> · dV/dt = −(V − V<sub>rest</sub>) + g(t)　　當 V 超過 V<sub>th</sub>：送出一個<b>放電</b>（spike），V 拉回 V<sub>rest</sub></div>
+  <div class="formula">τ<sub>m</sub> · dV/dt = −(V − V<sub>rest</sub>) + g(t)<br>放電規則：當 V 超過 V<sub>th</sub>，送出一個<b>放電</b>（spike），V 拉回 V<sub>rest</sub></div>
 
   <div class="plain"><b>白話：</b>膜電位像一個底部有小洞的水桶。上游神經元每放電一次，就往桶裡倒一點水（g 是倒進來的量，興奮性突觸倒正的、抑制性突觸倒負的）；洞會讓水慢慢漏回原本的高度（V<sub>rest</sub>）。水位一旦超過一條刻度（V<sub>th</sub>），這顆神經元就放電一次、把訊號傳給下游，然後桶子倒空重來。<b>放電率</b>就是每秒放電幾次，單位 Hz。</div>
 
