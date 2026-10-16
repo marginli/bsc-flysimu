@@ -71,7 +71,7 @@
     <div class="stat"><div class="v">70／70</div><div class="k">fruitfly-lab：七個條件 × 10 局，每一局的擊殺數都與作者相同（ViZDoom 1.3.0）</div></div>
     <div class="stat"><div class="v">10 局 → 50 局</div><div class="k">作者說損毀 AOTU025 這對神經元會讓果蠅打得變差，但他只跑 10 局，p = 0.048 剛好擦過 0.05 的門檻（p 是「其實沒差別、純靠運氣出現這麼大差距」的機率，愈小愈可信）。我們加到 50 局：平均擊殺 9.86 對 4.92，p &lt; 0.0001。結論是對的，證據本來不夠</div></div>
     <div class="stat"><div class="v">少寫一個參數</div><div class="k">fly-blackjack 的覓食實驗照 README 的指令重新訓練，學習組和對照組被電的次數幾乎一樣，等於學習沒用。作者存的策略檔裡記著訓練長度是 45 秒，README 的指令沒寫，程式用了預設的 40 秒。補上這個參數，三個條件全部與作者逐位相同</div></div>
-    <div class="stat"><div class="v">−0.31</div><div class="k">把蕈狀體裡「哪顆多巴胺神經元連到哪顆輸出神經元」打亂後的學習指數（衡量學會避開被懲罰氣味的程度，愈負學得愈多；原本 −1.38）：學習靠的是這一層接線</div></div>
+    <div class="stat"><div class="v">作者沒驗的那一層</div><div class="k">作者說蕈狀體的學習靠「多巴胺神經元連到哪顆輸出神經元」這層接線，但他只試過打亂另一層沒影響，沒有直接打亂這一層。我們打亂了：學習指數從 −1.38 掉到 −0.31（愈負學得愈多），少了約 78%。作者的解讀是對的，只是他沒驗</div></div>
   </div>
 
   <p class="figsrc">四個數字分別出自 <code>out/fruitfly/local_doom_vizdoom130/</code>、<code>out/fruitfly/ext_vizdoom1.3.0/E1.json</code>、<code>out/upstream/blackjack_forage_policy_meta.json</code>、<code>out/blackjack/bj_extra.json</code>，細節見 PART 3–5。</p>
