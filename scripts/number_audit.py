@@ -41,6 +41,7 @@ D = "/home/wanjuli/claude_linux/BSC_plan/specific_topics/fly_simu"
 EXEMPT = {
     "0.0001": "「p < 0.0001」是上界寫法：E1 的 p 值都是 4.99975e-05（out/fruitfly/ext_vizdoom1.3.0/E1.json），"
               "也就是配對置換檢定 20,000 次能給出的最小值，比 0.0001 小。",
+    "20,001": "1／20,001 是配對置換檢定 20,000 次的最小 p（(0+1)/(20000+1)），E1.json 的 4.99975e-05 就是它；20000 是 doom/analyze.py 的常數。",
     "3,955": "3,963 − 8 ＝ 3,955（子圖神經元數減掉圖上畫出的 8 個節點）。3,963 在 out/demo_data.json 的 circuit.n。",
     "78": "1 − 0.305 ÷ 1.377 ≈ 78%（DAN→MBON 打亂後的學習指數相對完整版少了多少）。兩個數都在 out/blackjack/bj_extra.json。",
 }
