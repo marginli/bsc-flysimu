@@ -16,7 +16,7 @@ SAY_FIX = [("fly-blackjack", "fly blackjack"), ("fruitfly-lab", "fruitfly lab"),
            ("MaleCNS", "Male C N S"), ("FlyWire", "Fly Wire"), ("README", "read me"),
            ("AOTU019", "AOTU 零一九"), ("AOTU025", "AOTU 零二五"), ("DNa02", "D N A 零二"), ("LC10a", "LC 十 a"),
            ("ViZDoom", "Doom 引擎"), ("MBON", "M B O N"), ("PPL1", "P P L 一"), ("DAN", "D A N"), ("PN", "P N"),
-           ("Hz", "赫茲")]
+           ("Hz", "赫茲"), ("T-maze", "T maze")]
 
 SLIDES = [
  dict(eyebrow="BSC 專題課程", title="果蠅大腦玩 Doom：<b>重現 fruitfly-lab</b>",

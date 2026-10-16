@@ -46,6 +46,8 @@ say(f"同步：{len(bounds)} 個投影片交界，{ok} 個落在靜音段裡" + 
 # ── 2. 辨識回填 ──
 from faster_whisper import WhisperModel   # noqa: E402
 m = WhisperModel("large-v3", device="cpu", compute_type="int8", cpu_threads=12)
+import opencc                            # noqa: E402
+_cc = opencc.OpenCC("s2t")
 
 
 def plain(s):
@@ -57,6 +59,8 @@ for i, s in enumerate(SLIDES):
     a = f"{WORK}/aud/a{i:02d}." + ("wav" if os.path.exists(f"{WORK}/aud/a{i:02d}.wav") else "mp3")
     segs, _ = m.transcribe(a, language="zh", beam_size=5, initial_prompt="繁體中文，果蠅神經科學課程。")
     heard = "".join(x.text for x in segs)
+    # 辨識常吐簡體字與阿拉伯數字：先轉成繁體（opencc），再把數字轉成國字，才跟稿子同一種寫法
+    heard = zh_num(_cc.convert(heard))
     # 比對前把稿子轉成「唸出來的樣子」（數字轉國字、名字照 SAY_FIX 換），否則 138,639 對「十三萬八千六百三十九」會被算成不同
     said = zh_num(s["say"])
     ratio = difflib.SequenceMatcher(None, plain(said), plain(heard)).ratio()
