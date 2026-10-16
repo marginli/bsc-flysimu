@@ -35,7 +35,7 @@
 """
 import io, re, os, sys, glob, json, html
 
-D = "/home/wanjuli/claude_linux/BSC_plan/specific_topics/fly_simu"
+D = "/home/wanjuli/claude_linux/BSC_plan/specific_topics/fly_doom"
 
 # ── 對不回 out/ 但確定沒問題的數字：一筆一個理由，沒有理由就不要加 ────────
 EXEMPT = {
@@ -45,8 +45,8 @@ EXEMPT = {
     "240": "115 + 119 + 6 ＝ 240（圖 1 八群的顆數加總；sizes 在 out/demo_data.json 的 circuit.sizes）。",
     "3,723": "3,963 − 240 ＝ 3,723（子圖神經元數減掉圖 1 八群的顆數）。3,963 在 out/demo_data.json 的 circuit.n。",
     "1,024": "2 的 10 次方＝1,024：10 局配對置換的翻號組合數，PART 3 第 7 節用它解釋 p 的下限 2／1,024 ≈ 0.002（analysis.json 裡三個條件的 p 都是 0.0023）。",
+    "1.96": "95% 信賴區間的常數（常態分布的 97.5 百分位）；PART 4 E1 用它解釋 ci95 怎麼算，不是資料。拆課前它碰巧對到 out/blackjack 的某個數。",
     "28.59": "完整接線 0° 的轉向訊號在 calibration_fly.json 的 rows 裡是 −28.59（負號＝偏左），PART 3 第 6 節寫的是它的絕對值；校準規則取絕對值。",
-    "78": "1 − 0.305 ÷ 1.377 ≈ 78%（DAN→MBON 打亂後的學習指數相對完整版少了多少）。兩個數都在 out/blackjack/bj_extra.json。",
 }
 
 # ── 不是資料的數字：節次、日期、授權版本、文獻出處 ──────────────────────
@@ -64,7 +64,7 @@ SKIP_CONTEXT = [
     (r'[–-]$',             "頁碼範圍的後半"),
 ]
 SKIP_TOKEN = {
-    "2010", "2014", "2018", "2020", "2023", "2025", "2026",   # 文獻與抓取年份
+    "2010", "2014", "2018", "2020", "2023", "2024", "2025", "2026",   # 文獻與抓取年份（2024 = Shiu 等人的全腦模型；拆課前它碰巧對到 out/blackjack 的某個數）
     "4.0", "3.0",                                             # 授權版本
 }
 

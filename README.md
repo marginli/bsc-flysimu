@@ -1,8 +1,8 @@
-# 果蠅大腦玩遊戲：重現兩個連結體模擬
+# 果蠅大腦玩 Doom：重現 fruitfly-lab
 
-BSC 專題課程（**重現型**，規範見 `../types/repro.md`）。對象是兩個公開的果蠅連結體模擬專案：
-[fruitfly-lab](https://github.com/webergithub/fruitfly-lab)（commit 8c27fe8）與
-[fly-blackjack](https://github.com/WilliamJones/fly-blackjack)（commit 004b2e3）。
+BSC 專題課程（**重現型**，規範見 `../types/repro.md`）。對象是公開的果蠅連結體模擬專案
+[fruitfly-lab](https://github.com/webergithub/fruitfly-lab)（commit 8c27fe8）。
+2026-10-16 之前這個 repo 同時講 fly-blackjack；那部分已拆成獨立的課 `../fly_blackjack/`（repo bsc-flyblackjack）。
 
 線上版：https://marginli.github.io/bsc-flysimu/ （`robots.txt` 擋掉搜尋引擎索引）
 
@@ -11,12 +11,11 @@ BSC 專題課程（**重現型**，規範見 `../types/repro.md`）。對象是�
 | 頁面 | 內容 |
 |---|---|
 | `index.html` | 首頁 |
-| `part1-what.html` | PART 1　兩個專案在做什麼：四個零件，哪些來自資料、哪些是人為設定 |
+| `part1-what.html` | PART 1　fruitfly-lab 在做什麼：四個零件，哪些來自資料、哪些是人為設定 |
 | `part2-setup.html` | PART 2　準備環境與資料 |
 | `part3-fruitfly.html` | PART 3　重現 fruitfly-lab（FF1–FF6）；三種判定標準的定義處 |
-| `part4-blackjack.html` | PART 4　重現 fly-blackjack（BJ1–BJ5） |
-| `part5-checks.html` | PART 5　作者沒做的檢查（E1–E4、X1–X4） |
-| `part6-demo.html` | PART 6　逐格看迴路怎麼打（互動播放） |
+| `part4-checks.html` | PART 4　作者沒做的檢查（E1–E4） |
+| `part5-demo.html` | PART 5　逐格看迴路怎麼打（互動播放） |
 
 ## 目錄
 
@@ -24,11 +23,11 @@ BSC 專題課程（**重現型**，規範見 `../types/repro.md`）。對象是�
 |---|---|
 | `assets/flysimu.css` | 共用樣式，與 `VFB/assets/vfb.css`、`LPU/assets/lpu.css`、`hub/assets/bsc.css` 用同一組設計變數 |
 | `assets/*.png` | 真實資料圖，由 `scripts/make_figures.py` 產生 |
-| `assets/p3-shot-*.png` | PART 3 的遊戲實況截圖，由 `scripts/make_shots.py` 從 `assets/demo/*.mp4` 抽幀；PART 3、4 的終端機節錄（`<figure class="shot">`）直接貼 `out/*/logs/` 的原文，數字由 `number_audit.py` 對回 |
-| `assets/demo/` | PART 6 的三段錄影與逐格資料，由 `scripts/record_demo.py`、`scripts/build_data.py` 產生 |
+| `assets/p3-shot-*.png` | PART 3 的遊戲實況截圖，由 `scripts/make_shots.py` 從 `assets/demo/*.mp4` 抽幀；PART 3 的終端機節錄（`<figure class="shot">`）直接貼 `out/*/logs/` 的原文，數字由 `number_audit.py` 對回 |
+| `assets/demo/` | PART 5 的三段錄影與逐格資料，由 `scripts/record_demo.py`、`scripts/build_data.py` 產生 |
 | `out/` | **頁面上每個數字的出處**：實跑的 JSON 與 log，由 `scripts/collect_out.py` 從本機實跑資料夾收來 |
-| `pack/` | 學員下載包的原始檔（`setup_envs.sh`、兩個 `run_all.sh`、加做檢查的程式、`check.py`、`expected.json`） |
-| `downloads/flysimu-code.zip` | `pack/` 打包，附 `SHA256SUMS.txt`。改了 `pack/` 任何檔案都要重打包 |
+| `pack/` | 學員下載包的原始檔（`setup_envs.sh`、`fruitfly_lab/run_all.sh`、加做檢查的程式、`check.py`、`expected.json`） |
+| `downloads/flydoom-code.zip` | `pack/` 打包，附 `SHA256SUMS.txt`。改了 `pack/` 任何檔案都要重打包 |
 | `scripts/` | 收資料、產圖、產驗收表、錄影，以及四道稽核（`page_audit.py`、`content_audit.py`、`svg_audit.py`、`number_audit.py`，沿用 VFB） |
 | `_notes/` | 修正紀錄。**進 repo，但由 workflow 的 `rm -rf _notes` 擋在網站之外** |
 
@@ -43,12 +42,12 @@ python3 scripts/number_audit.py                   # 頁面數字對回 out/
 python3 scripts/page_audit.py                     # 標籤平衡、連結與錨點、中英夾雜
 ```
 
-實跑資料夾是本機的 `~/claude_bscai/fly_play_game/`，結構與下載包解開後相同。
+實跑資料夾是本機的 `~/claude_bscai/fly_play_game/fruitfly_lab/`，結構與下載包解開後的 `fruitfly_lab/` 相同。
 
 ## 授權
 
 fruitfly-lab 的 repo 沒有授權檔，所以本 repo 與下載包**不收它的任何程式碼**；`out/` 只收它附的結果檔（數字）
 與 README 中宣稱結果的幾行（`out/upstream/fruitfly_README_claims.json`，標明行號）。
-fly-blackjack 與 Shiu 等人的全腦模型是 MIT 授權。
+Shiu 等人的全腦模型是 MIT 授權。
 
 教學用途，非營利。

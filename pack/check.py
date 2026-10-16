@@ -1,5 +1,5 @@
 """驗收：把 run_all.sh 跑出來的數字跟 expected.json（本課實跑的結果）逐項比對。
-用法：python check.py fruitfly   或   python check.py blackjack   （在 pack 根目錄或子資料夾都可以）
+用法：python check.py fruitfly   （在 pack 根目錄或子資料夾都可以）
 判定有五種：exact（逐位相同）、rel（相對誤差在容許範圍內，用在沒有固定亂數種子的全腦模型）、
 same（兩個檔案內容相同）、contains（終端輸出裡出現預期的那幾行）、md5_twice（同一支程式跑兩次的 md5 相同且等於預期）。"""
 import json
@@ -7,7 +7,7 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-SUB = {"fruitfly": "fruitfly_lab", "blackjack": "blackjack"}
+SUB = {"fruitfly": "fruitfly_lab"}
 
 
 def get(path, keys, pluck=None, mean=False):

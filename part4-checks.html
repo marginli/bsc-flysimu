@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PART 5 作者沒做的檢查｜果蠅模擬重現</title>
+<title>PART 4 作者沒做的檢查｜果蠅玩 Doom</title>
 <link rel="stylesheet" href="assets/flysimu.css">
 </head>
 <body>
-<div class="crumb"><a href="https://marginli.github.io/bsc-topics/">BSC 專題課程</a> ／ <a href="index.html">果蠅模擬重現</a> ／ PART 5</div>
+<div class="crumb"><a href="https://marginli.github.io/bsc-topics/">BSC 專題課程</a> ／ <a href="index.html">果蠅玩 Doom</a> ／ PART 4</div>
 <header class="hero">
-  <p class="eyebrow">PART 5</p>
+  <p class="eyebrow">PART 4</p>
   <h1>作者沒做的檢查</h1>
   <p class="subtitle">重現成功只代表「照作者的做法會得到作者的數字」。這一頁改動做法本身：加大樣本、換一種對照、改讀別的神經元</p>
 </header>
@@ -17,28 +17,25 @@
 <div class="wrap">
 
   <div class="pager top">
-    <a href="part4-blackjack.html">← PART 4　重現 fly-blackjack</a>
-    <a href="part6-demo.html">PART 6　逐格看迴路怎麼打 →</a>
+    <a href="part3-fruitfly.html">← PART 3　重現 fruitfly-lab</a>
+    <a href="part5-demo.html">PART 5　逐格看迴路怎麼打 →</a>
   </div>
 
   <nav class="toc">
     <h2>本頁章節</h2>
     <ol>
-      <li><a href="#s1">結論：八項檢查</a></li>
+      <li><a href="#s1">結論：四項檢查</a></li>
       <li><a href="#s2">E1　10 局夠嗎：加到 50 局</a></li>
       <li><a href="#s3">E2　打亂接線的每一種打亂都各自校準</a></li>
       <li><a href="#s4">E3　只讀下行神經元：正前方的瞄準靠的是誰</a></li>
       <li><a href="#s5">E4　右眼的子圖為什麼反應偏弱</a></li>
-      <li><a href="#s6">X1　12 個種子夠嗎：加到 50 個</a></li>
-      <li><a href="#s7">X2、X3　打亂哪一層接線，學習才會壞掉</a></li>
-      <li><a href="#s8">X4　MBON 的趨近／迴避標記對得上文獻嗎</a></li>
     </ol>
   </nav>
 
   <!-- ══════════════════════════════════════════════════════ -->
-  <h2 id="s1"><span class="pt">1</span>結論：八項檢查</h2>
+  <h2 id="s1"><span class="pt">1</span>結論：四項檢查</h2>
 
-  <p>每一項都只改參數、對照組或讀法，<b>不改作者的模型</b>；程式在下載包的 <code>fruitfly_lab/ext/</code> 與 <code>blackjack/scripts/</code>，結果另存，不覆蓋重現的輸出。代號 E1–E4、X1–X4 是本課自己編的。每一節照同一個順序寫：作者原本怎麼說、我們懷疑哪裡不夠、怎麼檢、怎樣算過、結果、結論能說到哪裡為止。</p>
+  <p>每一項都只改參數、對照組或讀法，<b>不改作者的模型</b>；程式在下載包的 <code>fruitfly_lab/ext/</code>，結果另存，不覆蓋重現的輸出。代號 E1–E4 是本課自己編的。每一節照同一個順序寫：作者原本怎麼說、我們懷疑哪裡不夠、怎麼檢、怎樣算過、結果、結論能說到哪裡為止。</p>
 
   <div class="tblwrap">
   <table>
@@ -47,10 +44,6 @@
     <tr><td>E2</td><td>打亂接線輸，是不是只因為閾值不合</td><td>10 種打亂各自校準：50 局平均擊殺 1.16，完整接線 9.86</td><td><b>支持</b>：各自校準之後仍遠低於完整接線</td></tr>
     <tr><td>E3</td><td>只讀下行神經元 DNa02，還打得到嗎</td><td>完整迴路的平均擊殺只剩 0.68，與隨機按鍵的 1.2 相當</td><td><b>改寫</b>：正前方的瞄準完全靠 AOTU019</td></tr>
     <tr><td>E4</td><td>右眼的子圖反應為什麼只有全腦的十幾分之一</td><td>直接輸入都在子圖內；差異來自子圖內部</td><td>作者沒討論；不影響遊戲結果</td></tr>
-    <tr><td>X1</td><td>12 個種子的學習指數是不是挑出來的</td><td>50 個種子：−1.38；作者的 −1.30 在其信賴區間內</td><td><b>支持</b></td></tr>
-    <tr><td>X2</td><td>打亂「多巴胺神經元連到哪顆 MBON」會怎樣</td><td>學習指數 −1.30 → −0.31（同用 12 個種子比）</td><td><b>支持</b>作者的解讀：學習靠這一層</td></tr>
-    <tr><td>X3</td><td>換一批 KC，結果會不會變</td><td>換六種選法，連作者的共七種都在 −1.21 到 −1.43</td><td><b>支持</b></td></tr>
-    <tr><td>X4</td><td>MBON 的趨近／迴避標記與文獻規則一致嗎</td><td>97 顆中 62 顆一致</td><td>不影響學習結果；但標記不能拿來談生物學</td></tr>
   </table>
   </div>
 
@@ -166,83 +159,14 @@
 
   <p>右側反應弱，最直接的後果應該是敵人在右邊時轉錯方向。作者的統計程式 <code>doom/analyze.py</code> 剛好算了「轉錯方向」的比例（敵人在左卻右轉，或反過來），在完整接線第 0 局的 481 格逐格紀錄裡是 0%（<code>out/fruitfly/local_doom_vizdoom130/analysis.json</code> 的 <code>turn_wrong_pct</code>）。這只是一局的證據（E1 才說過 10 局都嫌少），只能說這一局裡沒看到轉錯方向；要確定對遊戲結果的影響，得跑更多局，本課沒有做。但它提醒一件事：<b>子圖是全腦的近似，左右兩側的近似程度可以差很多。</b></p>
 
-  <!-- ══════════════════════════════════════════════════════ -->
-  <h2 id="s6"><span class="pt">6</span>X1　12 個種子夠嗎：加到 50 個</h2>
-
-  <p><b>作者的說法：</b>完整模型 12 個種子的學習指數平均 −1.30（學習指數的定義見 <a href="part1-what.html#s6">PART 1 第 6 節</a>：負得愈多，代表愈討厭被懲罰的氣味）。<b>懷疑：</b>12 個種子不多，而且種子是作者選的；如果剛好挑到學得好的 12 個，數字會比真實情況漂亮。<b>檢法：</b>改用 50 個種子（0–49，前 12 個就是作者的 12 個），完整版與 KC→MBON 打亂各跑一次。<b>怎樣算過：</b>如果作者挑過種子，他的 −1.30 會比 50 個的平均明顯更負，甚至掉出 50 個種子的 95% 信賴區間；所以標準是 −1.30 要落在區間內。</p>
-
-  <div class="tblwrap">
-  <table>
-    <tr><th>條件</th><th>種子數</th><th>學習指數平均</th><th>95% 信賴區間</th></tr>
-    <tr><td>完整（作者的 12 個種子）</td><td>12</td><td>−1.30</td><td>−1.49 到 −1.11</td></tr>
-    <tr><td>完整</td><td>50</td><td>−1.38</td><td>−1.47 到 −1.29</td></tr>
-    <tr><td>KC→MBON 打亂</td><td>50</td><td>−1.39</td><td>−1.49 到 −1.28</td></tr>
-  </table>
-  </div>
-  <p class="figsrc">由 <code>blackjack/scripts/bj_extra.py</code> 算出，輸出在 <code>out/blackjack/bj_extra.json</code> 的 <code>X1_50_seeds</code>。</p>
-
-  <p><b>結果：</b>50 個種子的平均 −1.38 比 12 個的 −1.30 更負一點，而作者的 −1.30 落在 50 個種子的信賴區間（−1.47 到 −1.29）之內，只比上端多 0.01，很接近邊界；但方向說明了問題：挑過的種子應該比 50 個的平均更負，作者的反而比較不負。<b>結論：看不出作者挑過種子。</b>KC→MBON 打亂與完整版仍然分不開，和作者的表一致。</p>
-
-  <!-- ══════════════════════════════════════════════════════ -->
-  <h2 id="s7"><span class="pt">7</span>X2、X3　打亂哪一層接線，學習才會壞掉</h2>
-
-  <p><b>作者的說法：</b>作者自己做過一個對照：把 KC→MBON 的接線打亂，學習幾乎不受影響（<a href="part4-blackjack.html#s4">PART 4 第 4 節</a>）。他的解讀是：KC→MBON 這一層只是氣味代碼到輸出的對應，哪顆 KC 接哪顆 MBON 不重要；真正重要的是<b>懲罰訊號能送到哪些 MBON</b>，也就是 DAN→MBON 這一層（<a href="part1-what.html#s6">PART 1 第 6 節</a>走過的例子：懲罰多巴胺只削弱它所管那幾顆 MBON 的輸入連結）。</p>
-
-  <p><b>懷疑：</b>這是推論，作者沒有直接打亂 DAN→MBON 來驗。<b>檢法（X2）：</b>把每顆多巴胺神經元連到的 MBON 隨機重排，其他全部不動，MBON 的趨近／迴避標記也不動；做 10 種重排、每種 12 個種子。<b>怎樣算過：</b>如果作者的解讀對，學習指數應該明顯往 0 靠。</p>
-
-  <figure class="fig">
-    <img src="assets/p5-mb-shuffle.png" alt="學習指數的比較：完整（50 種子）平均 −1.38；KC→MBON 打亂（50 種子）平均 −1.39；DAN→MBON 打亂 10 種，各自的平均落在 −0.44 到 −0.15 之間，10 種的平均是 −0.31。">
-    <figcaption><b>圖 3　打亂不同層的接線對學習指數的影響。</b>前兩列的粗線是 95% 信賴區間、黑點是平均；第三列每個紅點是一種打亂的 12 種子平均，短直線是 10 種的平均。愈往左代表學得愈多。
-    <span class="figsrc">由 <code>scripts/make_figures.py</code> 從 <code>out/blackjack/bj_extra.json</code> 畫出。</span></figcaption>
-  </figure>
-
-  <p><b>結果：</b>打亂 DAN→MBON 之後，學習指數從 −1.30（作者的 12 個種子，與 X2 用同一組種子）掉到 −0.31（10 種重排各 12 個種子，再取平均），少了約四分之三，但沒有降到 0：重排之後懲罰訊號仍有一部分碰巧落在趨近型 MBON 上，所以還剩一點學習。對照打亂 KC→MBON 完全沒影響。<b>結論：支持作者的解讀，這個模型的學習靠的是多巴胺神經元與 MBON 之間的對應。</b></p>
-
-  <p><b>作者的選擇（X3）：</b>蕈狀體路徑上有 3,811 顆 KC，作者只取 1,200 顆（依每顆 KC 的輸入加輸出連結數排名，等距取）。<b>懷疑：</b>結果會不會是這 1,200 顆的特性，換一批就不同？<b>檢法：</b>換成五組隨機的 1,200 顆、以及全部 3,811 顆，各跑 12 個種子。<b>怎樣算過：</b>作者選法的 −1.30 要落在每一種選法 12 個種子的 95% 信賴區間內（六種都在內，區間記在 <code>bj_extra.json</code> 的 <code>X3_kc_subsets</code>）；「切斷多巴胺」那一欄仍要是 0（切斷多巴胺＝懲罰訊號送不進蕈狀體，模型應該學不到任何東西，不是 0 就是程式有錯）：</p>
-
-  <div class="tblwrap">
-  <table>
-    <tr><th>KC 選法</th><th>KC 數</th><th>學習指數</th><th>切斷多巴胺</th></tr>
-    <tr><td>作者的選法</td><td>1,200</td><td>−1.30</td><td>0.00</td></tr>
-    <tr><td>全部</td><td>3,811</td><td>−1.21</td><td>0.00</td></tr>
-    <tr><td>隨機一</td><td>1,200</td><td>−1.32</td><td>0.00</td></tr>
-    <tr><td>隨機二</td><td>1,200</td><td>−1.24</td><td>0.00</td></tr>
-    <tr><td>隨機三</td><td>1,200</td><td>−1.31</td><td>0.00</td></tr>
-    <tr><td>隨機四</td><td>1,200</td><td>−1.43</td><td>0.00</td></tr>
-    <tr><td>隨機五</td><td>1,200</td><td>−1.34</td><td>0.00</td></tr>
-  </table>
-  </div>
-  <p class="figsrc">輸出在 <code>out/blackjack/bj_extra.json</code> 的 <code>X3_kc_subsets</code>；作者選法那一列就是 <a href="part4-blackjack.html#s4">PART 4 第 4 節</a>的重現結果。</p>
-
-  <p><b>結果：</b>七種選法都在 −1.21 到 −1.43 之間，切斷多巴胺都是 0。用全部 3,811 顆反而學得略少（−1.21），原因本課沒有追。<b>結論：結果對 KC 怎麼挑不敏感。</b></p>
-
-  <!-- ══════════════════════════════════════════════════════ -->
-  <h2 id="s8"><span class="pt">8</span>X4　MBON 的趨近／迴避標記對得上文獻嗎</h2>
-
-  <p><b>作者的做法：</b>給每顆 MBON 標「趨近」或「迴避」的依據，是它主要接收哪一群多巴胺神經元：主要來自 PPL1（懲罰）標趨近、主要來自 PAM（獎賞）標迴避（為什麼反過來，見 <a href="part1-what.html#s6">PART 1 第 6 節</a>）。作者在 README 明說沒有拿這些標記去對照文獻裡已鑑定的 MBON。<b>懷疑：</b>標記是從多巴胺輸入數出來的，沒有對過任何實驗證據。如果標記對不上真實果蠅，PART 4 的學習結果還成立嗎？標記能不能拿來談生物學？</p>
-
-  <p><b>檢法（X4）：</b>用一條簡化的文獻規則做粗略對照。Aso 等人 2014 年在 <i>eLife</i> 用光遺傳學（把光敏蛋白放進特定神經元，用光就能讓它放電）逐類活化 MBON，看果蠅趨近還是迴避，發現釋放麩胺酸的 MBON 多半促成迴避，釋放乙醯膽鹼或 GABA 的多半促成趨近（doi:10.7554/eLife.04580）。傳導物質是神經元放電時釋放給下游的化學訊號，<a href="part1-what.html#s2">PART 1 第 2 節</a>決定連結正負號的也是它。這條規則有已知的例外，這裡只當粗略對照。MBON 的傳導物質用 MaleCNS（fly-blackjack 用的雄果蠅連結體）附的預測值：它是從電子顯微鏡影像用機器學習猜出來的，可能猜錯，猜錯的那顆就會被算到錯的一列，所以這張表也只能當粗略對照。與作者的標記列成交叉表：</p>
-
-  <div class="tblwrap">
-  <table>
-    <tr><th>預測的傳導物質</th><th>作者標趨近</th><th>作者標迴避</th><th>文獻規則預期</th></tr>
-    <tr><td>乙醯膽鹼</td><td><b>38</b></td><td>12</td><td>趨近</td></tr>
-    <tr><td>GABA</td><td><b>8</b></td><td>13</td><td>趨近</td></tr>
-    <tr><td>麩胺酸</td><td>10</td><td><b>16</b></td><td>迴避</td></tr>
-  </table>
-  </div>
-  <p class="figsrc">粗體是與規則一致的格子。輸出在 <code>out/blackjack/bj_extra.json</code> 的 <code>X4_mbon_valence</code>，含逐顆的對照表。</p>
-
-  <p><b>結果：</b>一致的是 38 ＋ 8 ＋ 16 ＝ <b>62 顆，占 97 顆的 64%</b>；GABA 那一群多數相反。<b>結論：</b>PART 4 的學習結果不受這件事影響，原因在標記怎麼來的：它本來就是從 DAN→MBON 的接線數出來的（PART 1 第 6 節），被懲罰多巴胺管的 MBON 一定被標成趨近型，所以「懲罰削弱趨近型的輸入」在模型裡依定義成立，不需要標記對得上真實果蠅。X2 說的是同一件事：打亂 DAN→MBON 之後標記和接線不再對齊，學習才掉下來。但它表示：<b>「哪些 MBON 驅動趨近」不能從這個模型讀出生物學結論。</b>要逐顆確認，得把 MaleCNS 的 MBON 編號對到文獻裡已鑑定的 MBON，本課沒有做。</p>
-
-  <div class="note"><b>這一頁帶走的事：</b>八項檢查裡五項支持作者（E1、E2、X1、X2、X3），一項改寫了對結果的理解（E3），一項揭露了作者沒討論的近似誤差（E4），一項指出標記不能拿來談生物學（X4）。<b>檢查的價值不在推翻，而在把「這個結論靠什麼撐著」講清楚</b>——E3 之後，「果蠅迴路在瞄準」這句話要改成「LC10a 之後一個突觸的 AOTU019，在一條人為設定的讀出規則下瞄準」。</div>
+  <div class="note"><b>這一頁帶走的事：</b>四項檢查裡兩項支持作者（E1、E2），一項改寫了對結果的理解（E3），一項揭露了作者沒討論的近似誤差（E4）。<b>檢查的價值不在推翻，而在把「這個結論靠什麼撐著」講清楚</b>——E3 之後，「果蠅迴路在瞄準」這句話要改成「LC10a 之後一個突觸的 AOTU019，在一條人為設定的讀出規則下瞄準」。</div>
 
   <div class="pager">
-    <a href="part4-blackjack.html">← PART 4　重現 fly-blackjack</a>
-    <a href="part6-demo.html">PART 6　逐格看迴路怎麼打 →</a>
+    <a href="part3-fruitfly.html">← PART 3　重現 fruitfly-lab</a>
+    <a href="part5-demo.html">PART 5　逐格看迴路怎麼打 →</a>
   </div>
 
 </div>
-<div class="foot">BSC 腦空間體研究中心 · 專題課程 果蠅模擬重現 · 教材由 Claude Code 產生　·　<a href="index.html">回課程首頁</a></div>
+<div class="foot">BSC 腦空間體研究中心 · 專題課程 果蠅玩 Doom · 教材由 Claude Code 產生　·　<a href="index.html">回課程首頁</a></div>
 </body>
 </html>

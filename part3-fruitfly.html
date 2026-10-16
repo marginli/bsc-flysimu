@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PART 3 重現 fruitfly-lab｜果蠅模擬重現</title>
+<title>PART 3 重現 fruitfly-lab｜果蠅玩 Doom</title>
 <link rel="stylesheet" href="assets/flysimu.css">
 </head>
 <body>
-<div class="crumb"><a href="https://marginli.github.io/bsc-topics/">BSC 專題課程</a> ／ <a href="index.html">果蠅模擬重現</a> ／ PART 3</div>
+<div class="crumb"><a href="https://marginli.github.io/bsc-topics/">BSC 專題課程</a> ／ <a href="index.html">果蠅玩 Doom</a> ／ PART 3</div>
 <header class="hero">
   <p class="eyebrow">PART 3</p>
   <h1>重現 fruitfly-lab</h1>
@@ -18,7 +18,7 @@
 
   <div class="pager top">
     <a href="part2-setup.html">← PART 2　準備環境與資料</a>
-    <a href="part4-blackjack.html">PART 4　重現 fly-blackjack →</a>
+    <a href="part4-checks.html">PART 4　作者沒做的檢查 →</a>
   </div>
 
   <nav class="toc">
@@ -164,7 +164,7 @@ $ md5sum circuit/edges.bin circuit/meta.json      # 本機重新切出來的
 
   <p>大於 10 Hz 的項目共 12 項，<b>11 項在 ±20% 以內</b>；粗體那一項（打亂接線、左眼刺激時的 AOTU019 右）是 +22%（作者 21.6 Hz、本機 26.4 Hz），<b>超出事先訂的標準，所以這一步的成績照實寫 11／12，不是 12／12</b>。事先的標準沒有說「只看主模型」，這裡也不事後補一條；只補充兩件事實讓讀者自己判斷：它屬於打亂接線這個對照組，而且方向仍然相同。作者原本要驗的事——<b>完整子圖與全腦在兩側都把訊號送到同一側的 DNa02</b>——表上六列方向全部相同，成立。</p>
 
-  <p>表裡還有一個數字會讓人問「這不就是開頭說的『和全腦差很多、不能用』嗎」：右眼刺激時，子圖的 DNa02 右只有 4.4 Hz，全腦卻有 61.6 Hz。它沒有讓 FF3 不過，是因為作者的驗證只訂了方向（同一側放電）、沒訂量級，而這裡方向是對的；作者自己也得到同樣的落差（4.0 對 58.8），在 README 標成「同側、偏弱」。但「偏弱」不是沒事：右眼那一側訊號小十幾倍，遊戲裡敵人在右邊時迴路會不會反應慢、轉錯？這個落差怎麼來、有什麼後果，放在 <a href="part5-checks.html#s5">PART 5 第 5 節</a>追。</p>
+  <p>表裡還有一個數字會讓人問「這不就是開頭說的『和全腦差很多、不能用』嗎」：右眼刺激時，子圖的 DNa02 右只有 4.4 Hz，全腦卻有 61.6 Hz。它沒有讓 FF3 不過，是因為作者的驗證只訂了方向（同一側放電）、沒訂量級，而這裡方向是對的；作者自己也得到同樣的落差（4.0 對 58.8），在 README 標成「同側、偏弱」。但「偏弱」不是沒事：右眼那一側訊號小十幾倍，遊戲裡敵人在右邊時迴路會不會反應慢、轉錯？這個落差怎麼來、有什麼後果，放在 <a href="part4-checks.html#s5">PART 4 第 5 節</a>追。</p>
 
   <figure class="shot">
 <pre>LC10a_R  subgraph   DNa02 L=   0.0 R=   4.4  R-L=  +4.4  AOTU019 L/R=0/242  AOTU025 L/R=0/61  (0.8s)
@@ -175,13 +175,13 @@ LC10a_R  scrambled  DNa02 L=  45.0 R=   0.0  R-L= -45.0  AOTU019 L/R=19/34  AOTU
     Elapsed time:   14 s
 LC10a_R  full_brain DNa02 L=   0.0 R=  61.6  R-L= +61.6  AOTU019 L/R=0/185  AOTU025 L/R=0/121  (15.4s)
 已保存 output/validation.json</pre>
-    <figcaption><b>FF3 實跑輸出，右眼刺激那一半。</b>三行各是一種模型刺激右眼 119 顆 LC10a 後的放電率（Hz）：子圖（0.8 秒算完）、打亂接線的子圖、以及 Shiu 全腦模型（中間四行是全腦模型自己印的進度，跑 14 秒）。看 DNa02 那一欄：子圖右邊 4.4、全腦右邊 61.6，都是右邊在放電、左邊 0，方向一致但子圖弱很多（PART 5 第 5 節追這件事）；打亂接線則變成左邊 45.0，方向反了。<span class="figsrc">終端機輸出原文，出自 out/fruitfly/logs/ff3_validate.log（路徑縮短）。</span></figcaption>
+    <figcaption><b>FF3 實跑輸出，右眼刺激那一半。</b>三行各是一種模型刺激右眼 119 顆 LC10a 後的放電率（Hz）：子圖（0.8 秒算完）、打亂接線的子圖、以及 Shiu 全腦模型（中間四行是全腦模型自己印的進度，跑 14 秒）。看 DNa02 那一欄：子圖右邊 4.4、全腦右邊 61.6，都是右邊在放電、左邊 0，方向一致但子圖弱很多（PART 4 第 5 節追這件事）；打亂接線則變成左邊 45.0，方向反了。<span class="figsrc">終端機輸出原文，出自 out/fruitfly/logs/ff3_validate.log（路徑縮短）。</span></figcaption>
   </figure>
 
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s6"><span class="pt">6</span>FF4　校準出同樣的閾值</h2>
 
-  <p>閾值是整條流程裡唯一「調」出來的兩個數字：轉向訊號超過轉向閾值才按轉向鍵，兩側 AOTU019 都超過開火閾值才開火（<a href="part1-what.html#s4">PART 1 第 4 節</a>）。轉向訊號＝(DNa02 右 − DNa02 左)＋(AOTU019 右 − AOTU019 左)，是放電率相減再相加，所以它和兩個閾值的單位都是 Hz。校準時假想敵人固定放在 17 個方位（−90、−75、−60、−45、−30、−20、−10、−5、0、5、10、20、30、45、60、75、90 度，正前方附近排得密）、迴路用固定種子跑，沒有未固定的隨機性，所以要求逐位相同。閾值怎麼從 17 列數字算出來，走一次完整接線：敵人在 0° 時轉向訊號絕對值 28.59，在 ±10° 時較小的一邊是 233.27，中點 (28.59 ＋ 233.27) ÷ 2 ＝ 130.93 就是轉向閾值；0° 時左右 AOTU019 是 219.94 與 191.35，較小者的一半 95.68 就是開火閾值。閾值若差一點，後面每一局按的鍵都會不同，所以要在玩遊戲之前先驗這一步。打亂接線另有一組自己的閾值，給 <code>scrambled_cal</code> 條件用（為什麼要另外校準，見 PART 5 第 3 節）。</p>
+  <p>閾值是整條流程裡唯一「調」出來的兩個數字：轉向訊號超過轉向閾值才按轉向鍵，兩側 AOTU019 都超過開火閾值才開火（<a href="part1-what.html#s4">PART 1 第 4 節</a>）。轉向訊號＝(DNa02 右 − DNa02 左)＋(AOTU019 右 − AOTU019 左)，是放電率相減再相加，所以它和兩個閾值的單位都是 Hz。校準時假想敵人固定放在 17 個方位（−90、−75、−60、−45、−30、−20、−10、−5、0、5、10、20、30、45、60、75、90 度，正前方附近排得密）、迴路用固定種子跑，沒有未固定的隨機性，所以要求逐位相同。閾值怎麼從 17 列數字算出來，走一次完整接線：敵人在 0° 時轉向訊號絕對值 28.59，在 ±10° 時較小的一邊是 233.27，中點 (28.59 ＋ 233.27) ÷ 2 ＝ 130.93 就是轉向閾值；0° 時左右 AOTU019 是 219.94 與 191.35，較小者的一半 95.68 就是開火閾值。閾值若差一點，後面每一局按的鍵都會不同，所以要在玩遊戲之前先驗這一步。打亂接線另有一組自己的閾值，給 <code>scrambled_cal</code> 條件用（為什麼要另外校準，見 PART 4 第 3 節）。</p>
 
   <p>照同樣的校準流程重跑一次，兩組閾值都與作者附的檔案逐位相同：</p>
 
@@ -213,7 +213,7 @@ LC10a_R  full_brain DNa02 L=   0.0 R=  61.6  R-L= +61.6  AOTU019 L/R=0/185  AOTU
 [fly] az= +75°  DNa02 L/R=   0.0/ 173.1  AOTU019 L/R=   0.0/  84.9  steer= +258.0
 [fly] az= +90°  DNa02 L/R=   0.0/ 154.3  AOTU019 L/R=   0.0/   4.2  steer= +158.6
 [fly] 读出阈值：{&#x27;turn_th&#x27;: 130.93, &#x27;fire_th&#x27;: 95.68, &#x27;quiet_th&#x27;: 5.0, ...}</pre>
-    <figcaption><b>FF4 實跑輸出：校準的 17 個方位。</b>每一行是假想敵人放在一個方位（az）時，四顆神經元的平均放電率與算出來的轉向訊號（steer，右減左）。可以直接看出三件事：DNa02 在 ±30° 以內兩邊都是 0（PART 5 第 4 節的起點）；敵人從 +5° 移到 +10°，右邊 AOTU019 從 199.5 跳到 250.0、左邊從 225.5 掉到 16.8，轉向訊號因此從 −26 翻成 +233；最後一行是程式用 PART 1 第 4 節的兩條規則算出的閾值，與作者附的檔案逐位相同。<span class="figsrc">終端機輸出原文，出自 out/fruitfly/logs/ff4_calibrate.log（最後一行去掉了 Python 型別標記）。</span></figcaption>
+    <figcaption><b>FF4 實跑輸出：校準的 17 個方位。</b>每一行是假想敵人放在一個方位（az）時，四顆神經元的平均放電率與算出來的轉向訊號（steer，右減左）。可以直接看出三件事：DNa02 在 ±30° 以內兩邊都是 0（PART 4 第 4 節的起點）；敵人從 +5° 移到 +10°，右邊 AOTU019 從 199.5 跳到 250.0、左邊從 225.5 掉到 16.8，轉向訊號因此從 −26 翻成 +233；最後一行是程式用 PART 1 第 4 節的兩條規則算出的閾值，與作者附的檔案逐位相同。<span class="figsrc">終端機輸出原文，出自 out/fruitfly/logs/ff4_calibrate.log（最後一行去掉了 Python 型別標記）。</span></figcaption>
   </figure>
 
   <!-- ══════════════════════════════════════════════════════ -->
@@ -237,7 +237,7 @@ LC10a_R  full_brain DNa02 L=   0.0 R=  61.6  R-L= +61.6  AOTU019 L/R=0/185  AOTU
   </div>
   <p class="figsrc">本機與作者的逐局數字都在 <code>out/fruitfly/local_doom_vizdoom130/</code> 與 <code>out/fruitfly/author_doom/</code> 的 <code>analysis.json</code>。p 值是作者的 <code>doom/analyze.py</code> 算的配對置換檢定。</p>
 
-  <p><b>p 值</b>是「如果兩個條件其實沒有差別，純靠運氣得到這麼大（或更大）差距的機率」。慣例上小於 0.05 就說差距顯著。表上 <code>lesion025</code> 的 0.048 剛好低於這條線；10 局夠不夠，放在 <a href="part5-checks.html#s2">PART 5 第 2 節</a>用 50 局重新檢查。</p>
+  <p><b>p 值</b>是「如果兩個條件其實沒有差別，純靠運氣得到這麼大（或更大）差距的機率」。慣例上小於 0.05 就說差距顯著。表上 <code>lesion025</code> 的 0.048 剛好低於這條線；10 局夠不夠，放在 <a href="part4-checks.html#s2">PART 4 第 2 節</a>用 50 局重新檢查。</p>
 
   <p><b>這個 p 是怎麼算的</b>（<code>doom/analyze.py</code> 的 <code>paired_perm_p</code>）：遊戲只跑 10 局，p 不是再跑出來的，是拿這 10 對分數在電腦裡「洗牌」洗出來的。</p>
   <ol>
@@ -276,7 +276,7 @@ LC10a_R  full_brain DNa02 L=   0.0 R=  61.6  R-L= +61.6  AOTU019 L/R=0/185  AOTU
       <figcaption><span class="ab">B</span><b>完整接線，第 0 局第 60 格（1.7 秒）：敵人在右邊緣</b><br>敵人方位 +86.1°，AOTU019 兩側幾乎為 0，改由 AOTU025 右 116.9 推動 DNa02 右 131.0 Hz，轉向訊號超過 130.93，這一格按下右轉。損毀 AOTU025 的那局在同一格 DNa02 右只有 91.4，不轉。</figcaption>
     </figure>
   </div>
-  <p class="figsrc">兩張是 PART 6 錄影的原始畫面（assets/demo/fly.mp4 第 21、60 幀，由 scripts/make_shots.py 抽出）；畫面上沒有疊字，格號對應的神經元數字出自 out/demo_data.json。想逐格看放電怎麼變，到 PART 6。</p>
+  <p class="figsrc">兩張是 PART 5 錄影的原始畫面（assets/demo/fly.mp4 第 21、60 幀，由 scripts/make_shots.py 抽出）；畫面上沒有疊字，格號對應的神經元數字出自 out/demo_data.json。想逐格看放電怎麼變，到 PART 5。</p>
 
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s8"><span class="pt">8</span>遊戲版本換一個小版號，分數就變了</h2>
@@ -289,7 +289,7 @@ LC10a_R  full_brain DNa02 L=   0.0 R=  61.6  R-L= +61.6  AOTU019 L/R=0/185  AOTU
     <span class="figsrc">由 <code>scripts/make_figures.py</code> 從 <code>out/fruitfly/</code> 的三份 <code>fly.json</code> 畫出。</span></figcaption>
   </figure>
 
-  <p>分數變了，要先確定是誰變的：果蠅迴路，還是遊戲？看不經過迴路的 <code>oracle</code>：它只讀遊戲回報的敵人位置、照規則按鍵，裡面沒有任何神經元。它的逐局分數也變了（1.3.0：11 14 13 8 15 10 5 11 11 17；1.3.2：10 12 11 10 13 15 5 14 10 19），代表變的不是迴路。再看完全不讀敵人位置的 <code>random</code>：它在兩版的每一局都逐格相同，連存活的格數都一樣（PART 5 第 2 節），所以只要按鍵序列相同，遊戲本身在兩版跑得一模一樣，敵人出現的時間與位置並沒有變。會變的只有讀敵人位置的條件：<b>差異出在引擎回報給程式的敵人資訊在兩版之間不同</b>；按鍵因此不同，整局就分岔。具體是回報裡的哪一項變了，本課沒有追到。結論一樣：變的是遊戲引擎那一側，不是迴路。</p>
+  <p>分數變了，要先確定是誰變的：果蠅迴路，還是遊戲？看不經過迴路的 <code>oracle</code>：它只讀遊戲回報的敵人位置、照規則按鍵，裡面沒有任何神經元。它的逐局分數也變了（1.3.0：11 14 13 8 15 10 5 11 11 17；1.3.2：10 12 11 10 13 15 5 14 10 19），代表變的不是迴路。再看完全不讀敵人位置的 <code>random</code>：它在兩版的每一局都逐格相同，連存活的格數都一樣（PART 4 第 2 節），所以只要按鍵序列相同，遊戲本身在兩版跑得一模一樣，敵人出現的時間與位置並沒有變。會變的只有讀敵人位置的條件：<b>差異出在引擎回報給程式的敵人資訊在兩版之間不同</b>；按鍵因此不同，整局就分岔。具體是回報裡的哪一項變了，本課沒有追到。結論一樣：變的是遊戲引擎那一側，不是迴路。</p>
 
   <div class="tblwrap">
   <table>
@@ -326,10 +326,10 @@ LC10a_R  full_brain DNa02 L=   0.0 R=  61.6  R-L= +61.6  AOTU019 L/R=0/185  AOTU
 
   <div class="pager">
     <a href="part2-setup.html">← PART 2　準備環境與資料</a>
-    <a href="part4-blackjack.html">PART 4　重現 fly-blackjack →</a>
+    <a href="part4-checks.html">PART 4　作者沒做的檢查 →</a>
   </div>
 
 </div>
-<div class="foot">BSC 腦空間體研究中心 · 專題課程 果蠅模擬重現 · 教材由 Claude Code 產生　·　<a href="index.html">回課程首頁</a></div>
+<div class="foot">BSC 腦空間體研究中心 · 專題課程 果蠅玩 Doom · 教材由 Claude Code 產生　·　<a href="index.html">回課程首頁</a></div>
 </body>
 </html>

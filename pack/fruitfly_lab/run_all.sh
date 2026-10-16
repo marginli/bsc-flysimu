@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# fruitfly-lab 一鍵重跑：FF1–FF6 ＋ ViZDoom 1.3.2 對照 ＋ 加做檢查 E1–E4。用法：bash run_all.sh（本課實測 14 分 34 秒，12 核 CPU，與 blackjack 同時跑）
+# fruitfly-lab 一鍵重跑：FF1–FF6 ＋ ViZDoom 1.3.2 對照 ＋ 加做檢查 E1–E4。用法：bash run_all.sh（本課實測時間見 PART 2）
 # 需要先跑過上一層的 setup_envs.sh。下載約 400 MB（Shiu 全腦模型 repo ＋ FlyWire 註解檔）。
 # 若另外下載了 FlyWire 的 proofread_connections_783.feather，可設 FLYWIRE_FEATHER=<路徑> 讓 FF1 逐條比對。
 set -e

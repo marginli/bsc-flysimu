@@ -1,27 +1,23 @@
 {
- "setup_fresh_seconds": 54.25,
- "fruitfly_seconds": 873.71,
- "blackjack_seconds": 1313.76,
- "parallel": true,
+ "course": "fruitfly",
+ "setup_fresh_seconds": 42.55,
+ "run_seconds": 881.97,
+ "parallel": false,
  "data_mb": {
-  "fruitfly_lab/repo": 441,
-  "blackjack/repo": 129
+  "fruitfly_lab/repo": 441
  },
  "env_mb": {
   "ffl_brian": 843,
   "ffl_doom": 881,
-  "ffl_doom130": 774,
-  "flyplay_bj": 381
+  "ffl_doom130": 774
  },
- "check_fruitfly_last": "fruitfly：45 項通過，0 項不符，1 項已知不符（△，本課實跑時也一樣）（共 46 項）",
- "check_blackjack_last": "blackjack：19 項通過，0 項不符（共 19 項）",
+ "check_last": "fruitfly：45 項通過，0 項不符，1 項已知不符（△，本課實跑時也一樣）（共 46 項）",
  "python_versions": {
-  "flyplay_bj": "3.11.17",
   "ffl_brian": "3.11.17",
   "ffl_doom130": "3.12.15",
   "ffl_doom": "3.12.15"
  },
  "machine": "Linux, 12-core CPU, no GPU",
- "data_mb_total": 570,
- "env_mb_total": 2879
+ "data_mb_total": 441,
+ "env_mb_total": 2498
 }
