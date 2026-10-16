@@ -10,5 +10,5 @@ a95d56047a812883cf42da04d41b83f6114c123db27bab9b374e027fa1da0c07  ./expected.jso
 4feef38c0c8e2722fdd5a89e3218f1a2cc0a89cefcf360ee9be531e5a2bb1f80  ./fruitfly_lab/ext/ff1_compare_conn.py
 d784bcea63ab4286a9f7cd6172d410dae6223ff63de127f792003e53e5c0475b  ./fruitfly_lab/ext/ff_extra.py
 d263af320598dcca29879484d3caf1a2f2a8ce3c2a0a600b4d859a180cc8aa13  ./fruitfly_lab/run_all.sh
-696b6e6c081712eae0e267f7798c37ec24349ba7e90c0f1faefb52dda558c671  ./README.md
+b0d8f1bbb1134cc698ae0e13e1f5a7ad6b00829cbe49ddd6fdfbcaa787b64219  ./README.md
 54bf65503505240960cd04d18c6e5f851976421d86c07a5eb324c7ba702da1f1  ./setup_envs.sh

@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>果蠅大腦玩遊戲：重現兩個連線體模擬｜BSC 專題課程</title>
+<title>果蠅大腦玩遊戲：重現兩個連結體模擬｜BSC 專題課程</title>
 <link rel="stylesheet" href="assets/flysimu.css">
 </head>
 <body>
 <div class="crumb"><a href="https://marginli.github.io/bsc-topics/">← BSC 專題課程</a></div>
 <header class="hero">
   <p class="eyebrow">BSC 專題課程</p>
-  <h1>果蠅大腦玩遊戲：重現兩個連線體模擬</h1>
+  <h1>果蠅大腦玩遊戲：重現兩個連結體模擬</h1>
   <p class="subtitle">把別人公開的程式碼在自己的電腦上重跑一次，逐項判斷「對上了沒有」，再做作者沒做的檢查</p>
 </header>
 
@@ -18,7 +18,7 @@
 
   <div class="intro"><dl>
     <dt>這是什麼</dt>
-    <dd>一堂「重現」的專題課。對象是兩個公開在 GitHub 上的專案，它們都把果蠅的<b>連線體</b>（connectome：一顆腦裡每一顆神經元連到哪些神經元、各有幾個突觸的完整清單）接到電腦遊戲上。清單本身不會動；把清單裡每一顆神經元換成一條「會放電」的方程式、照清單接起來，就成了一個會動的模型（PART 1 講這件事）。<b>fruitfly-lab</b> 從全腦切出一段視覺追蹤<b>迴路</b>（一小群互相連接、一起完成某件事的神經元），讓它在 Doom 裡轉身、瞄準、開火；<b>fly-blackjack</b> 切出蕈狀體（果蠅負責嗅覺學習的腦區），把牌面編成「氣味」送進去，讓它用學氣味好壞的方式學 21 點怎麼打。</dd>
+    <dd>一堂「重現」的專題課。對象是兩個公開在 GitHub 上的專案，它們都把果蠅的<b>連結體</b>（connectome：一顆腦裡每一顆神經元連到哪些神經元、各有幾個突觸的完整清單）接到電腦遊戲上。清單本身不會動；把清單裡每一顆神經元換成一條「會放電」的方程式、照清單接起來，就成了一個會動的模型（PART 1 講這件事）。<b>fruitfly-lab</b> 從全腦切出一段視覺追蹤<b>迴路</b>（一小群互相連接、一起完成某件事的神經元），讓它在 Doom 裡轉身、瞄準、開火；<b>fly-blackjack</b> 切出蕈狀體（果蠅負責嗅覺學習的腦區），把牌面編成「氣味」送進去，讓它用學氣味好壞的方式學 21 點怎麼打。</dd>
     <dt>為什麼值得單獨開一堂</dt>
     <dd>「果蠅大腦會玩遊戲」這類示範在網路上傳得很快，但看示範影片判斷不了它可不可信。能判斷的辦法只有一個：<b>拿到程式碼，自己重跑，逐項對照作者宣稱的數字</b>。這兩個專案都附了程式碼與對照組（把模型的某個零件拿掉或打亂再跑一次，看成績掉不掉），所以能真的做這件事。</dd>
     <dt>怎麼讀</dt>
@@ -31,7 +31,7 @@
     <a class="btn c1" href="part1-what.html">
       <span class="no">PART 1</span>
       <span class="t">兩個專案在做什麼</span>
-      <p class="s">連線體怎麼變成一個會動的模型：神經元方程式（神經元怎麼放電；放電是神經元之間唯一的訊號）、從全腦切出一段迴路、把遊戲畫面接進去、把神經元的放電接出來變成按鍵。並逐項分清楚<b>哪些來自資料、哪些是人為設定</b>。</p>
+      <p class="s">連結體怎麼變成一個會動的模型：神經元方程式（神經元怎麼放電；放電是神經元之間唯一的訊號）、從全腦切出一段迴路、把遊戲畫面接進去、把神經元的放電接出來變成按鍵。並逐項分清楚<b>哪些來自資料、哪些是人為設定</b>。</p>
       <p class="m">概念為主 · 不需程式基礎 · 已完成</p>
     </a>
     <a class="btn c2" href="part2-setup.html">
@@ -84,8 +84,8 @@
   <div class="tblwrap">
   <table>
     <tr><th>專案</th><th>固定的版本</th><th>用的資料</th><th>授權</th></tr>
-    <tr><td><a href="https://github.com/webergithub/fruitfly-lab">webergithub/fruitfly-lab</a></td><td>commit <code>8c27fe8</code></td><td>FlyWire v783 雌果蠅全腦連線體；用的是 <a href="https://github.com/philshiu/Drosophila_brain_model">Shiu 等人 2024 年全腦模型</a>附的連線表（從 FlyWire 整理出每一對神經元之間有幾個突觸）</td><td>repo 裡沒有授權檔</td></tr>
-    <tr><td><a href="https://github.com/WilliamJones/fly-blackjack">WilliamJones/fly-blackjack</a></td><td>commit <code>004b2e3</code></td><td>MaleCNS v1.0 雄果蠅中樞神經系統連線體（經 <a href="https://github.com/YijieYin/connectome_data_prep">connectome_data_prep</a> 預處理）</td><td>MIT</td></tr>
+    <tr><td><a href="https://github.com/webergithub/fruitfly-lab">webergithub/fruitfly-lab</a></td><td>commit <code>8c27fe8</code></td><td>FlyWire v783 雌果蠅全腦連結體；用的是 <a href="https://github.com/philshiu/Drosophila_brain_model">Shiu 等人 2024 年全腦模型</a>附的連線表（從 FlyWire 整理出每一對神經元之間有幾個突觸）</td><td>repo 裡沒有授權檔</td></tr>
+    <tr><td><a href="https://github.com/WilliamJones/fly-blackjack">WilliamJones/fly-blackjack</a></td><td>commit <code>004b2e3</code></td><td>MaleCNS v1.0 雄果蠅中樞神經系統連結體（經 <a href="https://github.com/YijieYin/connectome_data_prep">connectome_data_prep</a> 預處理）</td><td>MIT</td></tr>
   </table>
   </div>
   <p>表裡的名詞：repo 是 GitHub 上一個專案的程式碼倉庫；commit 是倉庫在某個時間點的快照，<code>8c27fe8</code> 這類代號是它的編號，固定它才能保證重跑的是同一份程式；MIT 是一種允許任何人複製、修改、散布的授權。兩個專案用的是不同的腦（一雌一雄、不同團隊重建），互不相干，本課各自只跟它自己作者的數字比。</p>

@@ -95,7 +95,7 @@ bash blackjack/run_all.sh       # fly-blackjack：BJ1–BJ5、加做檢查 X1–
     <tr><td><code>setup_envs.sh</code></td><td>建四個 conda 環境，套件版本照本課實跑時固定</td></tr>
     <tr><td><code>fruitfly_lab/run_all.sh</code></td><td>取得 fruitfly-lab 與 Shiu 等人 2024 年的全腦模型 repo（PART 1 第 2 節提過；fruitfly-lab 讀的連線表是它附的），下載 FlyWire 註解檔（每顆神經元屬於哪一種細胞類型的清單，抽子圖時靠它找出 LC10a、AOTU019 等），然後依序跑 FF1–FF6、ViZDoom 1.3.2 對照、E1–E4。<br>選擇性的一步：如果你另外下載了 FlyWire 官方的連線表 <code>proofread_connections_783.feather</code>，執行前多打一行 <code>export FLYWIRE_FEATHER=/你的路徑/proofread_connections_783.feather</code>，FF1 就會把兩份逐條比對（<a href="part3-fruitfly.html#s3">PART 3 第 3 節</a>）。不設也沒關係：FF1 只印出 Shiu 連線表的三個數字並與本課的值核對，不會失敗</td></tr>
     <tr><td><code>fruitfly_lab/ext/</code></td><td>FF1 的資料核對與 E1–E4 的程式。它們把作者的程式當成程式庫來呼叫（匯入），不改作者任何一行</td></tr>
-    <tr><td><code>blackjack/run_all.sh</code></td><td>取得 fly-blackjack、下載 MaleCNS 連線體整理好的連結矩陣（fly-blackjack 切蕈狀體的來源，PART 1 第 6 節），依序跑 BJ1–BJ5、X1–X4</td></tr>
+    <tr><td><code>blackjack/run_all.sh</code></td><td>取得 fly-blackjack、下載 MaleCNS 連結體整理好的連結矩陣（fly-blackjack 切蕈狀體的來源，PART 1 第 6 節），依序跑 BJ1–BJ5、X1–X4</td></tr>
     <tr><td><code>blackjack/scripts/</code></td><td>覓食與 21 點兩個實驗，作者的程式裡沒有可以直接從終端機執行的指令（沒有「命令列入口」，作者是在 Python 裡呼叫函式跑的），所以本課寫了幾支小程式去呼叫作者的函式；X1–X4 也在這裡</td></tr>
     <tr><td><code>check.py</code>、<code>expected.json</code></td><td><b>驗收</b>：逐項比對你跑出來的數字與本課實跑的結果（第 7 節）</td></tr>
     <tr><td><code>SHA256SUMS.txt</code></td><td>每個檔案的 SHA-256 指紋：由檔案內容算出來的一串 64 個字，內容改一個位元組就完全不同。執行 <code>sha256sum -c SHA256SUMS.txt</code> 會重算每個檔案的指紋並與這份清單比對，確認下載的檔案沒有損壞或被改過</td></tr>

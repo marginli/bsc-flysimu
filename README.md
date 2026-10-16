@@ -1,6 +1,6 @@
-# 果蠅大腦玩遊戲：重現兩個連線體模擬
+# 果蠅大腦玩遊戲：重現兩個連結體模擬
 
-BSC 專題課程（**重現型**，規範見 `../types/repro.md`）。對象是兩個公開的果蠅連線體模擬專案：
+BSC 專題課程（**重現型**，規範見 `../types/repro.md`）。對象是兩個公開的果蠅連結體模擬專案：
 [fruitfly-lab](https://github.com/webergithub/fruitfly-lab)（commit 8c27fe8）與
 [fly-blackjack](https://github.com/WilliamJones/fly-blackjack)（commit 004b2e3）。
 
