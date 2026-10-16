@@ -65,7 +65,7 @@
     <tr><td>隨機按鍵</td><td>0</td><td>2.43</td><td>12.7</td></tr>
   </table>
   </div>
-  <p class="figsrc">本機與 README 第 42–47 行逐位相同。本機輸出在 <code>out/blackjack/logs/bj1_train.log</code>。</p>
+  <p class="figsrc">本機與 README 第 42–47 行逐位相同。本機輸出在 <code>out/blackjack/logs/bj1_train.log</code>；前兩列用的讀出參數是 <code>out/blackjack/bj1_checkpoint.json</code> 裡的那 243 個（40 代中驗證分最高的一組，見 PART 1 第 6 節），第三列「沒訓練的讀出」是另外隨機抽的一組 243 個。</p>
 
   <p>第二列是作者在 README 特別強調的對照：讀出一模一樣，只是把迴路送給它的活動換成 0。這一列完成 0 關，代表讀出確實在用迴路算出來的東西，而不是自己背下了關卡。作者也明說這個示範<b>不能</b>證明果蠅的接線比同樣大小的隨機網路好——要證明那件事，需要用打亂接線的網路以同樣的訓練量再比一次。</p>
 
