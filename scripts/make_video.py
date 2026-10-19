@@ -25,6 +25,7 @@
         （旁白稿寫原名，送進 TTS 前照表換成唸得對的寫法；字幕與 video_check 用的都還是原名）。
    每一段旁白各自補 PAD 秒靜音再串起來（不是整段串完補一次），否則每張投影片聲音提前 PAD 秒、一路累積。
 """
+import hashlib
 import io, os, re, json, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -141,27 +142,31 @@ def main():
         tts = F5TTS(model="F5TTS_v1_Base")
     ref_text = io.open(REF_TXT, encoding="utf-8").read().strip() if LOCAL else ""
     print(f"旁白來源：{'本機合成' if LOCAL else 'edge-tts'}")
-    durs = []
+    durs, auds = [], []
     for i, s in enumerate(SLIDES):
         p = f"{WORK}/s{i:02d}.html"
         io.open(p, "w", encoding="utf-8").write(slide_html(s, i, len(SLIDES)))
         subprocess.run(["google-chrome", "--headless=new", "--disable-gpu", "--no-sandbox",
                         "--hide-scrollbars", "--window-size=1920,1080", "--virtual-time-budget=3000",
                         f"--screenshot={WORK}/png/s{i:02d}.png", f"file://{p}"], capture_output=True)
-        a = f"{WORK}/aud/a{i:02d}." + ("wav" if LOCAL else "mp3")
+        # 音檔以「旁白內容的雜湊」命名：旁白改了就重新合成，不會沿用舊稿的音（2026-10-19 在 21 點課抓到：只以編號命名時，
+        # 改稿後 14 段裡 9 段仍是舊音，影音同步檢查看不出來，只有辨識回填才抓得到）
+        h = hashlib.md5(for_tts(s["say"]).encode("utf-8")).hexdigest()[:10]
+        a = f"{WORK}/aud/a{i:02d}_{h}." + ("wav" if LOCAL else "mp3")
         if not os.path.exists(a):
             if LOCAL:
                 tts.infer(ref_file=REF_WAV, ref_text=ref_text, gen_text=for_tts(s["say"]), file_wave=a, remove_silence=False)
             else:
                 subprocess.run(["edge-tts", "--voice", VOICE, f"--rate={RATE}", "--text", s["say"], "--write-media", a],
                                capture_output=True, timeout=300)
+        auds.append(a)
         durs.append(float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", a],
                                          capture_output=True, text=True).stdout.strip()))
         print(f"   投影片 {i + 1}/{len(SLIDES)}　旁白 {durs[-1]:.1f} 秒")
 
     ext = "wav" if LOCAL else "mp3"
     for i in range(len(durs)):      # 每一段各自補 PAD 秒靜音
-        subprocess.run(["ffmpeg", "-y", "-i", f"{WORK}/aud/a{i:02d}.{ext}", "-af", f"apad=pad_dur={PAD}",
+        subprocess.run(["ffmpeg", "-y", "-i", auds[i], "-af", f"apad=pad_dur={PAD}",
                         "-ar", "24000", "-ac", "1", "-c:a", "pcm_s16le", f"{WORK}/aud/p{i:02d}.wav"], capture_output=True)
     with io.open(f"{WORK}/ca.txt", "w") as f:
         for i in range(len(durs)):
