@@ -7,7 +7,9 @@
    2. 辨識回填：把每一段旁白的合成音丟回本機的語音辨識（faster-whisper，CPU），
       與旁白稿比對字元層級的相似度，把低於門檻的段落與差異印出來，給人判斷是唸錯還是辨識錯。
       要用辨識那個環境的 python：~/.venvs/asr/bin/python scripts/video_verify.py
-   報告寫到 _video/verify.txt（不進 repo）。
+      預設聽的是快取裡的合成音；加 --mp4 就改成照交界時間把成品的音軌切段來聽，
+      這才驗得到「影片裡的聲音」而不是「快取裡的聲音」（21 點課的快取 bug 就是這樣漏掉的）。
+   報告寫到 _video/verify.txt（--mp4 時寫 _video/verify_mp4.txt；都不進 repo）。
 """
 import glob
 import difflib, io, json, os, re, subprocess, sys
@@ -36,10 +38,14 @@ r = subprocess.run(["ffmpeg", "-i", mp4, "-af", "silencedetect=noise=-35dB:d=0.2
 starts = [float(x) for x in re.findall(r"silence_start: ([\d.]+)", r)]
 ends = [float(x) for x in re.findall(r"silence_end: ([\d.]+)", r)]
 sil = list(zip(starts, ends))
-t, ok, bounds = 0.0, 0, []
-for d in meta["segment_seconds"][:-1]:
+FROM_MP4 = "--mp4" in sys.argv
+t, ok, bounds, spans = 0.0, 0, [], []
+for d in meta["segment_seconds"]:
+    spans.append((t, t + d))            # 這一段旁白在成品裡的起迄（pad 在旁白之後）
     t += d + meta["pad"]
     bounds.append(t)
+bounds = bounds[:-1]
+for t in bounds:
     if any(a - 0.05 <= t <= b + 0.05 for a, b in sil):
         ok += 1
 say(f"同步：{len(bounds)} 個投影片交界，{ok} 個落在靜音段裡" + ("" if ok == len(bounds) else "　← 有交界不在靜音裡，要查"))
@@ -58,10 +64,21 @@ def plain(s):
 low = 0
 for i, s in enumerate(SLIDES):
     # 合成音以「編號_旁白雜湊」命名（make_video.py），取同編號最新的那一個
-    cands = sorted(glob.glob(f"{WORK}/aud/a{i:02d}_*.wav") + glob.glob(f"{WORK}/aud/a{i:02d}_*.mp3") +
-                   glob.glob(f"{WORK}/aud/a{i:02d}.wav") + glob.glob(f"{WORK}/aud/a{i:02d}.mp3"), key=os.path.getmtime)
-    a = cands[-1]
-    segs, _ = m.transcribe(a, language="zh", beam_size=5, initial_prompt="繁體中文，果蠅神經科學課程。")
+    if FROM_MP4:
+        # 從成品音軌切這一段（多留 0.2 秒尾巴，不會切到下一段：pad 0.6 秒都是靜音）
+        os.makedirs(f"{WORK}/cut", exist_ok=True)
+        a = f"{WORK}/cut/s{i:02d}.wav"
+        t0, t1 = spans[i]
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{t0:.3f}", "-to", f"{t1 + 0.2:.3f}", "-i", mp4,
+                        "-vn", "-ac", "1", "-ar", "16000", a], check=True)
+    else:
+        cands = sorted(glob.glob(f"{WORK}/aud/a{i:02d}_*.wav") + glob.glob(f"{WORK}/aud/a{i:02d}_*.mp3") +
+                       glob.glob(f"{WORK}/aud/a{i:02d}.wav") + glob.glob(f"{WORK}/aud/a{i:02d}.mp3"), key=os.path.getmtime)
+        a = cands[-1]
+    # condition_on_previous_text=False：不拿前一句當下一句的提示，否則偶爾會陷入重複迴圈，
+    # 把同一段話聽成兩三遍，相似度掉到 0.7 以下，看起來像影片多了旁白，其實是辨識出錯
+    segs, _ = m.transcribe(a, language="zh", beam_size=5, condition_on_previous_text=False,
+                           initial_prompt="繁體中文，果蠅神經科學課程。")
     heard = "".join(x.text for x in segs)
     # 辨識常吐簡體字與阿拉伯數字：先轉成繁體（opencc），再把數字轉成國字，才跟稿子同一種寫法
     heard = zh_num(_cc.convert(heard))
@@ -75,5 +92,5 @@ for i, s in enumerate(SLIDES):
         for tag, x1, x2, y1, y2 in difflib.SequenceMatcher(None, plain(said), plain(heard)).get_opcodes():
             if tag != "equal":
                 say(f"      稿「{plain(said)[x1:x2]}」→ 聽「{plain(heard)[y1:y2]}」")
-say(f"辨識回填：{len(SLIDES)} 段，{low} 段相似度低於 0.85")
-io.open(os.path.join(WORK, "verify.txt"), "w", encoding="utf-8").write("\n".join(out) + "\n")
+say(f"辨識回填（{'成品音軌切段' if FROM_MP4 else '快取合成音'}）：{len(SLIDES)} 段，{low} 段相似度低於 0.85")
+io.open(os.path.join(WORK, "verify_mp4.txt" if FROM_MP4 else "verify.txt"), "w", encoding="utf-8").write("\n".join(out) + "\n")

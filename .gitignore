@@ -3,5 +3,5 @@ __pycache__/
 .DS_Store
 _video/
 _voice/
-_video_make.log
+_video_*.log
 _notes/.coldread/
