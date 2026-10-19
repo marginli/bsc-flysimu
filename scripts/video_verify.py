@@ -9,6 +9,7 @@
       要用辨識那個環境的 python：~/.venvs/asr/bin/python scripts/video_verify.py
    報告寫到 _video/verify.txt（不進 repo）。
 """
+import glob
 import difflib, io, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -56,7 +57,10 @@ def plain(s):
 
 low = 0
 for i, s in enumerate(SLIDES):
-    a = f"{WORK}/aud/a{i:02d}." + ("wav" if os.path.exists(f"{WORK}/aud/a{i:02d}.wav") else "mp3")
+    # 合成音以「編號_旁白雜湊」命名（make_video.py），取同編號最新的那一個
+    cands = sorted(glob.glob(f"{WORK}/aud/a{i:02d}_*.wav") + glob.glob(f"{WORK}/aud/a{i:02d}_*.mp3") +
+                   glob.glob(f"{WORK}/aud/a{i:02d}.wav") + glob.glob(f"{WORK}/aud/a{i:02d}.mp3"), key=os.path.getmtime)
+    a = cands[-1]
     segs, _ = m.transcribe(a, language="zh", beam_size=5, initial_prompt="繁體中文，果蠅神經科學課程。")
     heard = "".join(x.text for x in segs)
     # 辨識常吐簡體字與阿拉伯數字：先轉成繁體（opencc），再把數字轉成國字，才跟稿子同一種寫法
