@@ -40,7 +40,7 @@ def main():
     # fruitfly-lab 沒有授權檔，不收整份 README；只摘它宣稱結果的那幾行表格（作者自己的數字），標明出處行號
     rd = open(os.path.join(SRC, "fruitfly_lab/repo/README.md"), encoding="utf-8").read().splitlines()
     claims = [{"line": i + 1, "text": t} for i, t in enumerate(rd) if t.startswith("|") and any(ch.isdigit() for ch in t)
-              or "10.2 kills" in t or "Thresholds come from" in t]
+              or "10.2 kills" in t or "Thresholds come from" in t or "central field" in t or "periphery 40" in t or "DNa02 has no baseline" in t or "AOTU025-only lesion" in t]
     json.dump({"source": "webergithub/fruitfly-lab README.md @ 8c27fe8", "claims": claims},
               open(os.path.join(OUT, "upstream/fruitfly_README_claims.json"), "w"), indent=1, ensure_ascii=False)
     # ViZDoom 執行時自動產生的設定檔，第一行記著產生它的版本：PART 3 第 8 節的依據

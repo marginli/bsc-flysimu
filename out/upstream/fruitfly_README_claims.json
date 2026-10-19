@@ -6,6 +6,14 @@
    "text": "The same 3,963-neuron circuit also plays Doom (ViZDoom *defend_the_center*). With its real wiring it scores 10.2 kills per episode; with the wiring scrambled it scores 0.7."
   },
   {
+   "line": 21,
+   "text": "  ├─> AOTU019  (GABA, projects contralaterally, central field 0–40° / 抑制性，投射对侧，中央视野)"
+  },
+  {
+   "line": 22,
+   "text": "  └─> AOTU025  (acetylcholine, ipsilateral, periphery 40–90° / 兴奋性，投射同侧，外周视野)"
+  },
+  {
    "line": 31,
    "text": "| Subgraph / 子图 | 3,963 neurons, 354,879 connections (38% inhibitory). Paths with ≥ 5 synapses, ≤ 2 hops from LC10a and from 5 steering DNs (DNa01/02/03/04/11). |"
   },
@@ -76,6 +84,14 @@
   {
    "line": 68,
    "text": "| Random buttons / 随机按键 | 0.9 ± 0.3 | 0.002 |"
+  },
+  {
+   "line": 75,
+   "text": "- **Engineered**: target bearing comes from game object labels, not from compound-eye optics; LC10a visual position is a wiring-based proxy; the steer/fire readout reads AOTU019 because DNa02 has no baseline activity in the subgraph; thresholds are calibrated once."
+  },
+  {
+   "line": 77,
+   "text": "- Silencing both AOTU019 and AOTU025 drops kills to 0 partly because the fire readout uses AOTU019; the AOTU025-only lesion is the more informative result. n = 10 episodes per condition."
   },
   {
    "line": 83,

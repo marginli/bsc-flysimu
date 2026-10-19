@@ -167,6 +167,8 @@ def audit(path, hay, where=False):
     b = os.path.basename(path)
     src = io.open(path, encoding="utf-8").read()
     src = re.sub(r'<(script|style)\b.*?</\1>', ' ', src, flags=re.S)
+    # PART 6 的程式區塊（<pre class="code">）是原始碼的照抄，數字由 scripts/make_code.py --check 逐行對回原檔
+    src = re.sub(r'<pre class="code">.*?</pre>', ' ', src, flags=re.S)
     bad = 0
     print(f"══════ {b}")
 

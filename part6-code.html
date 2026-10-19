@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PART 6 讀程式：一鍵重跑到底跑了什麼｜果蠅玩 Doom</title>
+<link rel="stylesheet" href="assets/flysimu.css">
+</head>
+<body>
+<div class="crumb"><a href="https://marginli.github.io/bsc-topics/">BSC 專題課程</a> ／ <a href="index.html">果蠅玩 Doom</a> ／ PART 6</div>
+<header class="hero">
+  <p class="eyebrow">PART 6</p>
+  <h1>讀程式：一鍵重跑到底跑了什麼</h1>
+  <p class="subtitle">從 <code>run_all.sh</code> 那一支腳本開始，一層一層往下讀，讀到作者把神經元方程式寫成程式的那個檔案為止。不教 Python 語法；教的是每一段在做什麼、為什麼要有這一段</p>
+</header>
+
+<div class="wrap">
+
+  <div class="pager top">
+    <a href="part5-demo.html">← PART 5　逐格看迴路怎麼打</a>
+    <a href="index.html">回課程首頁</a>
+  </div>
+
+  <nav class="toc">
+    <h2>本頁章節</h2>
+    <ol>
+      <li><a href="#s1">怎麼讀這一頁：三層、標記、哪些檔案只放片段</a></li>
+      <li><a href="#s2">第一層：兩支 shell script</a></li>
+      <li><a href="#s3">第二層：我們自己寫的四支程式</a></li>
+      <li><a href="#s4">第二層：作者的四支程式</a></li>
+      <li><a href="#s5">第三層：lif.py，神經元方程式怎麼變成程式</a></li>
+      <li><a href="#s6">停在哪裡：第三方套件與 Shiu 的全腦模型</a></li>
+      <li><a href="#s7">總表：每個檔案誰叫它、它產生什麼</a></li>
+    </ol>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s1"><span class="pt">1</span>怎麼讀這一頁：三層、標記、哪些檔案只放片段</h2>
+
+  <p><a href="part2-setup.html">PART 2</a> 要你貼兩個指令：<code>bash setup_envs.sh</code> 建環境，<code>bash fruitfly_lab/run_all.sh</code> 一鍵重跑。這一頁回答一個問題：<b>那兩個指令按下去之後，電腦到底做了哪些事？</b>做法是順著「誰叫了誰」往下讀：</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>層</th><th>是什麼</th><th>檔案</th></tr>
+    <tr><td><span class="layer">第一層</span></td><td>你親手執行的兩支 shell script（shell script：一個文字檔，裡面是一行一行要在終端機裡執行的指令；終端機是什麼見 <a href="index.html">首頁</a>）</td><td><code>setup_envs.sh</code>、<code>run_all.sh</code></td></tr>
+    <tr><td><span class="layer">第二層</span></td><td><code>run_all.sh</code> 每一行叫到的 Python 程式。一半是本課自己寫的，一半是作者的</td><td>我們的：<code>check.py</code>、<code>ff1_compare_conn.py</code>、<code>ff_extra.py</code>、<code>e4_asymmetry.py</code>；作者的：<code>extract.py</code>、<code>validate.py</code>、<code>fly_doom.py</code>、<code>analyze.py</code></td></tr>
+    <tr><td><span class="layer">第三層</span></td><td>第二層的程式再往下引用的檔案。作者的程式只引用一個自己寫的檔案，就是神經元方程式</td><td><code>lif.py</code></td></tr>
+  </table>
+  </div>
+
+  <p>第三層再往下就是第三方套件（別人寫好、裝進來直接用的程式庫，例如 numpy、ViZDoom）與 Shiu 等人的全腦模型。這一頁追到作者自己的檔案為止；套件只在被叫到的那一行說明它做什麼、吃什麼、吐什麼（第 6 節）。</p>
+
+  <h3>先認識幾個詞</h3>
+
+  <p>下面每一段都會用到這些詞，先在這裡說一次，之後不再解釋。</p>
+
+  <ul>
+    <li><b>下載包</b>：本課給你的那個資料夾（<code>setup_envs.sh</code>、<code>check.py</code>、<code>fruitfly_lab/</code>，PART 2 第 1 節）；跑完之後它的 <code>fruitfly_lab/</code> 底下會多出 <code>repo/</code>（作者的程式）、<code>logs/</code>、<code>results/</code>。<b>out/</b>：本課自己實跑時收下來的結果，放在本課網站的程式倉庫裡，check.py 的標準答案 <code>expected.json</code> 就是從它抄的。</li>
+    <li><b>作者</b>：寫 fruitfly-lab 這個專案的人，本課重現的對象。<b>Shiu 等人</b>是另一組人，做的是<b>全腦模型</b>：把果蠅 138,639 顆神經元全部用同一套方程式模擬的程式，用一個叫 <b>Brian2</b> 的模擬套件寫成，本頁說「Brian2 環境」就是裝了它的那個環境；作者借用它的方程式與連線表，也用它做驗證（首頁〈出處〉）。</li>
+    <li><b>repo</b>：放在 GitHub 上的一個程式資料夾；<b>clone</b>：把整個資料夾複製到自己電腦；<b>commit</b>：資料夾在某個時間點的快照（首頁〈出處〉）。</li>
+    <li><b>環境</b>：一套自成一格的 Python 加套件，彼此不影響；<b>conda</b> 是建環境的工具，<b>pip</b> 是往環境裡裝套件的工具。不同版本的套件裝在同一個環境會互相覆蓋，所以要三個環境（PART 2 第 4 節）。</li>
+    <li><b>路徑</b>：檔案在電腦裡的位址，像地址。三個環境各有自己的一個 Python 程式，所以腳本裡會看到三個不同路徑的 Python。<b>相對路徑</b>：從目前所在資料夾起算的位址。</li>
+    <li><b>FF1–FF6</b>：PART 3 重現作者結果的六個步驟；<b>E1–E4</b>：PART 4 本課自己加做的四項檢查。代號都是本課編的。</li>
+    <li><b>連結體</b>與<b>連線表</b>：FlyWire 是公開的果蠅全腦接線資料庫，連線表是從它整理出來的一張表，每一列是「哪一顆神經元連到哪一顆、有幾個突觸（兩顆神經元之間傳訊號的接點）」；突觸數帶正負號，正是興奮、負是抑制。<b>子圖</b>：從全腦裡只切出和「看到敵人、轉向」有關的 3,963 顆神經元（PART 1 第 3 節）。</li>
+    <li><b>迴路裡的四種神經元</b>：<b>LC10a</b> 是眼睛那一端收視覺訊號的神經元，分左右眼；<b>AOTU019</b> 與 <b>AOTU025</b> 是中間一層，前者對視野中央反應、後者對外圍反應；<b>DNa02</b> 是把轉向指令往身體送的下行神經元。訊號從 LC10a 往 DNa02 傳，送訊號給某顆神經元的叫它的<b>上游</b>，收它訊號的叫<b>下游</b>（PART 1 第 3 節）。</li>
+    <li><b>放電率</b>：神經元靠一次次短促的電訊號傳訊，放電率是每秒幾次，單位 Hz。<b>讀出</b>：把幾顆神經元的放電率翻成按鍵的規則（PART 1 第 4 節）。<b>校準</b>：玩遊戲之前，先讓模擬的大腦看固定方位的假想敵人、量它的反應，定出「訊號多大才按轉向、多大才按開火」的兩個門檻，叫<b>閾值</b>。</li>
+    <li><b>局</b>：遊戲玩一次，玩家死掉就結束；<b>格</b>：遊戲前進的最小單位，每秒 35 格。<b>ViZDoom</b>：讓程式自己操作 Doom 這個遊戲的套件，也就是遊戲引擎。</li>
+    <li><b>種子</b>：程式裡的「隨機」其實是從一個起始數字算出來的一串數，那個起始數字叫種子；同一個種子每次得到同一串，所以結果可以逐位相同。沒有固定種子的步驟（FF3 的全腦模型）每次重跑都會差一點，只能要求在誤差範圍內。</li>
+    <li><b>七個條件</b>：七種大腦各玩 10 局；程式裡叫 policy，一個 policy 就是一種大腦加一套讀出規則。<code>fly</code> 完整接線；<code>scrambled</code> 打亂接線、沿用完整接線的閾值；<code>scrambled_cal</code> 打亂接線、用自己校準的閾值；<code>lesion</code> 損毀 AOTU019 與 AOTU025；<code>lesion025</code> 只損毀 AOTU025；<code>random</code> 不用大腦、每格亂按；<code>oracle</code> 不用大腦、直接照遊戲回報的敵人方位轉向開火（PART 1 第 5 節）。</li>
+    <li><b>寫死</b>：直接把值寫在程式裡，不能從外面改。<b>匯入</b>（import）：把另一支程式裡寫好的東西接進來，在這支裡直接用。</li>
+  </ul>
+
+  <h3>程式區塊怎麼看</h3>
+
+  <p>每一段程式都照同一個格式：先用一段話說<b>這段在做什麼、為什麼要有這一段</b>，然後放程式，程式下面逐行解釋。程式區塊左邊的數字是<b>原檔的行號</b>，和你下載下來的檔案完全一致；底色標出的行是接下來要講的行；行號旁的 ①②③ 是解釋裡用的標記。下面拿 <code>run_all.sh</code> 的三行當例子：</p>
+
+<!-- code: run_all.sh 8-10 hl=8,9 lab=8:①,9:② -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln">  8</span><span class="mk">①</span>B=$ENVS/ffl_brian/bin/python      <span class="cm"># Brian2 全腦模型、抽子圖</span></span><span class="hl"><span class="ln">  9</span><span class="mk">②</span>D=$ENVS/ffl_doom130/bin/python    <span class="cm"># ViZDoom 1.3.0：與作者逐局相同</span></span><span class="ln"> 10</span><span class="mk"> </span>D2=$ENVS/ffl_doom/bin/python      <span class="cm"># ViZDoom 1.3.2：版本對照</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/run_all.sh</code> 第 8–10 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>第 8 行把一個很長的路徑（Brian2 那個環境的 Python 程式在哪裡）存進一個叫 <code>B</code> 的名字裡，之後要用那個環境的 Python 時只要寫 <code>$B</code>。這種「給一個東西取名字、之後用名字代替它」叫<b>變數</b>，程式裡到處都是。</li>
+    <li><b class="l">②</b>第 9 行同樣的事，取名 <code>D</code>。<code>#</code> 後面灰色的字是<b>註解</b>：寫給人看的說明，電腦跳過不執行。</li>
+  </ul>
+
+  <h3>哪些檔案全文放，哪些只放片段</h3>
+
+  <p>本課自己寫的六個檔案在<a href="downloads/flydoom-code.zip">下載包</a>裡，這一頁只放講到的段落，沒講到的行跳過（行號照原檔，缺的行可以對照下載包）。作者 fruitfly-lab 的五個檔案，repo 沒有附授權檔（授權是什麼，見<a href="index.html">首頁</a>〈出處〉），本課的規矩是不轉發它的任何檔案，所以這一頁只引講到的那幾行、標明 commit 與行號，請對照你自己 clone 下來的檔案讀（<code>run_all.sh</code> 第一次跑就會幫你 clone，在 <code>fruitfly_lab/repo/</code> 底下）。</p>
+
+  <div class="filecard">
+    <div class="f"><span class="nm">setup_envs.sh</span><span class="role">第一層　我們的　13 行</span><p>建三個 conda 環境</p></div>
+    <div class="f"><span class="nm">run_all.sh</span><span class="role">第一層　我們的　34 行</span><p>一鍵重跑：取得程式與資料、FF1–FF6、1.3.2 對照、E1–E4、驗收</p></div>
+    <div class="f"><span class="nm">check.py</span><span class="role">第二層　我們的　63 行</span><p>驗收：把你的結果和本課實跑的結果逐項比對</p></div>
+    <div class="f"><span class="nm">ff1_compare_conn.py</span><span class="role">第二層　我們的　27 行</span><p>FF1：數連線表的三個總數</p></div>
+    <div class="f"><span class="nm">ff_extra.py</span><span class="role">第二層　我們的　144 行</span><p>E1–E3：50 局、各自校準、只讀 DNa02</p></div>
+    <div class="f"><span class="nm">e4_asymmetry.py</span><span class="role">第二層　我們的　142 行</span><p>E4：右眼子圖為什麼反應偏弱</p></div>
+    <div class="f"><span class="nm">extract.py</span><span class="role">第二層　作者的　118 行</span><p>FF2：從全腦切出子圖</p></div>
+    <div class="f"><span class="nm">validate.py</span><span class="role">第二層　作者的　72 行</span><p>FF3：子圖、打亂接線、全腦各刺激一次</p></div>
+    <div class="f"><span class="nm">fly_doom.py</span><span class="role">第二層　作者的　266 行</span><p>FF4、FF5：校準、玩遊戲</p></div>
+    <div class="f"><span class="nm">analyze.py</span><span class="role">第二層　作者的　78 行</span><p>FF6：七個條件的統計與 p 值</p></div>
+    <div class="f"><span class="nm">lif.py</span><span class="role">第三層　作者的　139 行</span><p>神經元方程式、載入子圖、打亂接線</p></div>
+  </div>
+  <p class="figsrc">行數由 <code>scripts/make_code.py</code> 數出，記在 <code>out/code_meta.json</code>；我們的六個檔案合計 423 行，作者的五個合計 673 行。本頁每一個程式區塊都由同一支程式從原檔照抄，<code>make_code.py --check</code> 會逐塊確認和原檔一致。</p>
+
+  <div class="callout">
+    <b>不會 Python 也讀得下去。</b>會用到的語法只有幾種：變數（給東西取名）、函式（把幾行打包、取名、之後可以重複叫）、迴圈（同一段程式對一串東西各做一次）、條件（如果…就…）、串列與字典（一串值；一組「名字→值」）。每一種第一次出現時就地解釋，之後不再解釋。
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s2"><span class="pt">2</span>第一層：兩支 shell script</h2>
+
+  <h3>setup_envs.sh：建三個互不干擾的環境</h3>
+
+  <p><b>這支在做什麼。</b>PART 2 第 4 節說過為什麼要三個環境：Brian2 全腦模型、ViZDoom 1.3.0、ViZDoom 1.3.2 各要一組不同版本的套件，裝在一起會互相衝突。這支腳本把三個環境各建一次，套件版本寫死成本課實跑時的版本。</p>
+
+<!-- code: setup_envs.sh 1-6 hl=4,5,6 lab=4:①,5:②,6:③ -->
+<figure class="code"><pre class="code"><span class="ln">  1</span><span class="mk"> </span><span class="cm">#!/usr/bin/env bash</span>
+<span class="ln">  2</span><span class="mk"> </span><span class="cm"># 建立重現 fruitfly-lab 需要的三個 conda 環境（只需做一次，需要網路）。用法：bash setup_envs.sh</span>
+<span class="ln">  3</span><span class="mk"> </span><span class="cm"># 版本照本課實跑時的環境固定；ViZDoom 1.3.0 是 fruitfly-lab 作者用的版本，換版本遊戲隨機抽樣會不同。</span>
+<span class="hl"><span class="ln">  4</span><span class="mk">①</span>set -e</span><span class="hl"><span class="ln">  5</span><span class="mk">②</span>CONDA_BASE=&quot;$(conda info --base)&quot;</span><span class="hl"><span class="ln">  6</span><span class="mk">③</span>export PYTHONNOUSERSITE=1        <span class="cm"># 不讓使用者家目錄 ~/.local 裡的套件混進環境</span></span></pre><figcaption class="figsrc">下載包的 <code>setup_envs.sh</code> 第 1–6 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b><code>set -e</code>：之後任何一行失敗，整支腳本立刻停。沒有這一行，建環境失敗了腳本還會繼續往下裝套件，錯誤會被埋掉。</li>
+    <li><b class="l">②</b>問 conda 它裝在哪裡，存進變數 <code>CONDA_BASE</code>。不寫死路徑，換一台電腦也能跑（PART 2 第 5 節的可攜測試就是在驗這件事）。</li>
+    <li><b class="l">③</b><code>PYTHONNOUSERSITE=1</code>：叫 Python 不要去家目錄的 <code>~/.local</code> 找套件。PART 2 第 6 節那個「悄悄改變結果的陷阱」就是靠這一行擋掉的：家目錄裡若另外裝過同名但不同版本的套件，Python 會先拿它，結果就不同，而且不會有任何警告。<code>export</code> 的意思是這個設定連同之後叫出來的每一個程式都生效。</li>
+  </ul>
+
+<!-- code: setup_envs.sh 7-9 hl=8,9 lab=8:①,9:② -->
+<figure class="code"><pre class="code"><span class="ln">  7</span><span class="mk"> </span><span class="cm"># conda 預設的 libmamba 求解器在某些安裝裡會壞掉（錯誤訊息含 libmambapy），失敗時改用 classic 求解器再試一次</span>
+<span class="hl"><span class="ln">  8</span><span class="mk">①</span>mk() { conda env list | grep -q &quot;^$1 &quot; || conda create -y -q -n &quot;$1&quot; &quot;python=$2&quot; || conda create -y -q --solver classic -n &quot;$1&quot; &quot;python=$2&quot;</span><span class="hl"><span class="ln">  9</span><span class="mk">②</span>       &quot;$CONDA_BASE/envs/$1/bin/pip&quot; install -q &quot;${@:3}&quot;; }</span></pre><figcaption class="figsrc">下載包的 <code>setup_envs.sh</code> 第 7–9 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>這兩行定義一個叫 <code>mk</code> 的<b>函式</b>：把「建一個環境」這件事打包，下面三個環境各叫一次就好。<code>$1</code>、<code>$2</code> 是叫它時給的第一、第二個值（環境名、Python 版本）。三個用 <code>||</code> 接起來的指令讀成「或者」：先看環境在不在（<code>conda env list | grep</code>），在就什麼都不做；不在就 <code>conda create</code>；連 create 都失敗，就加 <code>--solver classic</code> 再試一次。最後那個備案是可攜測試時撞到的：conda 預設的求解器在某些安裝裡會壞掉（PART 2 第 5 節）。</li>
+    <li><b class="l">②</b>環境建好後，用那個環境自己的 pip 裝套件。<code>${@:3}</code> 是「第三個以後的所有值」，也就是下面每一行列的套件清單。</li>
+  </ul>
+
+<!-- code: setup_envs.sh 10-13 hl=10,13 lab=10:①,13:② -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 10</span><span class="mk">①</span>mk ffl_brian   3.11 Brian2==2.9.0 numpy==1.26.4 pandas==2.3.3 pyarrow==17.0.0 joblib numba==0.68.0</span><span class="ln"> 11</span><span class="mk"> </span>mk ffl_doom130 3.12 vizdoom==1.3.0 numpy==2.5.4 pandas==3.0.6 pyarrow==26.0.0 numba==0.68.0 pillow
+<span class="ln"> 12</span><span class="mk"> </span>mk ffl_doom    3.12 vizdoom==1.3.2 numpy==2.5.4 pandas==3.0.6 pyarrow==26.0.0 numba==0.68.0 pillow
+<span class="hl"><span class="ln"> 13</span><span class="mk">②</span>for e in ffl_brian ffl_doom130 ffl_doom; do &quot;$CONDA_BASE/envs/$e/bin/python&quot; -c &quot;import sys; print(&#x27;$e&#x27;, sys.version.split()[0], &#x27;OK&#x27;)&quot;; done</span></pre><figcaption class="figsrc">下載包的 <code>setup_envs.sh</code> 第 10–13 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>叫三次 <code>mk</code>。每個套件後面的 <code>==</code> 是版本號，寫死的理由在 PART 2 第 4 節：換一個小版號，結果就對不上。第 10 行是 Brian2 那個環境（跑 FF3 的全腦模型與 FF2 的切子圖），第 11 行是和作者同版的 ViZDoom 1.3.0，第 12 行是對照用的 1.3.2。</li>
+    <li><b class="l">②</b>收尾：三個環境各印一次自己的 Python 版本和 OK，確認都能啟動。</li>
+  </ul>
+
+  <h3>run_all.sh：一鍵重跑</h3>
+
+  <p><b>這支在做什麼。</b>它就是 <a href="part3-fruitfly.html">PART 3</a> 的 FF1–FF6 與 <a href="part4-checks.html">PART 4</a> 的 E1–E4 排成一列。讀它的重點不是指令本身，而是<b>每一步用哪個環境、輸出寫到哪裡</b>；第二層要讀的程式，就是這支腳本一行一行叫出來的。</p>
+
+<!-- code: run_all.sh 1-12 hl=6,7,11,12 lab=6:①,7:②,11:③,12:④ -->
+<figure class="code"><pre class="code"><span class="ln">  1</span><span class="mk"> </span><span class="cm">#!/usr/bin/env bash</span>
+<span class="ln">  2</span><span class="mk"> </span><span class="cm"># fruitfly-lab 一鍵重跑：FF1–FF6 ＋ ViZDoom 1.3.2 對照 ＋ 加做檢查 E1–E4。用法：bash run_all.sh（本課實測時間見 PART 2）</span>
+<span class="ln">  3</span><span class="mk"> </span><span class="cm"># 需要先跑過上一層的 setup_envs.sh。下載約 400 MB（Shiu 全腦模型 repo ＋ FlyWire 註解檔）。</span>
+<span class="ln">  4</span><span class="mk"> </span><span class="cm"># 若另外下載了 FlyWire 的 proofread_connections_783.feather，可設 FLYWIRE_FEATHER=&lt;路徑&gt; 讓 FF1 逐條比對。</span>
+<span class="ln">  5</span><span class="mk"> </span>set -e
+<span class="hl"><span class="ln">  6</span><span class="mk">①</span>HERE=&quot;$(cd &quot;$(dirname &quot;$0&quot;)&quot; &amp;&amp; pwd)&quot;</span><span class="hl"><span class="ln">  7</span><span class="mk">②</span>ENVS=&quot;$(conda info --base)/envs&quot;</span><span class="ln">  8</span><span class="mk"> </span>B=$ENVS/ffl_brian/bin/python      <span class="cm"># Brian2 全腦模型、抽子圖</span>
+<span class="ln">  9</span><span class="mk"> </span>D=$ENVS/ffl_doom130/bin/python    <span class="cm"># ViZDoom 1.3.0：與作者逐局相同</span>
+<span class="ln"> 10</span><span class="mk"> </span>D2=$ENVS/ffl_doom/bin/python      <span class="cm"># ViZDoom 1.3.2：版本對照</span>
+<span class="hl"><span class="ln"> 11</span><span class="mk">③</span>export PYTHONNOUSERSITE=1</span><span class="hl"><span class="ln"> 12</span><span class="mk">④</span>cd &quot;$HERE&quot;</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/run_all.sh</code> 第 1–12 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>算出這支腳本自己所在的資料夾，存進 <code>HERE</code>。這樣不管你在哪個資料夾打 <code>bash .../run_all.sh</code>，它都知道 <code>ext/</code>（本課自己寫的程式）、<code>logs/</code>（每一步印出的文字）、<code>results/</code>（算出來的結果檔）在哪。</li>
+    <li><b class="l">②</b>和 setup_envs.sh 一樣問 conda 裝在哪，接著第 8–10 行把三個環境的 Python 各取一個短名字：<code>$B</code>（Brian2）、<code>$D</code>（1.3.0）、<code>$D2</code>（1.3.2）。下面每一行前面的 <code>$B</code>、<code>$D</code> 就是在選環境。</li>
+    <li><b class="l">③</b>同一個擋家目錄套件的設定。</li>
+    <li><b class="l">④</b>先進到腳本自己的資料夾，之後的相對路徑都以它為準。</li>
+  </ul>
+
+<!-- code: run_all.sh 13-19 hl=13,14,15,18,19 lab=13:①,14:②,15:③,18:④,19:⑤ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 13</span><span class="mk">①</span>[ -d repo ] || git clone -q https://github.com/webergithub/fruitfly-lab.git repo</span><span class="hl"><span class="ln"> 14</span><span class="mk">②</span>git -C repo checkout -q 8c27fe8e70903e09b1d87bae6989051d09161e92</span><span class="hl"><span class="ln"> 15</span><span class="mk">③</span>[ -d repo/Drosophila_brain_model ] || git clone -q --depth 1 https://github.com/philshiu/Drosophila_brain_model.git repo/Drosophila_brain_model</span><span class="ln"> 16</span><span class="mk"> </span>mkdir -p logs results repo/data
+<span class="ln"> 17</span><span class="mk"> </span>cd repo
+<span class="hl"><span class="ln"> 18</span><span class="mk">④</span>mkdir -p ../results/author_doom &amp;&amp; cp doom/results/*.json ../results/author_doom/ &amp;&amp; cp output/validation.json ../results/validation_author.json   <span class="cm"># 作者附的結果，留作對照</span></span><span class="hl"><span class="ln"> 19</span><span class="mk">⑤</span>[ -f data/flywire_annotations_783.tsv ] || curl -sL -o data/flywire_annotations_783.tsv https://raw.githubusercontent.com/flyconnectome/flywire_annotations/main/supplemental_files/Supplemental_file1_neuron_annotations.tsv</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/run_all.sh</code> 第 13–19 行</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>把作者的程式、Shiu 的全腦模型、FlyWire 的註解檔三樣東西拿到手。下載包不附作者的程式（授權的事見第 1 節），所以是你的電腦自己去 GitHub 取。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b><code>[ -d repo ] ||</code> 讀成「如果 <code>repo</code> 這個資料夾還不存在，就」<code>git clone</code>：把 fruitfly-lab 整個 repo 複製下來，放進 <code>repo/</code>。第二次跑就跳過。</li>
+    <li><b class="l">②</b>切到固定的 commit <code>8c27fe8</code>（首頁〈出處〉解釋過 commit 是什麼）。沒有這一行，作者之後改了程式，你跑到的就不是本課重現的那一版。</li>
+    <li><b class="l">③</b>同樣的辦法取 Shiu 等人的全腦模型，<code>--depth 1</code> 只拿最新版、不拿歷史，省下載量。放在 <code>repo/Drosophila_brain_model/</code>，因為作者的程式寫死去那裡找它。</li>
+    <li><b class="l">④</b>作者自己附在 repo 裡的結果（十局的 JSON 檔與 validation.json；JSON 是一種用大括號和冒號寫資料的文字格式，本課 <code>out/</code> 裡的數字檔都是它）先複製到 <code>results/author_doom/</code> 留作對照。等一下作者的程式會把自己的輸出寫進同樣的位置，不先存一份，作者的數字就被蓋掉了。</li>
+    <li><b class="l">⑤</b>用 <code>curl</code> 下載 FlyWire 的神經元註解表（每顆神經元叫什麼型、在左半腦還是右半腦；連線表只有編號，名字要靠這張表）。作者的 extract.py 第 25 行要讀它，但 repo 裡沒附。</li>
+  </ul>
+
+<!-- code: run_all.sh 20-23 hl=20,21,22,23 lab=20:①,21:②,22:③,23:④ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 20</span><span class="mk">①</span>echo &quot;FF1 資料核對&quot;;      $B ../ext/ff1_compare_conn.py Drosophila_brain_model/Connectivity_783.parquet $FLYWIRE_FEATHER &gt; ../results/ff1_conn.json 2&gt; ../logs/ff1_conn.log</span><span class="hl"><span class="ln"> 21</span><span class="mk">②</span>echo &quot;FF2 抽子圖&quot;;        md5sum circuit/* &gt; ../logs/ff2_md5_committed.txt; $B flycircuit/extract.py &gt; ../logs/ff2_extract.log 2&gt;&amp;1; md5sum circuit/* &gt; ../logs/ff2_md5_rerun.txt</span><span class="hl"><span class="ln"> 22</span><span class="mk">③</span>echo &quot;FF3 子圖 vs 全腦（約 6 分鐘，會用滿 CPU）&quot;; $B flycircuit/validate.py &gt; ../logs/ff3_validate.log 2&gt;&amp;1; cp output/validation.json ../results/validation_local.json</span><span class="hl"><span class="ln"> 23</span><span class="mk">④</span>echo &quot;FF4 校準&quot;;          $D doom/fly_doom.py --calibrate &gt; ../logs/ff4_calibrate.log 2&gt;&amp;1</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/run_all.sh</code> 第 20–23 行</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>FF1 到 FF4，每一行一步。格式都一樣：<code>echo</code> 印出步驟名，然後用某個環境的 Python 跑一支程式，<code>&gt;</code> 把它印出來的東西存進 <code>logs/</code> 的一個檔案（<code>2&gt;&amp;1</code> 是把錯誤訊息也存進同一個檔）。PART 3 的終端機節錄就是這些 log 檔的原文。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b>FF1：用 Brian2 環境跑我們的 <code>ff1_compare_conn.py</code>，讀 Shiu 附的連線表，印三個總數成 JSON。最後那個 <code>$FLYWIRE_FEATHER</code> 平常是空的；設了才會做逐條比對（第 3 節）。</li>
+    <li><b class="l">②</b>FF2：先把作者附的子圖檔算一次 md5（檔案指紋，PART 3 第 4 節），跑作者的 <code>extract.py</code> 重切一次，再算一次 md5。兩份指紋檔之後由 check.py 比對，目的是確認你電腦上重切出來的子圖檔和作者附的一個位元都不差。</li>
+    <li><b class="l">③</b>FF3：跑作者的 <code>validate.py</code>。它會啟動 Shiu 的全腦模型，所以用 Brian2 環境，也是整支腳本最花時間的一步。跑完把輸出複製成 <code>validation_local.json</code>，和第 18 行存下來的作者版本並排。</li>
+    <li><b class="l">④</b>FF4：用 1.3.0 環境跑作者的 <code>fly_doom.py --calibrate</code>，量 17 個方位的反應、算出轉向與開火的兩個閾值（PART 1 第 4 節）。<code>--calibrate</code> 一次做兩種大腦：完整接線，與第 100 號打亂的接線（打亂的方式由一個種子決定，100 就是那個種子，見第 5 節），寫成兩個校準檔。校準只讓大腦看假想敵人、不經過遊戲，所以和 ViZDoom 的版本無關，只做這一次，之後固定不變。</li>
+  </ul>
+
+<!-- code: run_all.sh 24-30 hl=24,25,27,28,29 lab=24:①,25:②,27:③,28:④,29:⑤ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 24</span><span class="mk">①</span>for v in 132 130; do       <span class="cm"># 先跑 1.3.2 對照、最後跑 1.3.0，讓 doom/results/ 停在與作者相同的版本</span></span><span class="hl"><span class="ln"> 25</span><span class="mk">②</span>  P=$([ $v = 130 ] &amp;&amp; echo $D || echo $D2)</span><span class="ln"> 26</span><span class="mk"> </span>  echo &quot;FF5 七個條件 × 10 局（ViZDoom 1.3.${v#13}）&quot;
+<span class="hl"><span class="ln"> 27</span><span class="mk">③</span>  for p in fly scrambled scrambled_cal lesion lesion025 random oracle; do $P doom/fly_doom.py --policy $p --episodes 10 &gt; ../logs/ff5_${p}_v$v.log 2&gt;&amp;1; done</span><span class="hl"><span class="ln"> 28</span><span class="mk">④</span>  echo &quot;FF6 統計&quot;;        $P doom/analyze.py &gt; ../logs/ff6_analyze_v$v.log 2&gt;&amp;1</span><span class="hl"><span class="ln"> 29</span><span class="mk">⑤</span>  mkdir -p ../results/local_doom_vizdoom$v &amp;&amp; cp doom/results/*.json ../results/local_doom_vizdoom$v/</span><span class="ln"> 30</span><span class="mk"> </span>done</pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/run_all.sh</code> 第 24–30 行</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>FF5 與 FF6 要跑兩次：一次用 ViZDoom 1.3.2 當對照（PART 3 第 8 節），一次用作者的 1.3.0。所以用一個<b>迴圈</b>：同一段程式對 132、130 兩個值各跑一遍。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b><code>for v in 132 130; do … done</code>：<code>v</code> 先是 132、再是 130，中間的幾行各做一次。先 1.3.2 後 1.3.0 是故意的：作者的程式把七個條件的 JSON 寫在 <code>repo/doom/results/</code>，最後跑的版本會留在那裡，讓它停在和作者相同的 1.3.0。不過第 29 行已經把兩版各複製一份，第 33 行又會把這個資料夾還原，所以順序只是保險，沒有功能上的差別；校準檔只有一份、不受版本影響。</li>
+    <li><b class="l">②</b>依 <code>v</code> 選環境：130 用 <code>$D</code>，否則用 <code>$D2</code>。</li>
+    <li><b class="l">③</b>裡面再一個迴圈，七個條件各跑 10 局，就是 PART 3 第 7 節那張表的每一列。每個條件一個 log。</li>
+    <li><b class="l">④</b>FF6：跑作者的 <code>analyze.py</code>，把七個條件的 JSON 算成平均、信賴區間與 p 值。</li>
+    <li><b class="l">⑤</b>把這一版的全部 JSON 複製到 <code>results/local_doom_vizdoom132/</code> 或 <code>…130/</code>，兩版才不會互相覆蓋。本課 <code>out/fruitfly/</code> 底下同名的兩個資料夾就是從這裡收來的。</li>
+  </ul>
+
+<!-- code: run_all.sh 31-34 hl=31,32,33,34 lab=31:①,32:②,33:③,34:④ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 31</span><span class="mk">①</span>echo &quot;E1–E3 加做檢查（ViZDoom 1.3.0 ＋ 1.3.2）&quot;; $D ../ext/ff_extra.py E1 E2 E3 &gt; ../logs/ext_vizdoom130.log 2&gt;&amp;1; $D2 ../ext/ff_extra.py E1 &gt; ../logs/ext_vizdoom132.log 2&gt;&amp;1</span><span class="hl"><span class="ln"> 32</span><span class="mk">②</span>echo &quot;E4 右側不對稱&quot;;     $B ../ext/e4_asymmetry.py &gt; ../logs/e4_asymmetry.log 2&gt;&amp;1</span><span class="hl"><span class="ln"> 33</span><span class="mk">③</span>git checkout -q _vizdoom.ini doom/results output 2&gt;/dev/null || true   <span class="cm"># 還原作者附的檔案；本機結果都在 ../results/</span></span><span class="hl"><span class="ln"> 34</span><span class="mk">④</span>cd &quot;$HERE&quot;; &quot;$D&quot; ../check.py fruitfly</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/run_all.sh</code> 第 31–34 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>E1–E3：我們的 <code>ff_extra.py</code>，1.3.0 環境跑 E1、E2、E3 三項，1.3.2 環境只跑 E1（PART 4 第 2 節的兩版對照）。</li>
+    <li><b class="l">②</b>E4：我們的 <code>e4_asymmetry.py</code>，要讀 FF3 全腦模型留下的放電紀錄，所以用 Brian2 環境。</li>
+    <li><b class="l">③</b>把作者 repo 裡被我們的跑動改掉的檔案還原（ViZDoom 自動產生的設定檔、作者附的結果）。本機的結果都已經在 <code>results/</code>，repo 回到乾淨狀態。<code>|| true</code> 讓這一行就算失敗也不要觸發第 5 行的 <code>set -e</code>。</li>
+    <li><b class="l">④</b>回到腳本所在資料夾，跑我們的 <code>check.py</code> 驗收。PART 2 第 7 節那份 ✓／✗／△ 的清單就是它印的。</li>
+  </ul>
+
+  <div class="note">
+    <b>讀到這裡你已經有第二層的目錄。</b>run_all.sh 總共叫了八支 Python 程式：我們的 <code>ff1_compare_conn.py</code>、<code>ff_extra.py</code>、<code>e4_asymmetry.py</code>、<code>check.py</code>，作者的 <code>extract.py</code>、<code>validate.py</code>、<code>fly_doom.py</code>、<code>analyze.py</code>。下面兩節照這個順序讀。
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s3"><span class="pt">3</span>第二層：我們自己寫的四支程式</h2>
+
+  <p>這四支都在下載包裡，講到的段落照原檔放。它們的共同原則寫在 PART 4 第 1 節：<b>只匯入作者的程式，不修改它</b>（匯入的意思見第 1 節的詞表）；結果另外存，不蓋掉重現的輸出。</p>
+
+  <h3>check.py：驗收</h3>
+
+  <p><b>這支在做什麼。</b>run_all.sh 跑完的最後一步。它讀 <code>expected.json</code>（本課實跑的結果，每一項寫著「去哪個檔、取哪個值、用哪種標準比」），逐項去你的 <code>results/</code> 與 <code>logs/</code> 取值，比對後印 ✓、✗ 或 △。PART 3 第 1 節講的三種判定標準，在這裡變成五種程式判法。</p>
+
+<!-- code: check.py 1-10 hl=5,6,7,9,10 lab=5:①,9:②,10:③ -->
+<figure class="code"><pre class="code"><span class="ln">  1</span><span class="mk"> </span>&quot;&quot;&quot;驗收：把 run_all.sh 跑出來的數字跟 expected.json（本課實跑的結果）逐項比對。
+<span class="ln">  2</span><span class="mk"> </span>用法：python check.py fruitfly   （在 pack 根目錄或子資料夾都可以）
+<span class="ln">  3</span><span class="mk"> </span>判定有五種：exact（逐位相同）、rel（相對誤差在容許範圍內，用在沒有固定亂數種子的全腦模型）、
+<span class="ln">  4</span><span class="mk"> </span>same（兩個檔案內容相同）、contains（終端輸出裡出現預期的那幾行）、md5_twice（同一支程式跑兩次的 md5 相同且等於預期）。&quot;&quot;&quot;
+<span class="hl"><span class="ln">  5</span><span class="mk">①</span>import json</span><span class="hl"><span class="ln">  6</span><span class="mk"> </span>import os</span><span class="hl"><span class="ln">  7</span><span class="mk"> </span>import sys</span><span class="ln">  8</span><span class="mk"> </span>
+<span class="hl"><span class="ln">  9</span><span class="mk">②</span>ROOT = os.path.dirname(os.path.abspath(__file__))</span><span class="hl"><span class="ln"> 10</span><span class="mk">③</span>SUB = {&quot;fruitfly&quot;: &quot;fruitfly_lab&quot;}</span></pre><figcaption class="figsrc">下載包的 <code>check.py</code> 第 1–10 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>開頭三個 <code>import</code>：把 Python 內建的三個套件接進來用。<code>json</code> 讀寫 JSON 檔（一種用大括號和冒號寫資料的文字格式，本課 <code>out/</code> 裡的數字檔都是它），<code>os</code> 處理路徑，<code>sys</code> 讀指令列給的參數。第 1–4 行三個引號夾的是這支程式的說明文字，和註解一樣不執行。</li>
+    <li><b class="l">②</b><code>ROOT</code>：這支程式自己所在的資料夾，和 run_all.sh 的 <code>HERE</code> 同一個想法。</li>
+    <li><b class="l">③</b>一個<b>字典</b>：名字對到值。這裡只有一組，<code>"fruitfly"</code> 對到子資料夾名 <code>"fruitfly_lab"</code>。以前這支程式同時驗兩個專案，字典是那時留下的形狀，本課只用一組。</li>
+  </ul>
+
+<!-- code: check.py 13-22 hl=13,14,15,16,17,18,19,20,21 lab=13:①,14:②,16:③,18:④,20:⑤ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 13</span><span class="mk">①</span>def get(path, keys, pluck=None, mean=False):</span><span class="hl"><span class="ln"> 14</span><span class="mk">②</span>    with open(path) as f:</span><span class="hl"><span class="ln"> 15</span><span class="mk"> </span>        d = json.load(f) if path.endswith(&quot;.json&quot;) else f.read()</span><span class="hl"><span class="ln"> 16</span><span class="mk">③</span>    for k in keys:</span><span class="hl"><span class="ln"> 17</span><span class="mk"> </span>        d = d[k]</span><span class="hl"><span class="ln"> 18</span><span class="mk">④</span>    if pluck:                      <span class="cm"># 一串 dict 裡取同一個欄位，例如每一局的 kills</span></span><span class="hl"><span class="ln"> 19</span><span class="mk"> </span>        d = [x[pluck] for x in d]</span><span class="hl"><span class="ln"> 20</span><span class="mk">⑤</span>    if mean:</span><span class="hl"><span class="ln"> 21</span><span class="mk"> </span>        d = round(sum(d) / len(d), 6)</span><span class="ln"> 22</span><span class="mk"> </span>    return d</pre><figcaption class="figsrc">下載包的 <code>check.py</code> 第 13–22 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b><code>def get(…)</code>：定義一個函式，叫 <code>get</code>，工作是「打開一個檔，沿著一串鍵走進去，取出一個值」。括號裡是它收的四樣東西：檔案路徑、鍵的串列、可選的 <code>pluck</code> 與 <code>mean</code>。</li>
+    <li><b class="l">②</b>打開檔案。檔名以 <code>.json</code> 結尾就當 JSON 解析，否則整個當文字讀進來（log 檔走這條）。</li>
+    <li><b class="l">③</b><code>for k in keys</code>：對鍵的串列裡每一個鍵做一次 <code>d = d[k]</code>，也就是一層一層往裡面走。例如 expected.json 寫 <code>["summary", "kills"]</code>，就是先進 <code>summary</code> 再取 <code>kills</code>。</li>
+    <li><b class="l">④</b><code>pluck</code>：遇到「一串局」這種東西時，從每一局裡取同一個欄位，例如每一局的 <code>kills</code>，變成一串數字。</li>
+    <li><b class="l">⑤</b><code>mean</code>：把那串數字取平均。E1 的 50 局平均就是這樣算出來比對的。</li>
+  </ul>
+
+<!-- code: check.py 25-31 hl=26,27,29,31 lab=26:①,27:②,29:③,31:④ -->
+<figure class="code"><pre class="code"><span class="ln"> 25</span><span class="mk"> </span>def main(which):
+<span class="hl"><span class="ln"> 26</span><span class="mk">①</span>    exp = json.load(open(os.path.join(ROOT, &quot;expected.json&quot;)))[which]</span><span class="hl"><span class="ln"> 27</span><span class="mk">②</span>    base = os.path.join(ROOT, SUB[which])</span><span class="ln"> 28</span><span class="mk"> </span>    ok = bad = known = 0
+<span class="hl"><span class="ln"> 29</span><span class="mk">③</span>    for c in exp:</span><span class="ln"> 30</span><span class="mk"> </span>        try:
+<span class="hl"><span class="ln"> 31</span><span class="mk">④</span>            got = get(os.path.join(base, c[&quot;file&quot;]), c.get(&quot;keys&quot;, []), c.get(&quot;pluck&quot;), c.get(&quot;mean&quot;, False))</span></pre><figcaption class="figsrc">下載包的 <code>check.py</code> 第 25–31 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>讀 expected.json，取出要驗的那一組（<code>which</code> 是 <code>"fruitfly"</code>）。</li>
+    <li><b class="l">②</b>結果資料夾：<code>ROOT/fruitfly_lab</code>。</li>
+    <li><b class="l">③</b>對 expected.json 裡每一項（<code>c</code>）做一次下面的事；<code>ok</code>、<code>bad</code>、<code>known</code> 三個計數器從 0 開始。</li>
+    <li><b class="l">④</b>叫上面的 <code>get</code> 取值，存進 <code>got</code>。<code>try</code> 的意思是「試著做，失敗了跳到第 47 行」，檔案不存在也不會讓整支程式當掉，而是記成一項不符。</li>
+  </ul>
+
+<!-- code: check.py 32-48 hl=32,34,37,40,42,47,48 lab=32:①,34:②,37:③,40:④,42:⑤,47:⑥ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 32</span><span class="mk">①</span>            if c[&quot;kind&quot;] == &quot;exact&quot;:</span><span class="ln"> 33</span><span class="mk"> </span>                good = got == c[&quot;value&quot;]
+<span class="hl"><span class="ln"> 34</span><span class="mk">②</span>            elif c[&quot;kind&quot;] == &quot;rel&quot;:</span><span class="ln"> 35</span><span class="mk"> </span>                v = c[&quot;value&quot;]
+<span class="ln"> 36</span><span class="mk"> </span>                good = abs(got - v) &lt;= c[&quot;tol&quot;] * max(abs(v), 1e-9)
+<span class="hl"><span class="ln"> 37</span><span class="mk">③</span>            elif c[&quot;kind&quot;] == &quot;same&quot;:</span><span class="ln"> 38</span><span class="mk"> </span>                other = get(os.path.join(base, c[&quot;other&quot;]), [])
+<span class="ln"> 39</span><span class="mk"> </span>                good = got == other
+<span class="hl"><span class="ln"> 40</span><span class="mk">④</span>            elif c[&quot;kind&quot;] == &quot;contains&quot;:</span><span class="ln"> 41</span><span class="mk"> </span>                good = all(v in got for v in c[&quot;value&quot;])
+<span class="hl"><span class="ln"> 42</span><span class="mk">⑤</span>            elif c[&quot;kind&quot;] == &quot;md5_twice&quot;:     <span class="cm"># 同一支程式跑兩次，兩行 md5 相同且等於預期</span></span><span class="ln"> 43</span><span class="mk"> </span>                h = got.split()[0::2]
+<span class="ln"> 44</span><span class="mk"> </span>                good = len(h) == 2 and h[0] == h[1] == c[&quot;value&quot;]
+<span class="ln"> 45</span><span class="mk"> </span>            else:
+<span class="ln"> 46</span><span class="mk"> </span>                good = False
+<span class="hl"><span class="ln"> 47</span><span class="mk">⑥</span>        except (OSError, KeyError, IndexError, ValueError) as e:</span><span class="hl"><span class="ln"> 48</span><span class="mk"> </span>            got, good = f&quot;讀不到（{type(e).__name__}）&quot;, False</span></pre><figcaption class="figsrc">下載包的 <code>check.py</code> 第 32–48 行</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>五種判法。<code>if … elif … else</code> 讀成「如果是這種…否則如果是那種…都不是就…」。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b><code>exact</code>：逐位相同，取到的值要和預期一模一樣。FF1 的三個總數、FF4 的閾值、FF5 的每一局擊殺數、E1–E3 的平均都用它。</li>
+    <li><b class="l">②</b><code>rel</code>：相對誤差。<code>abs(got − v)</code> 是差距的絕對值，不能超過預期值乘上容許比例 <code>tol</code>。只用在 FF3 的全腦模型，因為它沒有固定種子（PART 3 第 1 節）。</li>
+    <li><b class="l">③</b><code>same</code>：兩個檔案內容相同。FF2 只用這一種：重切之後的指紋檔（rerun）要和重切之前作者附的（committed）相同。</li>
+    <li><b class="l">④</b><code>contains</code>：檔案裡要出現預期的那幾段文字。E4 用它確認結果檔存在、而且含右眼刺激的比較。</li>
+    <li><b class="l">⑤</b><code>md5_twice</code>：同一支程式跑兩次，兩行 md5 要相同、而且等於預期。本課沒有一項用到它，是以前留下的判法。</li>
+    <li><b class="l">⑥</b>第 31 行失敗時跳到這裡：記下錯誤的種類，判成不符。</li>
+  </ul>
+
+<!-- code: check.py 49-59 hl=49,50,51,55,56,58 lab=49:①,55:②,58:③ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 49</span><span class="mk">①</span>        if not good and c.get(&quot;known&quot;):         <span class="cm"># 本課實跑時就不符、頁面上已說明的項目</span></span><span class="hl"><span class="ln"> 50</span><span class="mk"> </span>            known += 1</span><span class="hl"><span class="ln"> 51</span><span class="mk"> </span>            print(f&quot;△ {c[&#x27;step&#x27;]:6s} {c[&#x27;what&#x27;]}　本次 {got!r}；已知：{c[&#x27;known&#x27;]}&quot;)</span><span class="ln"> 52</span><span class="mk"> </span>            continue
+<span class="ln"> 53</span><span class="mk"> </span>        ok += good
+<span class="ln"> 54</span><span class="mk"> </span>        bad += not good
+<span class="hl"><span class="ln"> 55</span><span class="mk">②</span>        mark = &quot;✓&quot; if good else &quot;✗&quot;</span><span class="hl"><span class="ln"> 56</span><span class="mk"> </span>        print(f&quot;{mark} {c[&#x27;step&#x27;]:6s} {c[&#x27;what&#x27;]}&quot; + (&quot;&quot; if good else f&quot;　本次 {got!r}，預期 {c.get(&#x27;value&#x27;, c.get(&#x27;other&#x27;))!r}&quot;))</span><span class="ln"> 57</span><span class="mk"> </span>    tail = f&quot;，{known} 項已知不符（△，本課實跑時也一樣）&quot; if known else &quot;&quot;
+<span class="hl"><span class="ln"> 58</span><span class="mk">③</span>    print(f&quot;\n{which}：{ok} 項通過，{bad} 項不符{tail}（共 {ok + bad + known} 項）&quot;)</span><span class="ln"> 59</span><span class="mk"> </span>    return bad</pre><figcaption class="figsrc">下載包的 <code>check.py</code> 第 49–59 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>△ 那一類：expected.json 裡標了 <code>known</code> 的項目，本課實跑時就不符、頁面上已經說明（FF3 那一項 +22%，PART 3 第 5 節）。不符但有 <code>known</code> 就印 △ 並單獨計數，不算失敗；<code>continue</code> 是跳到下一項。</li>
+    <li><b class="l">②</b>其他項目印 ✓ 或 ✗；✗ 的後面附上本次的值和預期值，讓你知道差在哪。</li>
+    <li><b class="l">③</b>最後一行總結：幾項通過、幾項不符、幾項已知。第 59 行把不符的數目交回去，第 62–63 行（本頁沒引）用它決定程式的結束碼（程式結束時告訴終端機成功或失敗的一個數：0 是成功、1 是失敗）：有不符就回 1。這是 run_all.sh 的最後一步，所以效果只是終端機上看得出失敗。</li>
+  </ul>
+
+  <h3>ff1_compare_conn.py：FF1，數連線表</h3>
+
+  <p><b>這支在做什麼。</b>FF1 要確認 Shiu 全腦模型附的那張連線表（每一對神經元之間幾個突觸）就是 FlyWire 官方的那一份。學員的電腦上只有 Shiu 這一份，所以程式平常只數它的三個總數；若另外下載了 FlyWire 的原檔，才逐條比對。</p>
+
+<!-- code: ff1_compare_conn.py 1-11 hl=7,9,10,11 lab=7:①,9:②,10:③ -->
+<figure class="code"><pre class="code"><span class="ln">  1</span><span class="mk"> </span>&quot;&quot;&quot;FF1：核對 Shiu 全腦模型附的 FlyWire 連線表（Connectivity_783.parquet）。
+<span class="ln">  2</span><span class="mk"> </span>只給一個檔案：印出神經元數、連結數、突觸總數。
+<span class="ln">  3</span><span class="mk"> </span>再給第二個檔案（另外下載的 FlyWire proofread_connections_783.feather）：逐條比對兩份是否相同。&quot;&quot;&quot;
+<span class="ln">  4</span><span class="mk"> </span>import json
+<span class="ln">  5</span><span class="mk"> </span>import sys
+<span class="ln">  6</span><span class="mk"> </span>
+<span class="hl"><span class="ln">  7</span><span class="mk">①</span>import pandas as pd</span><span class="ln">  8</span><span class="mk"> </span>
+<span class="hl"><span class="ln">  9</span><span class="mk">②</span>shiu = pd.read_parquet(sys.argv[1])</span><span class="hl"><span class="ln"> 10</span><span class="mk">③</span>out = {&quot;shiu_edges&quot;: len(shiu), &quot;shiu_synapses&quot;: int(shiu.Connectivity.sum()),</span><span class="hl"><span class="ln"> 11</span><span class="mk"> </span>       &quot;shiu_neurons&quot;: int(pd.unique(pd.concat([shiu.Presynaptic_ID, shiu.Postsynaptic_ID])).size)}</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/ff1_compare_conn.py</code> 第 1–11 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b><code>pandas</code>：處理表格資料的第三方套件，取短名 <code>pd</code>。整頁後面每一支程式都用它讀表。</li>
+    <li><b class="l">②</b>讀第一個指令列參數指到的檔（run_all.sh 第 20 行給的是 <code>Connectivity_783.parquet</code>）；parquet 是一種壓縮過的表格檔。</li>
+    <li><b class="l">③</b>三個數字：表有幾列（連結數）、<code>Connectivity</code> 這一欄加總（突觸總數）、兩欄 ID 合起來有幾個不同的值（神經元數）。這就是 PART 3 第 3 節那三個數：138,639 顆、15,091,983 條、54,492,922 個。</li>
+  </ul>
+
+<!-- code: ff1_compare_conn.py 12-27 hl=12,17,21,26,27 lab=12:①,17:②,21:③,26:④,27:⑤ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 12</span><span class="mk">①</span>if len(sys.argv) &gt; 2:</span><span class="ln"> 13</span><span class="mk"> </span>    loc = pd.read_feather(sys.argv[2])
+<span class="ln"> 14</span><span class="mk"> </span>    pre = [c for c in loc.columns if &quot;pre&quot; in c.lower() and &quot;id&quot; in c.lower()][0]
+<span class="ln"> 15</span><span class="mk"> </span>    post = [c for c in loc.columns if &quot;post&quot; in c.lower() and &quot;id&quot; in c.lower()][0]
+<span class="ln"> 16</span><span class="mk"> </span>    cnt = [c for c in loc.columns if &quot;syn&quot; in c.lower() and &quot;count&quot; in c.lower()][0]
+<span class="hl"><span class="ln"> 17</span><span class="mk">②</span>    agg = loc.groupby([pre, post])[cnt].sum().reset_index()      <span class="cm"># 同一對神經元在不同神經氈的列合併</span></span><span class="ln"> 18</span><span class="mk"> </span>    out.update({&quot;local_rows&quot;: len(loc), &quot;local_edges_after_neuropil_merge&quot;: len(agg),
+<span class="ln"> 19</span><span class="mk"> </span>                &quot;local_synapses&quot;: int(agg[cnt].sum()),
+<span class="ln"> 20</span><span class="mk"> </span>                &quot;local_neurons&quot;: int(pd.unique(pd.concat([agg[pre], agg[post]])).size)})
+<span class="hl"><span class="ln"> 21</span><span class="mk">③</span>    m = shiu.merge(agg, left_on=[&quot;Presynaptic_ID&quot;, &quot;Postsynaptic_ID&quot;], right_on=[pre, post], how=&quot;outer&quot;, indicator=True)</span><span class="ln"> 22</span><span class="mk"> </span>    out[&quot;only_shiu&quot;] = int((m._merge == &quot;left_only&quot;).sum())
+<span class="ln"> 23</span><span class="mk"> </span>    out[&quot;only_local&quot;] = int((m._merge == &quot;right_only&quot;).sum())
+<span class="ln"> 24</span><span class="mk"> </span>    both = m[m._merge == &quot;both&quot;]
+<span class="ln"> 25</span><span class="mk"> </span>    out[&quot;both&quot;] = len(both)
+<span class="hl"><span class="ln"> 26</span><span class="mk">④</span>    out[&quot;count_equal_frac&quot;] = float((both.Connectivity == both[cnt]).mean())</span><span class="hl"><span class="ln"> 27</span><span class="mk">⑤</span>print(json.dumps(out, indent=1))</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/ff1_compare_conn.py</code> 第 12–27 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>只有給了第二個檔才進這一段。</li>
+    <li><b class="l">②</b>FlyWire 原檔把同一對神經元在不同腦區的突觸分開列，Shiu 的表是合併過的；先依「前、後」兩個 ID 分組加總，兩邊才能比。</li>
+    <li><b class="l">③</b>把兩張表依兩個 ID 對起來（<code>merge</code>），<code>outer</code> 的意思是兩邊都保留，<code>indicator</code> 多一欄記每一列是只有左邊有、只有右邊有、還是兩邊都有。</li>
+    <li><b class="l">④</b>兩邊都有的那些列裡，突觸數相等的比例。</li>
+    <li><b class="l">⑤</b>把整個字典印成 JSON，run_all.sh 把它存成 <code>results/ff1_conn.json</code>。</li>
+  </ul>
+
+  <h3>ff_extra.py：E1、E2、E3</h3>
+
+  <p><b>這支在做什麼。</b>PART 4 的三項檢查。它不複製作者的程式，而是把作者的 <code>fly_doom.py</code> 整個匯入進來，借用它的遊戲迴圈、大腦與校準流程，只換掉需要換的那一小塊。這是「不改作者的模型」能成立的方法。先看開頭的說明與匯入：</p>
+
+<!-- code: ff_extra.py 1-11 hl=5,6,8 lab=5:①,6:②,8:③ -->
+<figure class="code"><pre class="code"><span class="ln">  1</span><span class="mk"> </span>&quot;&quot;&quot;計畫第 5 節：作者沒做、本輪加做的檢查（E1–E3）。不改作者程式碼：匯入 doom/fly_doom.py，
+<span class="ln">  2</span><span class="mk"> </span>把 RESULTS 指到 ../results/ext_vizdoom&lt;版本&gt;/，需要的新條件在這裡另外定義。
+<span class="ln">  3</span><span class="mk"> </span>在 repo/ 目錄下執行：ffl_doom 環境  python ../ext/ff_extra.py [E1|E2|E3 ...]
+<span class="ln">  4</span><span class="mk"> </span>
+<span class="hl"><span class="ln">  5</span><span class="mk">①</span>  E1 加大樣本：fly / lesion025 / scrambled_cal / random 各 50 局（種子 0–49），重算配對置換 p</span><span class="hl"><span class="ln">  6</span><span class="mk">②</span>  E2 打亂對照逐一校準：作者 scrambled_cal 的閾值只在打亂種子 100 上校準，卻套用到每局不同的打亂；</span><span class="ln">  7</span><span class="mk"> </span>     這裡 10 組打亂各自校準，各跑 5 局
+<span class="hl"><span class="ln">  8</span><span class="mk">③</span>  E3 拆開 lesion：作者的開火條件讀 AOTU019，靜音 AOTU019 就必然 0 殺。改用與 AOTU019 無關的讀出</span><span class="ln">  9</span><span class="mk"> </span>     （轉向 = DNa02 右減左；開火 = 兩側 DNa02 較小者 &gt; 閾值，閾值同作者方法在 0° 校準），
+<span class="ln"> 10</span><span class="mk"> </span>     比較 fly_alt（完整迴路）與 lesion019_alt（靜音 AOTU019 左右），各 50 局
+<span class="ln"> 11</span><span class="mk"> </span>&quot;&quot;&quot;</pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/ff_extra.py</code> 第 1–11 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>E1：四個條件各 50 局，重算 p 值。</li>
+    <li><b class="l">②</b>E2：十組打亂接線各自校準、各 5 局。理由：作者的 scrambled_cal 每一局用不同的打亂，閾值卻只在其中一組上校準過（PART 4 第 3 節）。</li>
+    <li><b class="l">③</b>E3：換一個不讀 AOTU019 的讀出，比較完整迴路與損毀 AOTU019。理由：作者的開火規則本身讀 AOTU019，損毀它必然 0 分，分不出迴路的貢獻（PART 4 第 4 節）。</li>
+  </ul>
+
+<!-- code: ff_extra.py 12-26 hl=16,17,18,19,22,24,25 lab=16:①,17:②,18:③,22:④,25:⑤ -->
+<figure class="code"><pre class="code"><span class="ln"> 12</span><span class="mk"> </span>import json, sys, shutil
+<span class="ln"> 13</span><span class="mk"> </span>from pathlib import Path
+<span class="ln"> 14</span><span class="mk"> </span>import numpy as np
+<span class="ln"> 15</span><span class="mk"> </span>
+<span class="hl"><span class="ln"> 16</span><span class="mk">①</span>ROOT = Path(__file__).resolve().parent.parent / &quot;repo&quot;</span><span class="hl"><span class="ln"> 17</span><span class="mk">②</span>sys.path.insert(0, str(ROOT / &quot;doom&quot;)); sys.path.insert(0, str(ROOT / &quot;flycircuit&quot;))</span><span class="hl"><span class="ln"> 18</span><span class="mk">③</span>import fly_doom as fd                                         <span class="cm"># noqa: E402</span></span><span class="hl"><span class="ln"> 19</span><span class="mk"> </span>from lif import Circuit                                        <span class="cm"># noqa: E402</span></span><span class="ln"> 20</span><span class="mk"> </span>
+<span class="ln"> 21</span><span class="mk"> </span>import vizdoom                                                 <span class="cm"># noqa: E402</span>
+<span class="hl"><span class="ln"> 22</span><span class="mk">④</span>EXT = ROOT.parent / &quot;results&quot; / f&quot;ext_vizdoom{vizdoom.__version__}&quot;; EXT.mkdir(parents=True, exist_ok=True)</span><span class="ln"> 23</span><span class="mk"> </span>for f in [&quot;calibration_fly.json&quot;, &quot;calibration_scrambled.json&quot;]:
+<span class="hl"><span class="ln"> 24</span><span class="mk"> </span>    shutil.copy(ROOT / &quot;doom&quot; / &quot;results&quot; / f, EXT / f)</span><span class="hl"><span class="ln"> 25</span><span class="mk">⑤</span>fd.RESULTS = EXT</span><span class="ln"> 26</span><span class="mk"> </span>rng = np.random.default_rng(0)</pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/ff_extra.py</code> 第 12–26 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b><code>ROOT</code>：作者的 repo 在哪（這支程式在 <code>ext/</code>，往上一層再進 <code>repo/</code>）。</li>
+    <li><b class="l">②</b>把作者的兩個資料夾加進 Python 找程式的路徑，第 18、19 行才找得到。</li>
+    <li><b class="l">③</b>匯入作者的 <code>fly_doom.py</code>，取短名 <code>fd</code>；之後 <code>fd.play</code>、<code>fd.FlyBrain</code> 全是作者的東西。<code>FlyBrain</code> 是作者程式裡的一顆模擬大腦，把接線、方程式、輸入編碼包成一個東西；本頁說「大腦」都是它。也從 <code>lif.py</code> 匯入 <code>Circuit</code>（第 5 節）。</li>
+    <li><b class="l">④</b>結果資料夾依 ViZDoom 的版本命名：<code>results/ext_vizdoom1.3.0/</code> 或 <code>…1.3.2/</code>。本課 <code>out/fruitfly/ext_vizdoom1.3.0/</code> 就是它。第 23–24 行把作者校準出來的兩個閾值檔複製過來，因為作者的程式會去 <code>RESULTS</code> 底下找它們。</li>
+    <li><b class="l">⑤</b>關鍵的一行：把作者程式裡「結果寫到哪」的變數改指到我們的資料夾。作者的程式本身一個字沒動，但它之後寫出來的檔案都落在我們這邊，重現的輸出不會被蓋掉。</li>
+  </ul>
+
+<!-- code: ff_extra.py 29-42 hl=29,30,31,32,40,41,42 lab=29:①,31:②,32:③,40:④ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 29</span><span class="mk">①</span>def perm_p(a, b, n=20000):</span><span class="hl"><span class="ln"> 30</span><span class="mk"> </span>    d = np.asarray(a, float) - np.asarray(b, float)</span><span class="hl"><span class="ln"> 31</span><span class="mk">②</span>    flips = rng.choice([-1, 1], size=(n, d.size))</span><span class="hl"><span class="ln"> 32</span><span class="mk">③</span>    return float(((np.abs((flips * d).mean(axis=1)) &gt;= abs(d.mean()) - 1e-12).sum() + 1) / (n + 1))</span><span class="ln"> 33</span><span class="mk"> </span>
+<span class="ln"> 34</span><span class="mk"> </span>
+<span class="ln"> 35</span><span class="mk"> </span>def kills(out):
+<span class="ln"> 36</span><span class="mk"> </span>    return [e[&quot;kills&quot;] for e in out[&quot;episodes&quot;]]
+<span class="ln"> 37</span><span class="mk"> </span>
+<span class="ln"> 38</span><span class="mk"> </span>
+<span class="ln"> 39</span><span class="mk"> </span>def summary(k):
+<span class="hl"><span class="ln"> 40</span><span class="mk">④</span>    k = np.asarray(k, float); se = k.std(ddof=1) / np.sqrt(len(k))</span><span class="hl"><span class="ln"> 41</span><span class="mk"> </span>    return dict(n=len(k), mean=round(float(k.mean()), 2), sd=round(float(k.std(ddof=1)), 2),</span><span class="hl"><span class="ln"> 42</span><span class="mk"> </span>                ci95=[round(float(k.mean() - 1.96 * se), 2), round(float(k.mean() + 1.96 * se), 2)])</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/ff_extra.py</code> 第 29–42 行</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>三個小工具。<code>perm_p</code> 是 PART 3 第 7 節講的 p 值算法；<code>summary</code> 算平均、標準差和 95% 信賴區間。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b>收兩串擊殺數（例如 fly 的 50 局、lesion025 的 50 局），第 30 行逐局相減得到差值 <code>d</code>。</li>
+    <li><b class="l">②</b>洗牌：抽出一張 20,000 列的表，每一格是 −1 或 +1，每一列代表一次「每一局各丟一次銅板決定翻不翻號」。</li>
+    <li><b class="l">③</b>翻號後的平均差距比真實差距大（或相等）的次數，加 1，除以 20,001，就是 p。加 1 與除以 20,001 是為了 p 永遠不會是 0；PART 4 第 2 節「小於 0.0001」就是這裡來的。</li>
+    <li><b class="l">④</b>信賴區間：平均 ± 1.96 × 標準差 ÷ √n，PART 4 第 2 節圖 1 的粗短線。</li>
+  </ul>
+
+<!-- code: ff_extra.py 45-52 hl=45,47,48,50,52 lab=45:①,47:②,48:③,50:④,52:⑤ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 45</span><span class="mk">①</span>def play_with(policy_fn, tag, episodes, seed=0):</span><span class="ln"> 46</span><span class="mk"> </span>    &quot;&quot;&quot;借用 fd.play 的遊戲迴圈，只換 make_policy。&quot;&quot;&quot;
+<span class="hl"><span class="ln"> 47</span><span class="mk">②</span>    orig = fd.make_policy</span><span class="hl"><span class="ln"> 48</span><span class="mk">③</span>    fd.make_policy = lambda name, circuit, s: policy_fn(circuit, s)</span><span class="ln"> 49</span><span class="mk"> </span>    try:
+<span class="hl"><span class="ln"> 50</span><span class="mk">④</span>        return fd.play(tag, episodes, seed)</span><span class="ln"> 51</span><span class="mk"> </span>    finally:
+<span class="hl"><span class="ln"> 52</span><span class="mk">⑤</span>        fd.make_policy = orig</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/ff_extra.py</code> 第 45–52 行</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>這八行是整支程式的中心思想。作者的 <code>fd.play</code> 是遊戲迴圈（開局、每一格問大腦要按什麼、記分），它在裡面叫 <code>fd.make_policy</code> 來拿「大腦＋讀出」。我們想換讀出，但不想改作者的檔案，就在執行的時候把 <code>fd.make_policy</code> 暫時換成我們的，跑完再換回來。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b>收一個我們自己寫的 <code>policy_fn</code>（怎麼決定按鍵）、一個名字、局數、種子。</li>
+    <li><b class="l">②</b>先把作者原本的 <code>make_policy</code> 存起來。</li>
+    <li><b class="l">③</b>換成我們的。<code>lambda</code> 是一行的小函式：不管作者的迴圈給什麼名字，都交給 <code>policy_fn</code>。</li>
+    <li><b class="l">④</b>用作者的迴圈玩，所以遊戲、種子、記分方式和 PART 3 完全一樣，只有讀出不同。</li>
+    <li><b class="l">⑤</b><code>finally</code>：不管成功或出錯，最後一定換回作者原本的。</li>
+  </ul>
+
+<!-- code: ff_extra.py 55-64 hl=57,58,62,63 lab=57:①,58:②,62:③,63:④ -->
+<figure class="code"><pre class="code"><span class="ln"> 55</span><span class="mk"> </span>def e1():
+<span class="ln"> 56</span><span class="mk"> </span>    res = {}
+<span class="hl"><span class="ln"> 57</span><span class="mk">①</span>    for p in [&quot;fly&quot;, &quot;lesion025&quot;, &quot;scrambled_cal&quot;, &quot;random&quot;]:</span><span class="hl"><span class="ln"> 58</span><span class="mk">②</span>        res[p] = kills(fd.play(p, 50, 0))</span><span class="ln"> 59</span><span class="mk"> </span>    out = {p: summary(k) for p, k in res.items()}
+<span class="ln"> 60</span><span class="mk"> </span>    for p in res:
+<span class="ln"> 61</span><span class="mk"> </span>        if p != &quot;fly&quot;:
+<span class="hl"><span class="ln"> 62</span><span class="mk">③</span>            out[p][&quot;p_vs_fly&quot;] = perm_p(res[&quot;fly&quot;], res[p])</span><span class="hl"><span class="ln"> 63</span><span class="mk">④</span>    out[&quot;fly_first10_vs_lesion025_first10_p&quot;] = perm_p(res[&quot;fly&quot;][:10], res[&quot;lesion025&quot;][:10])</span><span class="ln"> 64</span><span class="mk"> </span>    return dict(kills=res, summary=out)</pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/ff_extra.py</code> 第 55–64 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>E1 跑四個條件。</li>
+    <li><b class="l">②</b>直接叫作者的 <code>fd.play</code>，50 局，種子從 0 開始，所以種子 0–9 就是作者那 10 局（PART 4 第 2 節）。</li>
+    <li><b class="l">③</b>每個條件對 fly 算 p。</li>
+    <li><b class="l">④</b>另外只拿前 10 局再算一次 p，驗證能回到作者的 0.048 附近（PART 4 第 2 節的 0.047）。</li>
+  </ul>
+
+<!-- code: ff_extra.py 67-84 hl=67,71,72,73,76,81,82,83 lab=67:①,71:②,73:③,76:④,81:⑤,83:⑥ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 67</span><span class="mk">①</span>def calibrate_circuit(c, steer=fd.steer_signal, fire_keys=(&quot;AOTU019_L&quot;, &quot;AOTU019_R&quot;), silenced=(), seed=0):</span><span class="ln"> 68</span><span class="mk"> </span>    &quot;&quot;&quot;逐行照抄 fd.calibrate 的方法（每個方位先跑 10 tic 暖機，再取 20 tic 平均；轉向閾值取 |steer| 在 0° 與 ±10° 較小者的中點；
+<span class="ln"> 69</span><span class="mk"> </span>    開火閾值取 0° 時 fire_keys 較小者的一半，下限 1），但可換電路、換讀出、可靜音，且不寫檔。&quot;&quot;&quot;
+<span class="ln"> 70</span><span class="mk"> </span>    by = {}
+<span class="hl"><span class="ln"> 71</span><span class="mk">②</span>    for az in fd.CAL_AZ:</span><span class="hl"><span class="ln"> 72</span><span class="mk"> </span>        brain = fd.FlyBrain(c, seed=seed, silenced=silenced)</span><span class="hl"><span class="ln"> 73</span><span class="mk">③</span>        for _ in range(10):</span><span class="ln"> 74</span><span class="mk"> </span>            brain.step([(float(az), 1.0)])
+<span class="ln"> 75</span><span class="mk"> </span>        acc = {k: 0.0 for k in fd.PANEL}
+<span class="hl"><span class="ln"> 76</span><span class="mk">④</span>        for _ in range(20):</span><span class="ln"> 77</span><span class="mk"> </span>            r = brain.step([(float(az), 1.0)])
+<span class="ln"> 78</span><span class="mk"> </span>            for k in fd.PANEL:
+<span class="ln"> 79</span><span class="mk"> </span>                acc[k] += r[k] / 20
+<span class="ln"> 80</span><span class="mk"> </span>        by[az] = acc
+<span class="hl"><span class="ln"> 81</span><span class="mk">⑤</span>    s0 = abs(steer(by[0])); s_off = min(abs(steer(by[-10])), abs(steer(by[10])))</span><span class="hl"><span class="ln"> 82</span><span class="mk"> </span>    turn_th = (s0 + s_off) / 2 if s_off &gt; s0 else max(1.1 * s0, 1.0)</span><span class="hl"><span class="ln"> 83</span><span class="mk">⑥</span>    fire_th = max(0.5 * min(by[0][fire_keys[0]], by[0][fire_keys[1]]), 1.0)</span><span class="ln"> 84</span><span class="mk"> </span>    return dict(turn_th=turn_th, fire_th=fire_th, quiet_th=5.0), by</pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/ff_extra.py</code> 第 67–84 行</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>E2 與 E3 都要重新校準，但校準的對象不是作者的迴路（E2 換成打亂的接線，E3 換成讀 DNa02）。作者的 <code>fd.calibrate</code> 寫死了用完整迴路與作者的讀出，所以這裡照抄它的步驟，把「用哪個迴路、讀哪幾顆、算哪個訊號」改成可以指定的。PART 1 第 4 節的兩條閾值規則就是第 81–83 行。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b>四樣可以指定的東西：迴路 <code>c</code>、轉向訊號怎麼算 <code>steer</code>（預設用作者的）、開火讀哪兩顆 <code>fire_keys</code>（預設 AOTU019 左右）、要損毀哪些 <code>silenced</code>。</li>
+    <li><b class="l">②</b>對作者定的 17 個方位各做一次。</li>
+    <li><b class="l">③</b>先跑 10 格暖機不記錄（這裡的格是大腦自己前進 286 步、等於遊戲一格的時間，沒有真的開遊戲，fly_doom.py 第 99 行），因為放電率是和前幾格平滑過的（第 103 行），剛開始幾格還沒穩定；再跑 20 格取平均。10 與 20 和作者的 calibrate（fly_doom.py 第 230–236 行，本頁沒引）一樣。</li>
+    <li><b class="l">④</b>20 格裡每一格的放電率各加二十分之一，加完就是平均。</li>
+    <li><b class="l">⑤</b>轉向閾值：0° 的訊號絕對值與 ±10° 較小者的中點。敵人在正前方不該轉、偏 10° 該轉，門檻就取兩者中間；±10° 沒有比 0° 大時取 0° 的 1.1 倍，下限 1。</li>
+    <li><b class="l">⑥</b>開火閾值：0° 時兩顆較小者的一半，下限 1。</li>
+  </ul>
+
+<!-- code: ff_extra.py 87-107 hl=88,89,90,91,97,98,99,104,106,107 lab=89:①,90:②,91:③,97:④,104:⑤,107:⑥ -->
+<figure class="code"><pre class="code"><span class="ln"> 87</span><span class="mk"> </span>def e2():
+<span class="hl"><span class="ln"> 88</span><span class="mk"> </span>    base = Circuit(); res = []</span><span class="hl"><span class="ln"> 89</span><span class="mk">①</span>    for k in range(10):</span><span class="hl"><span class="ln"> 90</span><span class="mk">②</span>        c = base.scrambled(seed=100 + k)</span><span class="hl"><span class="ln"> 91</span><span class="mk">③</span>        cal, _ = calibrate_circuit(c)</span><span class="ln"> 92</span><span class="mk"> </span>
+<span class="ln"> 93</span><span class="mk"> </span>        def pol(circuit, s, c=c, cal=cal):
+<span class="ln"> 94</span><span class="mk"> </span>            brain = fd.FlyBrain(c, seed=s)
+<span class="ln"> 95</span><span class="mk"> </span>
+<span class="ln"> 96</span><span class="mk"> </span>            def act(targets):
+<span class="hl"><span class="ln"> 97</span><span class="mk">④</span>                r = brain.step(targets); st = fd.steer_signal(r)</span><span class="hl"><span class="ln"> 98</span><span class="mk"> </span>                left, right = int(st &lt; -cal[&quot;turn_th&quot;]), int(st &gt; cal[&quot;turn_th&quot;])</span><span class="hl"><span class="ln"> 99</span><span class="mk"> </span>                fire = int(min(r[&quot;AOTU019_L&quot;], r[&quot;AOTU019_R&quot;]) &gt; cal[&quot;fire_th&quot;])</span><span class="ln">100</span><span class="mk"> </span>                if not targets and sum(r.values()) &lt; cal[&quot;quiet_th&quot;]:
+<span class="ln">101</span><span class="mk"> </span>                    left, right = 0, 1
+<span class="ln">102</span><span class="mk"> </span>                return [left, right, fire], dict(r)
+<span class="ln">103</span><span class="mk"> </span>            return act, brain
+<span class="hl"><span class="ln">104</span><span class="mk">⑤</span>        out = play_with(pol, f&quot;scrambled_selfcal_{k}&quot;, 5, seed=1000 + 5 * k)</span><span class="ln">105</span><span class="mk"> </span>        res.append(dict(scramble_seed=100 + k, cal={a: round(float(b), 2) for a, b in cal.items()}, kills=kills(out)))
+<span class="hl"><span class="ln">106</span><span class="mk"> </span>    allk = [x for r in res for x in r[&quot;kills&quot;]]</span><span class="hl"><span class="ln">107</span><span class="mk">⑥</span>    return dict(per_scramble=res, summary=summary(allk))</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/ff_extra.py</code> 第 87–107 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>E2 對十組打亂各做一次。</li>
+    <li><b class="l">②</b>第 k 組打亂用編號 100 + k，和作者的 scrambled_cal 第 k 局用的打亂同一組（PART 4 第 3 節）。</li>
+    <li><b class="l">③</b>用這一組打亂自己的迴路校準，得到它自己的閾值 <code>cal</code>。</li>
+    <li><b class="l">④</b>按鍵規則本身照抄作者（第 4 節 fly_doom.py 第 131–138 行），只是閾值換成剛算的。</li>
+    <li><b class="l">⑤</b>這一組玩 5 局，種子從 1000 + 5k 起算，十組合起來 50 局都是不同的遊戲種子，故意避開 E1 用的 0–49。你可能會問：種子不同，還能和 E1 比嗎？能，因為比的是平均而不是逐局配對：對照的是 E1 的完整接線 9.86 與作者設定下的 scrambled_cal 0.9，差了八倍以上，換一批種子不影響結論（PART 4 第 3 節）。</li>
+    <li><b class="l">⑥</b>十組的擊殺數合在一起算平均與信賴區間，就是 PART 4 第 3 節的 1.16。</li>
+  </ul>
+
+<!-- code: ff_extra.py 110-127 hl=112,113,116,117,120,121,122 lab=112:①,113:②,116:③,120:④,122:⑤ -->
+<figure class="code"><pre class="code"><span class="ln">110</span><span class="mk"> </span>def alt_readout(silence):
+<span class="ln">111</span><span class="mk"> </span>    &quot;&quot;&quot;與 AOTU019 無關的讀出：轉向 = DNa02 右減左；開火 = 兩側 DNa02 較小者 &gt; 閾值。閾值在完整迴路上以作者同法校準。&quot;&quot;&quot;
+<span class="hl"><span class="ln">112</span><span class="mk">①</span>    st = lambda r: r[&quot;DNa02_R&quot;] - r[&quot;DNa02_L&quot;]</span><span class="hl"><span class="ln">113</span><span class="mk">②</span>    cal, by = calibrate_circuit(Circuit(), steer=st, fire_keys=(&quot;DNa02_L&quot;, &quot;DNa02_R&quot;))</span><span class="ln">114</span><span class="mk"> </span>
+<span class="ln">115</span><span class="mk"> </span>    def pol(circuit, s):
+<span class="hl"><span class="ln">116</span><span class="mk">③</span>        sil = [i for k in silence for i in circuit.groups[k]]</span><span class="hl"><span class="ln">117</span><span class="mk"> </span>        brain = fd.FlyBrain(circuit, seed=s, silenced=sil)</span><span class="ln">118</span><span class="mk"> </span>
+<span class="ln">119</span><span class="mk"> </span>        def act(targets):
+<span class="hl"><span class="ln">120</span><span class="mk">④</span>            r = brain.step(targets); d = st(r)</span><span class="hl"><span class="ln">121</span><span class="mk"> </span>            left, right = int(d &lt; -cal[&quot;turn_th&quot;]), int(d &gt; cal[&quot;turn_th&quot;])</span><span class="hl"><span class="ln">122</span><span class="mk">⑤</span>            fire = int(min(r[&quot;DNa02_L&quot;], r[&quot;DNa02_R&quot;]) &gt; cal[&quot;fire_th&quot;])</span><span class="ln">123</span><span class="mk"> </span>            if not targets and sum(r.values()) &lt; cal[&quot;quiet_th&quot;]:
+<span class="ln">124</span><span class="mk"> </span>                left, right = 0, 1
+<span class="ln">125</span><span class="mk"> </span>            return [left, right, fire], dict(r)
+<span class="ln">126</span><span class="mk"> </span>        return act, brain
+<span class="ln">127</span><span class="mk"> </span>    return pol, cal, {a: by[a] for a in (-10, 0, 10)}</pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/ff_extra.py</code> 第 110–127 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>E3 的新轉向訊號：只有 DNa02 右減左，沒有 AOTU019 那一項。</li>
+    <li><b class="l">②</b>用完整迴路、這個訊號、開火改讀 DNa02 左右，重新校準一次。</li>
+    <li><b class="l">③</b><code>silence</code> 給的那幾群神經元整場不放電；E3 的第二個條件給的是 AOTU019 左右。</li>
+    <li><b class="l">④</b>每一格：讓大腦前進一格、算新訊號。</li>
+    <li><b class="l">⑤</b>開火條件也只看 DNa02。PART 4 第 4 節的 0.68 就是這個讀法跑出來的。</li>
+  </ul>
+
+<!-- code: ff_extra.py 130-144 hl=131,132,133,134,140,141,142,143 lab=131:①,133:②,140:③,143:④ -->
+<figure class="code"><pre class="code"><span class="ln">130</span><span class="mk"> </span>def e3():
+<span class="hl"><span class="ln">131</span><span class="mk">①</span>    pol_f, cal, rows = alt_readout([])</span><span class="hl"><span class="ln">132</span><span class="mk"> </span>    pol_l, _, _ = alt_readout([&quot;AOTU019_L&quot;, &quot;AOTU019_R&quot;])</span><span class="hl"><span class="ln">133</span><span class="mk">②</span>    kf = kills(play_with(pol_f, &quot;fly_alt&quot;, 50))</span><span class="hl"><span class="ln">134</span><span class="mk"> </span>    kl = kills(play_with(pol_l, &quot;lesion019_alt&quot;, 50))</span><span class="ln">135</span><span class="mk"> </span>    return dict(cal={a: round(float(b), 2) for a, b in cal.items()}, cal_rows={str(a): {k: round(v, 1) for k, v in r.items()} for a, r in rows.items()},
+<span class="ln">136</span><span class="mk"> </span>                fly_alt=summary(kf), lesion019_alt=summary(kl), p=perm_p(kf, kl), kills=dict(fly_alt=kf, lesion019_alt=kl))
+<span class="ln">137</span><span class="mk"> </span>
+<span class="ln">138</span><span class="mk"> </span>
+<span class="ln">139</span><span class="mk"> </span>if __name__ == &quot;__main__&quot;:
+<span class="hl"><span class="ln">140</span><span class="mk">③</span>    todo = sys.argv[1:] or [&quot;E1&quot;, &quot;E2&quot;, &quot;E3&quot;]</span><span class="hl"><span class="ln">141</span><span class="mk"> </span>    for name in todo:</span><span class="hl"><span class="ln">142</span><span class="mk"> </span>        r = {&quot;E1&quot;: e1, &quot;E2&quot;: e2, &quot;E3&quot;: e3}[name]()</span><span class="hl"><span class="ln">143</span><span class="mk">④</span>        (EXT / f&quot;{name}.json&quot;).write_text(json.dumps(r, indent=1))</span><span class="ln">144</span><span class="mk"> </span>        print(name, json.dumps({k: v for k, v in r.items() if k not in (&quot;kills&quot;, &quot;per_scramble&quot;, &quot;cal_rows&quot;)}), flush=True)</pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/ff_extra.py</code> 第 130–144 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>兩種大腦：完整迴路、損毀 AOTU019，都用上面的新讀出。</li>
+    <li><b class="l">②</b>各玩 50 局（借作者的迴圈）。</li>
+    <li><b class="l">③</b>指令列沒指定就三項全做；run_all.sh 第 31 行對 1.3.0 給 <code>E1 E2 E3</code>、對 1.3.2 只給 <code>E1</code>。</li>
+    <li><b class="l">④</b>每一項各寫一個 JSON：<code>E1.json</code>、<code>E2.json</code>、<code>E3.json</code>，就是 PART 4 每一節圖說引的檔案。</li>
+  </ul>
+
+  <h3>e4_asymmetry.py：E4，右眼的子圖為什麼反應偏弱</h3>
+
+  <p><b>這支在做什麼。</b>PART 3 第 5 節看到右眼刺激時，子圖的 DNa02 右只有 4.4 Hz、全腦 61.6 Hz。E4 想知道差距是不是切子圖時切掉了什麼輸入。做法：讀 FF3 全腦模擬留下的每一顆神經元的放電率，對 DNa02 的每一個上游神經元算「放電率 × 帶正負號的突觸數」（PART 4 第 5 節叫它驅動量），分成在子圖內、不在子圖內兩堆比大小。程式分三步，這裡讀前兩步。它最後的答案（PART 4 第 5 節）：DNa02 的直接輸入幾乎全在子圖內，差距不是切掉了外面的輸入，而是子圖內的上游神經元本身在子圖裡放電比在全腦裡弱；第二步量的就是這個差。</p>
+
+<!-- code: e4_asymmetry.py 11-22 hl=13,14,16,18,20,21 lab=13:①,14:②,16:③,18:④,20:⑤ -->
+<figure class="code"><pre class="code"><span class="ln"> 11</span><span class="mk"> </span>ROOT = Path(__file__).resolve().parent.parent / &quot;repo&quot;
+<span class="ln"> 12</span><span class="mk"> </span>OUT = ROOT.parent / &quot;results&quot; / &quot;E4_asymmetry.json&quot;
+<span class="hl"><span class="ln"> 13</span><span class="mk">①</span>meta = json.loads((ROOT / &quot;circuit/meta.json&quot;).read_text())</span><span class="hl"><span class="ln"> 14</span><span class="mk">②</span>sub_ids = {int(n[&quot;id&quot;]) for n in meta[&quot;neurons&quot;]}</span><span class="ln"> 15</span><span class="mk"> </span>groups = {k: [int(meta[&quot;neurons&quot;][i][&quot;id&quot;]) for i in v] for k, v in meta[&quot;groups&quot;].items()}
+<span class="hl"><span class="ln"> 16</span><span class="mk">③</span>ann = pd.read_csv(ROOT / &quot;data/flywire_annotations_783.tsv&quot;, sep=&quot;\t&quot;, low_memory=False,</span><span class="ln"> 17</span><span class="mk"> </span>                  usecols=[&quot;root_id&quot;, &quot;cell_type&quot;, &quot;hemibrain_type&quot;, &quot;side&quot;]).set_index(&quot;root_id&quot;)
+<span class="hl"><span class="ln"> 18</span><span class="mk">④</span>con = pd.read_parquet(ROOT / &quot;Drosophila_brain_model/Connectivity_783.parquet&quot;,</span><span class="ln"> 19</span><span class="mk"> </span>                      columns=[&quot;Presynaptic_ID&quot;, &quot;Postsynaptic_ID&quot;, &quot;Connectivity&quot;, &quot;Excitatory x Connectivity&quot;])
+<span class="hl"><span class="ln"> 20</span><span class="mk">⑤</span>THR = 5</span><span class="hl"><span class="ln"> 21</span><span class="mk"> </span>strong = con[con.Connectivity &gt;= THR]</span><span class="ln"> 22</span><span class="mk"> </span>lc = {s: set(groups[f&quot;LC10a_{s}&quot;]) for s in &quot;LR&quot;}</pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/e4_asymmetry.py</code> 第 11–22 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>讀作者切出來的子圖描述檔 <code>circuit/meta.json</code>（第 4 節 extract.py 寫的）。</li>
+    <li><b class="l">②</b>子圖裡所有神經元的 ID 做成一個集合，之後判斷「在不在子圖內」就查它。</li>
+    <li><b class="l">③</b>讀 FlyWire 註解表，只要四欄：ID、細胞型、另一套命名、左右側。</li>
+    <li><b class="l">④</b>讀全腦連線表，四欄：前、後、突觸數、帶正負號的突觸數。</li>
+    <li><b class="l">⑤</b>作者切子圖時的門檻是突觸數 5 以上才算強連結，這裡沿用同一個數，第 21 行先篩出強連結。</li>
+  </ul>
+
+<!-- code: e4_asymmetry.py 44-47 hl=45,47 lab=45:①,47:② -->
+<figure class="code"><pre class="code"><span class="ln"> 44</span><span class="mk"> </span>def rates(stim):
+<span class="hl"><span class="ln"> 45</span><span class="mk">①</span>    df = pd.read_parquet(ROOT / f&quot;Drosophila_brain_model/results/validate/{stim}.parquet&quot;)</span><span class="ln"> 46</span><span class="mk"> </span>    n_run, t_run = df.trial.nunique() if &quot;trial&quot; in df else 5, 1.0
+<span class="hl"><span class="ln"> 47</span><span class="mk">②</span>    return (df.groupby(&quot;flywire_id&quot;).size() / (5 * t_run)).to_dict()</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/e4_asymmetry.py</code> 第 44–47 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>讀 FF3 時 Shiu 模型存下來的放電紀錄（刺激左眼或右眼各一檔）。</li>
+    <li><b class="l">②</b>每顆神經元放了幾次電，除以 5 次模擬 × 1 秒，得到每秒放電率。</li>
+  </ul>
+
+<!-- code: e4_asymmetry.py 50-62 hl=51,55,57,58,59,60,61,62 lab=51:①,57:②,58:③,59:④,60:⑤,61:⑥,62:⑦ -->
+<figure class="code"><pre class="code"><span class="ln"> 50</span><span class="mk"> </span>res = {}
+<span class="hl"><span class="ln"> 51</span><span class="mk">①</span>for stim in [&quot;LC10a_L&quot;, &quot;LC10a_R&quot;]:</span><span class="ln"> 52</span><span class="mk"> </span>    r = rates(stim)
+<span class="ln"> 53</span><span class="mk"> </span>    side = stim[-1]
+<span class="ln"> 54</span><span class="mk"> </span>    res[stim] = {}
+<span class="hl"><span class="ln"> 55</span><span class="mk"> </span>    for dn in [&quot;DNa02_L&quot;, &quot;DNa02_R&quot;]:</span><span class="ln"> 56</span><span class="mk"> </span>        tgt = groups[dn][0]
+<span class="hl"><span class="ln"> 57</span><span class="mk">②</span>        inp = con[con.Postsynaptic_ID == tgt].copy()</span><span class="hl"><span class="ln"> 58</span><span class="mk">③</span>        inp[&quot;rate&quot;] = inp.Presynaptic_ID.map(r).fillna(0.0)</span><span class="hl"><span class="ln"> 59</span><span class="mk">④</span>        inp[&quot;drive&quot;] = inp.rate * inp[&quot;Excitatory x Connectivity&quot;]</span><span class="hl"><span class="ln"> 60</span><span class="mk">⑤</span>        inp[&quot;in_sub&quot;] = inp.Presynaptic_ID.isin(sub_ids)</span><span class="hl"><span class="ln"> 61</span><span class="mk">⑥</span>        tot = inp.groupby(&quot;in_sub&quot;).drive.sum().to_dict()</span><span class="hl"><span class="ln"> 62</span><span class="mk">⑦</span>        miss = inp[~inp.in_sub &amp; (inp.drive != 0)].sort_values(&quot;drive&quot;, key=np.abs, ascending=False).head(12)</span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/e4_asymmetry.py</code> 第 50–62 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>左眼刺激、右眼刺激各做一次；裡面對 DNa02 左、右各做一次。</li>
+    <li><b class="l">②</b>從連線表取出所有「後面是這顆 DNa02」的列，也就是它全部的上游。</li>
+    <li><b class="l">③</b>每一個上游神經元查它在全腦模擬裡的放電率；沒放電的填 0。</li>
+    <li><b class="l">④</b>驅動量 ＝ 放電率 × 帶正負號的突觸數。</li>
+    <li><b class="l">⑤</b>標記這個上游在不在子圖內。</li>
+    <li><b class="l">⑥</b>子圖內、子圖外各加總。PART 4 第 5 節的 20,501.8 對 −84.4 就是這兩個總和。</li>
+    <li><b class="l">⑦</b>子圖外、驅動量最大的前 12 顆列出來，看少掉的是誰。</li>
+  </ul>
+
+<!-- code: e4_asymmetry.py 78-88 hl=78,80,81,82,86,87,88 lab=78:①,81:②,86:③,88:④ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 78</span><span class="mk">①</span><span class="cm"># ---------- 第二步：DNa02 的輸入幾乎都來自子圖內，所以比較子圖內各突觸前神經元在「子圖模擬」與「全腦模擬」的放電率</span></span><span class="ln"> 79</span><span class="mk"> </span>import sys
+<span class="hl"><span class="ln"> 80</span><span class="mk"> </span>sys.path.insert(0, str(ROOT / &quot;flycircuit&quot;))</span><span class="hl"><span class="ln"> 81</span><span class="mk">②</span>from lif import LIF, Circuit</span><span class="hl"><span class="ln"> 82</span><span class="mk"> </span>circ = Circuit()</span><span class="ln"> 83</span><span class="mk"> </span>ids = np.array([int(n[&quot;id&quot;]) for n in circ.meta[&quot;neurons&quot;]])
+<span class="ln"> 84</span><span class="mk"> </span>step2 = {}
+<span class="ln"> 85</span><span class="mk"> </span>for stim in [&quot;LC10a_L&quot;, &quot;LC10a_R&quot;]:
+<span class="hl"><span class="ln"> 86</span><span class="mk">③</span>    rr = np.zeros(circ.n); rates_in = np.zeros(circ.n); rates_in[circ.groups[stim]] = 100.0</span><span class="hl"><span class="ln"> 87</span><span class="mk"> </span>    for k in range(5):</span><span class="hl"><span class="ln"> 88</span><span class="mk">④</span>        rr += LIF(circ, seed=k).run(10_000, rates_in) / 5.0           <span class="cm"># 每秒放電次數</span></span></pre><figcaption class="figsrc">下載包的 <code>fruitfly_lab/ext/e4_asymmetry.py</code> 第 78–88 行</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>第一步的答案是「DNa02 的輸入幾乎都來自子圖內」，所以第二步換個問法：同樣這些子圖內的上游，在子圖模擬裡和在全腦模擬裡放電率差多少。</li>
+    <li><b class="l">②</b>匯入作者的 <code>lif.py</code>，載入子圖（第 5 節）。</li>
+    <li><b class="l">③</b>把刺激設成該側 LC10a 每秒 100 次，和作者 validate.py 的條件相同。</li>
+    <li><b class="l">④</b>子圖跑 5 次、每次 10,000 步（1 秒），放電次數平均起來就是子圖裡的放電率。接下來的幾行和第一步同一套：逐顆比較、排序、存檔。第三步（第 118 行起）再問「子圖內的神經元在全腦裡收到多少子圖外的輸入」，寫法相同，不另外列。</li>
+  </ul>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s4"><span class="pt">4</span>第二層：作者的四支程式</h2>
+
+  <p>這四支是 fruitfly-lab 的核心，PART 1 講的四個零件（①連結體、②神經元方程式、③輸入編碼、④讀出規則）都在這裡變成程式。只放片段的理由見第 1 節；每一塊的圖說寫著行號，請打開你 <code>fruitfly_lab/repo/</code> 底下的同一個檔案對著讀。四支之間的關係：<code>extract.py</code> 切出子圖、寫成兩個檔；<code>validate.py</code> 與 <code>fly_doom.py</code> 都讀那兩個檔、用 <code>lif.py</code> 讓它動起來；<code>analyze.py</code> 只讀 <code>fly_doom.py</code> 寫出來的結果。</p>
+
+  <h3>extract.py：FF2，從全腦切出子圖</h3>
+
+  <p><b>這支在做什麼。</b>PART 1 第 3 節講的切法：沿著突觸數 5 以上的連結，從 LC10a 往下游走 2 步、從轉向下行神經元往上游走 2 步，兩邊都走得到的留下。這支程式就是那段話。先看它開頭的幾個設定值：</p>
+
+<!-- code: extract.py 20-23 hl=20,21,22,23 lab=20:①,21:②,22:③,23:④ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 20</span><span class="mk">①</span>THR, DEPTH = 5, 2</span><span class="hl"><span class="ln"> 21</span><span class="mk">②</span>SOURCE = [&quot;LC10a&quot;]</span><span class="hl"><span class="ln"> 22</span><span class="mk">③</span>STEER = [&quot;DNa01&quot;, &quot;DNa02&quot;, &quot;DNa03&quot;, &quot;DNa04&quot;, &quot;DNa11&quot;]</span><span class="hl"><span class="ln"> 23</span><span class="mk">④</span>W_SYN_MV = 0.275  <span class="cm"># Shiu et al. 2024 每个突触的权重</span></span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/extract.py</code> 第 20–23 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>兩個門檻：突觸數至少 5、最多走 2 步。PART 1 說「5 與 2 是作者挑的」，挑的地方就是這一行。</li>
+    <li><b class="l">②</b>起點：LC10a。</li>
+    <li><b class="l">③</b>終點：五種轉向下行神經元。PART 1 第 3 節說另外四種只在切子圖時當終點，指的就是這個串列。</li>
+    <li><b class="l">④</b>每個突觸的權重 0.275 mV，PART 1 第 2 節參數表最後一列；之後寫進子圖檔，讓 lif.py 讀。</li>
+  </ul>
+
+<!-- code: extract.py 31-33 hl=31,32,33 lab=31:①,32:②,33:③ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 31</span><span class="mk">①</span>S = set(ann.root_id[ann.cell_type.isin(SOURCE)])</span><span class="hl"><span class="ln"> 32</span><span class="mk">②</span>T = set(ann.root_id[ann.cell_type.isin(STEER)])</span><span class="hl"><span class="ln"> 33</span><span class="mk">③</span>strong = con[con.Connectivity &gt;= THR]</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/extract.py</code> 第 31–33 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>從註解表裡挑出細胞型是 LC10a 的所有神經元 ID，做成集合 <code>S</code>（起點）。</li>
+    <li><b class="l">②</b>同樣挑出五種下行神經元，集合 <code>T</code>（終點）。</li>
+    <li><b class="l">③</b>只留突觸數 5 以上的連結，叫 <code>strong</code>。下面走路只走這些。</li>
+  </ul>
+
+<!-- code: extract.py 36-47 hl=36,38,39,45,46,47 lab=36:①,38:②,39:③,45:④,46:⑤,47:⑥ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 36</span><span class="mk">①</span>def bfs(start, src_col, dst_col):</span><span class="ln"> 37</span><span class="mk"> </span>    seen, frontier, dist = set(start), set(start), {n: 0 for n in start}
+<span class="hl"><span class="ln"> 38</span><span class="mk">②</span>    for d in range(1, DEPTH + 1):</span><span class="hl"><span class="ln"> 39</span><span class="mk">③</span>        frontier = set(strong[dst_col][strong[src_col].isin(frontier)]) - seen</span><span class="ln"> 40</span><span class="mk"> </span>        seen |= frontier
+<span class="ln"> 41</span><span class="mk"> </span>        dist.update({n: d for n in frontier})
+<span class="ln"> 42</span><span class="mk"> </span>    return seen, dist
+<span class="ln"> 43</span><span class="mk"> </span>
+<span class="ln"> 44</span><span class="mk"> </span>
+<span class="hl"><span class="ln"> 45</span><span class="mk">④</span>fwd, dist_fwd = bfs(S, &quot;Presynaptic_ID&quot;, &quot;Postsynaptic_ID&quot;)</span><span class="hl"><span class="ln"> 46</span><span class="mk">⑤</span>bwd, _ = bfs(T, &quot;Postsynaptic_ID&quot;, &quot;Presynaptic_ID&quot;)</span><span class="hl"><span class="ln"> 47</span><span class="mk">⑥</span>nodes = (fwd &amp; bwd) | S | T</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/extract.py</code> 第 36–47 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>PART 1 白話框裡「從甲城出發兩站以內到得了、而且離乙城兩站以內」的走法，程式叫 <code>bfs</code>（一種從起點一圈一圈往外找的走法）。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b>函式收三樣東西：起點集合、連結表裡哪一欄當「從」、哪一欄當「到」。</li>
+    <li><b class="l">②</b>走 1 步、再走 1 步，共 2 步。</li>
+    <li><b class="l">③</b>每一步：找所有「從」在目前邊界裡的強連結，取它們的「到」，扣掉已經走過的，就是下一圈。</li>
+    <li><b class="l">④</b>從 LC10a 往下游走（從＝前、到＝後）。</li>
+    <li><b class="l">⑤</b>從下行神經元往上游走：欄位反過來（從＝後、到＝前）。</li>
+    <li><b class="l">⑥</b>兩邊都到得了的交集，加上起點和終點，就是子圖的 3,963 顆。PART 3 第 4 節的 md5 比對，比的就是這一支程式產出的檔案。</li>
+  </ul>
+
+<!-- code: extract.py 66-75 hl=66,70,72,73,74,75 lab=70:①,72:②,73:③,75:④ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 66</span><span class="mk"> </span><span class="cm"># LC10a 视野位置代理：更多连到 AOTU019（中央视野 0–40°）→ 偏中央；更多连到 AOTU025（外周 40–90°）→ 偏外周</span></span><span class="ln"> 67</span><span class="mk"> </span>lc = a.index[a.cell_type == &quot;LC10a&quot;]
+<span class="ln"> 68</span><span class="mk"> </span>aotu = {(t, s): ann.root_id[(ann.cell_type == t) &amp; (ann.side == s)].tolist() for t in [&quot;AOTU019&quot;, &quot;AOTU025&quot;] for s in [&quot;left&quot;, &quot;right&quot;]}
+<span class="ln"> 69</span><span class="mk"> </span>central = {}
+<span class="hl"><span class="ln"> 70</span><span class="mk">①</span>for n in lc:</span><span class="ln"> 71</span><span class="mk"> </span>    s = a.at[n, &quot;side&quot;]
+<span class="hl"><span class="ln"> 72</span><span class="mk">②</span>    out = con[con.Presynaptic_ID == n]</span><span class="hl"><span class="ln"> 73</span><span class="mk">③</span>    w19 = out.Connectivity[out.Postsynaptic_ID.isin(aotu[(&quot;AOTU019&quot;, s)])].sum()</span><span class="hl"><span class="ln"> 74</span><span class="mk"> </span>    w25 = out.Connectivity[out.Postsynaptic_ID.isin(aotu[(&quot;AOTU025&quot;, s)])].sum()</span><span class="hl"><span class="ln"> 75</span><span class="mk">④</span>    central[n] = float(w19 / (w19 + w25)) if w19 + w25 &gt; 0 else 0.5</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/extract.py</code> 第 66–75 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>PART 1 第 3 節追問過的那件事：「AOTU019 負責視野中央、AOTU025 負責視野外圍」是論文來的，作者在這裡把它變成每顆 LC10a 的偏好位置。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b>對子圖裡每一顆 LC10a 做一次。</li>
+    <li><b class="l">②</b>取出它所有往外的連結。</li>
+    <li><b class="l">③</b>分別加總它連到同側 AOTU019、同側 AOTU025 的突觸數。</li>
+    <li><b class="l">④</b>連到 AOTU019 的比例 <code>w19 ÷ (w19 + w25)</code> 存成 <code>central</code>：愈接近 1 愈偏中央。兩邊都是 0 的填 0.5。第 86 行把它寫進每顆神經元的描述，fly_doom.py 第 80 行再讀出來用。</li>
+  </ul>
+
+<!-- code: extract.py 107-113 hl=108,109,110,111,112,113 lab=108:①,109:②,110:③ -->
+<figure class="code"><pre class="code"><span class="ln">107</span><span class="mk"> </span>OUT.mkdir(exist_ok=True)
+<span class="hl"><span class="ln">108</span><span class="mk">①</span>(OUT / &quot;meta.json&quot;).write_text(json.dumps(meta, ensure_ascii=False, separators=(&quot;,&quot;, &quot;:&quot;)))</span><span class="hl"><span class="ln">109</span><span class="mk">②</span>w = e[&quot;Excitatory x Connectivity&quot;].clip(-32768, 32767).to_numpy(np.int16)</span><span class="hl"><span class="ln">110</span><span class="mk">③</span>with open(OUT / &quot;edges.bin&quot;, &quot;wb&quot;) as f:</span><span class="hl"><span class="ln">111</span><span class="mk"> </span>    f.write(offsets.tobytes())</span><span class="hl"><span class="ln">112</span><span class="mk"> </span>    f.write(e.post.to_numpy(np.uint16).tobytes())</span><span class="hl"><span class="ln">113</span><span class="mk"> </span>    f.write(w.tobytes())</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/extract.py</code> 第 107–113 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>寫 <code>circuit/meta.json</code>：神經元清單（型、側、座標、central）、分群、參數。</li>
+    <li><b class="l">②</b>連結的權重：帶正負號的突觸數，壓成 16 位元整數省空間；lif.py 讀進來再乘 0.275 mV。</li>
+    <li><b class="l">③</b>寫 <code>circuit/edges.bin</code>，一個二進位檔，三段接著放：每顆神經元的連結從第幾條開始（offsets）、每條連結連到誰（post）、每條的權重（weight）。第 5 節 lif.py 第 31–33 行用同樣的順序讀回來。</li>
+  </ul>
+
+  <h3>validate.py：FF3，子圖、打亂接線、全腦各刺激一次</h3>
+
+  <p><b>這支在做什麼。</b>PART 3 第 5 節的驗證：刺激一側的 LC10a，看 DNa02 與 AOTU019 的放電率，三種模型各做一次。目的是確認子圖和全腦的反應方向一致（沒切錯），而打亂接線後方向就不一致（接線真的在做事）。</p>
+
+<!-- code: validate.py 21-23 hl=21,22 lab=21:①,22:② -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 21</span><span class="mk">①</span>RATE, N_RUN, STEPS = 100.0, 5, 10_000  <span class="cm"># 100 Hz, 5 次, 1 s</span></span><span class="hl"><span class="ln"> 22</span><span class="mk">②</span>READ = [&quot;LC10a_L&quot;, &quot;LC10a_R&quot;, &quot;AOTU019_L&quot;, &quot;AOTU019_R&quot;, &quot;AOTU025_L&quot;, &quot;AOTU025_R&quot;,</span><span class="ln"> 23</span><span class="mk"> </span>        &quot;DNa02_L&quot;, &quot;DNa02_R&quot;, &quot;DNa01_L&quot;, &quot;DNa01_R&quot;, &quot;DNa03_L&quot;, &quot;DNa03_R&quot;, &quot;DNa11_L&quot;, &quot;DNa11_R&quot;]</pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/validate.py</code> 第 21–23 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>三個設定：刺激強度每秒 100 次、重複 5 次、每次 10,000 步（一步 0.1 ms，就是 1 秒）。PART 3 第 5 節寫的條件就是這一行。</li>
+    <li><b class="l">②</b>要記錄哪幾群神經元的放電率。</li>
+  </ul>
+
+<!-- code: validate.py 28-36 hl=28,30,31,32,33,35,36 lab=30:①,33:②,35:③,36:④ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 28</span><span class="mk"> </span>def run_sub(c, stim_group):</span><span class="ln"> 29</span><span class="mk"> </span>    out = {k: [] for k in READ}
+<span class="hl"><span class="ln"> 30</span><span class="mk">①</span>    rates = np.zeros(c.n)</span><span class="hl"><span class="ln"> 31</span><span class="mk"> </span>    rates[circ.groups[stim_group]] = RATE</span><span class="hl"><span class="ln"> 32</span><span class="mk"> </span>    for r in range(N_RUN):</span><span class="hl"><span class="ln"> 33</span><span class="mk">②</span>        cnt = LIF(c, seed=r).run(STEPS, rates)</span><span class="ln"> 34</span><span class="mk"> </span>        for k in READ:
+<span class="hl"><span class="ln"> 35</span><span class="mk">③</span>            out[k].append(float(cnt[circ.groups[k]].mean()))</span><span class="hl"><span class="ln"> 36</span><span class="mk">④</span>    return {k: round(float(np.mean(v)), 2) for k, v in out.items()}</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/validate.py</code> 第 28–36 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>先做一個全是 0 的串列，長度是子圖的神經元數；第 31 行把被刺激那一群的位置填成 100。這就是「刺激左眼 LC10a」在程式裡的樣子：一串每顆神經元的刺激頻率。</li>
+    <li><b class="l">②</b>用 lif.py 的 <code>LIF</code> 跑 10,000 步，種子 <code>r</code> 是 0 到 4；回來的是每顆神經元放了幾次電。種子固定，所以 PART 3 第 5 節說子圖的結果逐位相同。</li>
+    <li><b class="l">③</b>每一群取平均。</li>
+    <li><b class="l">④</b>5 次再平均，四捨五入到小數兩位。</li>
+  </ul>
+
+<!-- code: validate.py 45-49 hl=45,46,47 lab=45:①,46:②,47:③ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 45</span><span class="mk">①</span>    params = dict(default_params, n_run=N_RUN, t_run=1000 * ms, r_poi=RATE * Hz)</span><span class="hl"><span class="ln"> 46</span><span class="mk">②</span>    stim_ids = [int(ids[i]) for i in circ.groups[stim_group]]</span><span class="hl"><span class="ln"> 47</span><span class="mk">③</span>    run_exp(exp_name=stim_group, neu_exc=stim_ids, params=params, force_overwrite=True, n_proc=-1,</span><span class="ln"> 48</span><span class="mk"> </span>            path_res=str(res), path_comp=str(ROOT / &quot;Drosophila_brain_model/Completeness_783.csv&quot;),
+<span class="ln"> 49</span><span class="mk"> </span>            path_con=str(ROOT / &quot;Drosophila_brain_model/Connectivity_783.parquet&quot;))</pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/validate.py</code> 第 45–49 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>全腦模型：拿 Shiu 等人程式的預設參數，只改三樣：次數、時間、刺激頻率，和子圖相同。</li>
+    <li><b class="l">②</b>把要刺激的那一群從子圖的編號換回 FlyWire 的 ID，因為全腦模型認的是 ID。</li>
+    <li><b class="l">③</b>叫 Shiu 程式的 <code>run_exp</code> 跑全腦（13 萬多顆）。本頁不追進去（第 6 節）；它跑完會把每一顆的放電紀錄存成檔，E4 讀的就是這些檔。這一步沒有固定種子，所以 PART 3 第 1 節對它只要求在誤差範圍內。</li>
+  </ul>
+
+<!-- code: validate.py 57-65 hl=57,58,59,60,64,65 lab=57:①,58:②,59:③,60:④,64:⑤ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 57</span><span class="mk">①</span>for stim in [&quot;LC10a_L&quot;, &quot;LC10a_R&quot;]:</span><span class="hl"><span class="ln"> 58</span><span class="mk">②</span>    for name, fn in [(&quot;subgraph&quot;, lambda s: run_sub(circ, s)),</span><span class="hl"><span class="ln"> 59</span><span class="mk">③</span>                     (&quot;scrambled&quot;, lambda s: run_sub(circ.scrambled(seed=1), s)),</span><span class="hl"><span class="ln"> 60</span><span class="mk">④</span>                     (&quot;full_brain&quot;, run_full)]:</span><span class="ln"> 61</span><span class="mk"> </span>        t0 = time.time()
+<span class="ln"> 62</span><span class="mk"> </span>        r = fn(stim)
+<span class="ln"> 63</span><span class="mk"> </span>        r[&quot;_seconds&quot;] = round(time.time() - t0, 1)
+<span class="hl"><span class="ln"> 64</span><span class="mk">⑤</span>        r[&quot;DNa02_R_minus_L&quot;] = round(r[&quot;DNa02_R&quot;] - r[&quot;DNa02_L&quot;], 2)</span><span class="hl"><span class="ln"> 65</span><span class="mk"> </span>        results[f&quot;{stim}/{name}&quot;] = r</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/validate.py</code> 第 57–65 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>左眼、右眼各一次。</li>
+    <li><b class="l">②</b>子圖。</li>
+    <li><b class="l">③</b>打亂接線的子圖：<code>circ.scrambled(seed=1)</code>，怎麼打亂見第 5 節。</li>
+    <li><b class="l">④</b>全腦。</li>
+    <li><b class="l">⑤</b>每一組都算 DNa02 右減左，PART 3 第 5 節表上的方向就是看它的正負。全部存成 <code>output/validation.json</code>，run_all.sh 第 22 行把它複製成 <code>validation_local.json</code>。</li>
+  </ul>
+
+  <h3>fly_doom.py：FF4 校準、FF5 玩遊戲</h3>
+
+  <p><b>這支在做什麼。</b>PART 1 第 4 節的兩個零件：輸入編碼（敵人方位 → LC10a 的刺激）與讀出規則（放電率 → 按鍵），加上遊戲迴圈和校準。266 行裡大約四分之一是畫錄影用的疊圖與指令列參數，這裡不讀。先看開頭的設定值：</p>
+
+<!-- code: fly_doom.py 44-55 hl=46,47,48,49,50,54 lab=46:①,47:②,48:③,49:④,50:⑤,54:⑥ -->
+<figure class="code"><pre class="code"><span class="ln"> 44</span><span class="mk"> </span>RESULTS = ROOT / &quot;doom&quot; / &quot;results&quot;
+<span class="ln"> 45</span><span class="mk"> </span>DT = 1e-4
+<span class="hl"><span class="ln"> 46</span><span class="mk">①</span>STEPS_PER_TIC = round(1 / 35 / DT)  <span class="cm"># 286</span></span><span class="hl"><span class="ln"> 47</span><span class="mk">②</span>HALF_FOV_DOOM = 45.0                <span class="cm"># Doom 水平视野 90°</span></span><span class="hl"><span class="ln"> 48</span><span class="mk">③</span>FLY_SCALE = 2.0                     <span class="cm"># 屏幕 ±45° → 果蝇视野 ±90°</span></span><span class="hl"><span class="ln"> 49</span><span class="mk">④</span>BINO = 6.0                          <span class="cm"># 双眼重叠区 ±6°（果蝇视野角），两侧 LC10a 同时受刺激</span></span><span class="hl"><span class="ln"> 50</span><span class="mk">⑤</span>MAX_RATE = 150.0                    <span class="cm"># LC10a 最大刺激频率 Hz</span></span><span class="ln"> 51</span><span class="mk"> </span>SIGMA = 0.3                         <span class="cm"># LC10a 视野位置代理的调谐宽度</span>
+<span class="ln"> 52</span><span class="mk"> </span>TAU_S = 0.1                         <span class="cm"># 放电率平滑时间常数</span>
+<span class="ln"> 53</span><span class="mk"> </span>PANEL = [&quot;LC10a_L&quot;, &quot;LC10a_R&quot;, &quot;AOTU019_L&quot;, &quot;AOTU019_R&quot;, &quot;AOTU025_L&quot;, &quot;AOTU025_R&quot;, &quot;DNa02_L&quot;, &quot;DNa02_R&quot;]
+<span class="hl"><span class="ln"> 54</span><span class="mk">⑥</span>CAL_AZ = [-90, -75, -60, -45, -30, -20, -10, -5, 0, 5, 10, 20, 30, 45, 60, 75, 90]</span><span class="ln"> 55</span><span class="mk"> </span>POLICIES = [&quot;fly&quot;, &quot;scrambled&quot;, &quot;scrambled_cal&quot;, &quot;lesion&quot;, &quot;lesion025&quot;, &quot;random&quot;, &quot;oracle&quot;]</pre><figcaption class="figsrc">fruitfly-lab 的 <code>doom/fly_doom.py</code> 第 44–55 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>遊戲每秒 35 格，模擬每步 0.1 ms，所以一格要跑 286 步。PART 1 第 4 節的 286 就是這一行算出來的。</li>
+    <li><b class="l">②③</b>Doom 畫面橫向 90°，一半是 45°；再乘 2 攤成果蠅的 ±90°（PART 1 第 4 節）。</li>
+    <li><b class="l">④</b>雙眼重疊區 ±6°。</li>
+    <li><b class="l">⑤</b>LC10a 最大刺激頻率每秒 150 次。</li>
+    <li><b class="l">⑥</b>校準用的 17 個方位。</li>
+  </ul>
+
+<!-- code: fly_doom.py 61-66 hl=62,64,65,66 lab=62:①,64:②,65:③,66:④ -->
+<figure class="code"><pre class="code"><span class="ln"> 61</span><span class="mk"> </span>    for lb in state.labels:
+<span class="hl"><span class="ln"> 62</span><span class="mk">①</span>        if lb.object_name == &quot;DoomPlayer&quot; or lb.height &lt; 4 or lb.width &gt; lb.height * 1.3:</span><span class="ln"> 63</span><span class="mk"> </span>            continue
+<span class="hl"><span class="ln"> 64</span><span class="mk">②</span>        cx = lb.x + lb.width / 2</span><span class="hl"><span class="ln"> 65</span><span class="mk">③</span>        az = (cx - 160) / 160 * HALF_FOV_DOOM * FLY_SCALE</span><span class="hl"><span class="ln"> 66</span><span class="mk">④</span>        out.append((float(np.clip(az, -90, 90)), float(min(1.0, 0.35 + lb.height / 60))))</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>doom/fly_doom.py</code> 第 61–66 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>從遊戲回報的物體清單裡找出敵人、換算成方位角。PART 1 說「模型沒有看畫面的像素」，看的就是這份清單（每個物體在畫面上的位置與大小）。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b>跳過玩家自己、太小的、以及寬大於高的（倒地的屍體）。</li>
+    <li><b class="l">②</b>物體的橫向中心（像素）。</li>
+    <li><b class="l">③</b>換算：離畫面中線多遠、佔半個畫面的幾分之幾、乘 45°、再乘 2。</li>
+    <li><b class="l">④</b>夾在 −90 到 +90 之間；旁邊附一個強度，物體愈高（愈近）愈強。</li>
+  </ul>
+
+<!-- code: fly_doom.py 70-71 hl=71 lab=71:① -->
+<figure class="code"><pre class="code"><span class="ln"> 70</span><span class="mk"> </span>def steer_signal(r):
+<span class="hl"><span class="ln"> 71</span><span class="mk">①</span>    return (r[&quot;DNa02_R&quot;] - r[&quot;DNa02_L&quot;]) + (r[&quot;AOTU019_R&quot;] - r[&quot;AOTU019_L&quot;])</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>doom/fly_doom.py</code> 第 70–71 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>轉向訊號，PART 1 第 4 節的公式一字不差：DNa02 右減左，加 AOTU019 右減左。</li>
+  </ul>
+
+<!-- code: fly_doom.py 89-95 hl=90,91,93,94,95 lab=90:①,91:②,94:③,95:④ -->
+<figure class="code"><pre class="code"><span class="ln"> 89</span><span class="mk"> </span>        for az, strength in targets:
+<span class="hl"><span class="ln"> 90</span><span class="mk">①</span>            ecc = min(abs(az) / 90.0, 1.0)</span><span class="hl"><span class="ln"> 91</span><span class="mk">②</span>            sides = [&quot;L&quot;, &quot;R&quot;] if abs(az) &lt; BINO else ([&quot;R&quot;] if az &gt; 0 else [&quot;L&quot;])</span><span class="ln"> 92</span><span class="mk"> </span>            for s in sides:
+<span class="hl"><span class="ln"> 93</span><span class="mk"> </span>                ids = self.lc[s]</span><span class="hl"><span class="ln"> 94</span><span class="mk">③</span>                tune = np.exp(-((self.pref_ecc[ids] - ecc) ** 2) / (2 * SIGMA ** 2))</span><span class="hl"><span class="ln"> 95</span><span class="mk">④</span>                rates[ids] = np.minimum(MAX_RATE, rates[ids] + MAX_RATE * strength * tune)</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>doom/fly_doom.py</code> 第 89–95 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>輸入編碼的核心：一個方位角變成每顆 LC10a 的刺激頻率。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b>偏心度：方位角的絕對值除以 90，正前方是 0、最邊緣是 1。</li>
+    <li><b class="l">②</b>決定刺激哪一眼：±6° 以內兩眼都刺激，否則依正負挑右眼或左眼。</li>
+    <li><b class="l">③</b>每顆 LC10a 的偏好位置（extract.py 算的 central 反過來，<code>pref_ecc = 1 − central</code>）和敵人的偏心度愈接近，<code>tune</code> 愈接近 1；差得遠就趨近 0。這是一條鐘形曲線，寬度由 <code>SIGMA</code> 決定。</li>
+    <li><b class="l">④</b>刺激頻率 ＝ 150 × 強度 × tune，上限 150。PART 1 第 4 節「偏好位置和敵人方位接近的那幾顆刺激最強」就是這兩行。</li>
+  </ul>
+
+<!-- code: fly_doom.py 98-104 hl=99,101,103 lab=99:①,101:②,103:③ -->
+<figure class="code"><pre class="code"><span class="ln"> 98</span><span class="mk"> </span>    def step(self, targets):
+<span class="hl"><span class="ln"> 99</span><span class="mk">①</span>        cnt = self.lif.run(STEPS_PER_TIC, self.stim_rates(targets))</span><span class="ln">100</span><span class="mk"> </span>        self.last_counts = cnt
+<span class="hl"><span class="ln">101</span><span class="mk">②</span>        hz = cnt / (STEPS_PER_TIC * DT)</span><span class="ln">102</span><span class="mk"> </span>        for k, ids in self.idx.items():
+<span class="hl"><span class="ln">103</span><span class="mk">③</span>            self.rate[k] = self.alpha * self.rate[k] + (1 - self.alpha) * float(hz[ids].mean())</span><span class="ln">104</span><span class="mk"> </span>        return self.rate</pre><figcaption class="figsrc">fruitfly-lab 的 <code>doom/fly_doom.py</code> 第 98–104 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>每一格：把上面算出的刺激交給 lif.py 跑 286 步，拿回每顆神經元在這一格放了幾次電。</li>
+    <li><b class="l">②</b>次數除以這一格的秒數，變成每秒放電率。</li>
+    <li><b class="l">③</b>八群各取平均，再和上一格的值做加權平均（平滑，讓一格之內的隨機起伏不要直接變成按鍵）。回傳的 <code>self.rate</code> 就是 PART 5 播放台上那八條曲線。</li>
+  </ul>
+
+<!-- code: fly_doom.py 125-138 hl=125,126,127,128,129,133,134,135,136,137 lab=125:①,126:②,128:③,129:④,133:⑤,134:⑥,135:⑦,136:⑧ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln">125</span><span class="mk">①</span>    c = circuit.scrambled(seed=seed + 100) if name.startswith(&quot;scrambled&quot;) else circuit</span><span class="hl"><span class="ln">126</span><span class="mk">②</span>    kill = {&quot;lesion&quot;: [&quot;AOTU019_L&quot;, &quot;AOTU019_R&quot;, &quot;AOTU025_L&quot;, &quot;AOTU025_R&quot;], &quot;lesion025&quot;: [&quot;AOTU025_L&quot;, &quot;AOTU025_R&quot;]}.get(name, [])</span><span class="hl"><span class="ln">127</span><span class="mk"> </span>    silenced = [i for k in kill for i in circuit.groups[k]]</span><span class="hl"><span class="ln">128</span><span class="mk">③</span>    brain = FlyBrain(c, seed=seed, silenced=silenced)</span><span class="hl"><span class="ln">129</span><span class="mk">④</span>    cal = load_cal(&quot;scrambled&quot; if name == &quot;scrambled_cal&quot; else &quot;fly&quot;)</span><span class="ln">130</span><span class="mk"> </span>
+<span class="ln">131</span><span class="mk"> </span>    def act(targets):
+<span class="ln">132</span><span class="mk"> </span>        r = brain.step(targets)
+<span class="hl"><span class="ln">133</span><span class="mk">⑤</span>        s = steer_signal(r)</span><span class="hl"><span class="ln">134</span><span class="mk">⑥</span>        left, right = int(s &lt; -cal[&quot;turn_th&quot;]), int(s &gt; cal[&quot;turn_th&quot;])</span><span class="hl"><span class="ln">135</span><span class="mk">⑦</span>        fire = int(min(r[&quot;AOTU019_L&quot;], r[&quot;AOTU019_R&quot;]) &gt; cal[&quot;fire_th&quot;])</span><span class="hl"><span class="ln">136</span><span class="mk">⑧</span>        if not targets and sum(r.values()) &lt; cal[&quot;quiet_th&quot;]:</span><span class="hl"><span class="ln">137</span><span class="mk"> </span>            left, right = 0, 1  <span class="cm"># 没有视觉输入：向右搜索（与 oracle 相同的工程化行为）</span></span><span class="ln">138</span><span class="mk"> </span>        return [left, right, fire], dict(r)</pre><figcaption class="figsrc">fruitfly-lab 的 <code>doom/fly_doom.py</code> 第 125–138 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>七個條件裡用到大腦的五個，差別全在這幾行：換不換接線、損毀誰、用哪組閾值。然後是讀出規則本身。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b>條件名以 <code>scrambled</code> 開頭就用打亂的接線，打亂編號是種子加 100；PART 4 第 3 節「每一局不同的打亂」就是因為種子每局加 1。</li>
+    <li><b class="l">②</b>要損毀哪些群：<code>lesion</code> 四群、<code>lesion025</code> 兩群、其他不損毀。</li>
+    <li><b class="l">③</b>建大腦：接線、種子、損毀名單交給 lif.py。</li>
+    <li><b class="l">④</b>讀哪組閾值：<code>scrambled_cal</code> 用打亂接線自己校準的那組，其他全用完整接線的。PART 4 第 3 節指出的問題（閾值只在第 100 號打亂上校準）就在這一行與第 125 行的組合裡。</li>
+    <li><b class="l">⑤</b>轉向訊號。</li>
+    <li><b class="l">⑥</b>訊號小於負閾值按左轉、大於正閾值按右轉；<code>int(…)</code> 把真假變成 1 或 0。</li>
+    <li><b class="l">⑦</b>開火：兩顆 AOTU019 較小者超過開火閾值。PART 4 第 4 節 E3 的起點就是這一行。</li>
+    <li><b class="l">⑧</b>畫面上沒有敵人、整個迴路也安靜時（八群放電率加總小於 5 Hz；校準檔除了兩個閾值還存了這個 5，叫 <code>quiet_th</code>，它不是校準出來的，是作者直接寫死的），固定按右轉去找敵人。這是人為設定，作者的註解自己標明了。</li>
+  </ul>
+
+<!-- code: fly_doom.py 187-198 hl=187,188,189,190,198 lab=187:①,188:②,189:③,190:④,198:⑤ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln">187</span><span class="mk">①</span>        while not game.is_episode_finished():</span><span class="hl"><span class="ln">188</span><span class="mk">②</span>            st = game.get_state()</span><span class="hl"><span class="ln">189</span><span class="mk">③</span>            targets = enemies(st)</span><span class="hl"><span class="ln">190</span><span class="mk">④</span>            action, rates = act(targets)</span><span class="ln">191</span><span class="mk"> </span>            if ep == 0:
+<span class="ln">192</span><span class="mk"> </span>                near = min(targets, key=lambda t: abs(t[0]))[0] if targets else None
+<span class="ln">193</span><span class="mk"> </span>                trace.append({&quot;az&quot;: None if near is None else round(near, 1), &quot;a&quot;: action,
+<span class="ln">194</span><span class="mk"> </span>                              **({k: round(v, 1) for k, v in rates.items()} if rates else {})})
+<span class="ln">195</span><span class="mk"> </span>                if record:
+<span class="ln">196</span><span class="mk"> </span>                    frames.append(overlay(st.screen_buffer, rates, action, st.number,
+<span class="ln">197</span><span class="mk"> </span>                                          int(game.get_game_variable(vzd.GameVariable.KILLCOUNT)), policy))
+<span class="hl"><span class="ln">198</span><span class="mk">⑤</span>            game.make_action(action)</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>doom/fly_doom.py</code> 第 187–198 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>遊戲迴圈，一局裡每一格都走一遍。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b>只要這一局還沒結束（玩家還沒死），就一直做。</li>
+    <li><b class="l">②</b>向遊戲要目前的狀態（畫面、物體清單）。</li>
+    <li><b class="l">③</b>用上面的 <code>enemies</code> 換算成敵人方位的清單。</li>
+    <li><b class="l">④</b>問大腦要按什麼：這就是叫第 131 行那個 <code>act</code>。回來一組三個 0 或 1（左、右、開火）。</li>
+    <li><b class="l">⑤</b>把按鍵交給遊戲，遊戲前進一格。中間跳過的幾行是第 0 局的逐格紀錄（PART 5 的資料來源）。</li>
+  </ul>
+
+<!-- code: fly_doom.py 240-244 hl=241,242,243,244 lab=241:①,242:②,243:③,244:④ -->
+<figure class="code"><pre class="code"><span class="ln">240</span><span class="mk"> </span>    by = {r[&quot;az&quot;]: r for r in rows}
+<span class="hl"><span class="ln">241</span><span class="mk">①</span>    s0 = abs(by[0][&quot;steer&quot;])</span><span class="hl"><span class="ln">242</span><span class="mk">②</span>    s_off = min(abs(by[-10][&quot;steer&quot;]), abs(by[10][&quot;steer&quot;]))</span><span class="hl"><span class="ln">243</span><span class="mk">③</span>    turn_th = (s0 + s_off) / 2 if s_off &gt; s0 else max(1.1 * s0, 1.0)</span><span class="hl"><span class="ln">244</span><span class="mk">④</span>    fire_th = max(0.5 * min(by[0][&quot;AOTU019_L&quot;], by[0][&quot;AOTU019_R&quot;]), 1.0)</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>doom/fly_doom.py</code> 第 240–244 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>校準跑完 17 個方位之後，取出 0° 那一列的轉向訊號絕對值。</li>
+    <li><b class="l">②</b>取 −10° 與 +10° 兩列中較小的絕對值。</li>
+    <li><b class="l">③</b>轉向閾值：兩者的中點；例外與下限同 PART 1 第 4 節。</li>
+    <li><b class="l">④</b>開火閾值：0° 時兩顆 AOTU019 較小者的一半，下限 1。第 3 節 ff_extra.py 第 81–83 行就是照抄這四行。</li>
+  </ul>
+
+  <h3>analyze.py：FF6，統計</h3>
+
+  <p><b>這支在做什麼。</b>讀七個條件的 JSON，算每個條件的平均、信賴區間、對 fly 的 p 值，以及第 0 局逐格紀錄的瞄準品質，寫成 <code>analysis.json</code>。PART 3 第 7 節那張表每一欄都從這裡來。</p>
+
+<!-- code: analyze.py 18-23 hl=18,20,22,23 lab=18:①,20:②,22:③,23:④ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 18</span><span class="mk">①</span>def paired_perm_p(a, b, n=20000):</span><span class="ln"> 19</span><span class="mk"> </span>    &quot;&quot;&quot;同一组随机种子下的配对符号翻转置换检验（双侧）。&quot;&quot;&quot;
+<span class="hl"><span class="ln"> 20</span><span class="mk">②</span>    d = np.asarray(a, float) - np.asarray(b, float)</span><span class="ln"> 21</span><span class="mk"> </span>    obs = abs(d.mean())
+<span class="hl"><span class="ln"> 22</span><span class="mk">③</span>    flips = rng.choice([-1, 1], size=(n, d.size))</span><span class="hl"><span class="ln"> 23</span><span class="mk">④</span>    return float(((np.abs((flips * d).mean(axis=1)) &gt;= obs - 1e-12).sum() + 1) / (n + 1))</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>doom/analyze.py</code> 第 18–23 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>配對置換檢定，和第 3 節 ff_extra.py 的 <code>perm_p</code> 同一個算法；ff_extra.py 就是照這裡抄的。</li>
+    <li><b class="l">②</b>逐局相減。</li>
+    <li><b class="l">③</b>20,000 次翻號。第 15 行把亂數種子固定成 0，所以 PART 3 第 7 節說 p 值也逐位相同。</li>
+    <li><b class="l">④</b>算 p。</li>
+  </ul>
+
+<!-- code: analyze.py 36-40 hl=36,37,38,39 lab=36:①,37:②,38:③,39:④ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 36</span><span class="mk">①</span>    off = [f for f in seen if abs(f[&quot;az&quot;]) &gt;= BINO]</span><span class="hl"><span class="ln"> 37</span><span class="mk">②</span>    correct = sum(1 for f in off if (f[&quot;az&quot;] &gt; 0 and f[&quot;a&quot;][1] and not f[&quot;a&quot;][0]) or (f[&quot;az&quot;] &lt; 0 and f[&quot;a&quot;][0] and not f[&quot;a&quot;][1]))</span><span class="hl"><span class="ln"> 38</span><span class="mk">③</span>    wrong = sum(1 for f in off if (f[&quot;az&quot;] &gt; 0 and f[&quot;a&quot;][0] and not f[&quot;a&quot;][1]) or (f[&quot;az&quot;] &lt; 0 and f[&quot;a&quot;][1] and not f[&quot;a&quot;][0]))</span><span class="hl"><span class="ln"> 39</span><span class="mk">④</span>    fire_in = sum(1 for f in seen if f[&quot;a&quot;][2] and abs(f[&quot;az&quot;]) &lt; BINO)</span><span class="ln"> 40</span><span class="mk"> </span>    fire_all = sum(1 for f in trace if f[&quot;a&quot;][2])</pre><figcaption class="figsrc">fruitfly-lab 的 <code>doom/analyze.py</code> 第 36–40 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b><code>trace</code> 是第 0 局全部的格，<code>seen</code> 是其中畫面上有敵人的格；這一行再從中挑出敵人在 ±6° 以外的格。</li>
+    <li><b class="l">②</b>敵人在右邊時按了右轉（而且沒按左轉）、或在左邊時按了左轉，算轉對。</li>
+    <li><b class="l">③</b>反過來算轉錯。PART 3 第 7 節表上的「轉對、轉錯」兩欄就是這兩個數除以 ±6° 以外的格數。</li>
+    <li><b class="l">④</b>開火時敵人正好在 ±6° 以內的次數。</li>
+  </ul>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s5"><span class="pt">5</span>第三層：lif.py，神經元方程式怎麼變成程式</h2>
+
+  <p>第二層的四支作者程式裡，<code>validate.py</code>、<code>fly_doom.py</code> 和我們的 <code>e4_asymmetry.py</code> 都寫了 <code>from lif import LIF, Circuit</code>，<code>ff_extra.py</code> 只匯入 <code>Circuit</code>。這是作者自己寫的唯一一個被引用的檔案，裡面兩樣東西：<code>Circuit</code> 負責把 extract.py 寫出來的子圖讀進來（和打亂它），<code>LIF</code> 負責 PART 1 第 2 節那兩條方程式。</p>
+
+  <h3>Circuit：讀子圖、打亂子圖</h3>
+
+<!-- code: lif.py 27-35 hl=27,31,32,33,35 lab=27:①,31:②,32:③,33:④,35:⑤ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 27</span><span class="mk">①</span>        self.meta = json.loads((path / &quot;meta.json&quot;).read_text())</span><span class="ln"> 28</span><span class="mk"> </span>        n, m = self.meta[&quot;n_neurons&quot;], self.meta[&quot;n_edges&quot;]
+<span class="ln"> 29</span><span class="mk"> </span>        raw = (path / &quot;edges.bin&quot;).read_bytes()
+<span class="ln"> 30</span><span class="mk"> </span>        o = 4 * (n + 1)
+<span class="hl"><span class="ln"> 31</span><span class="mk">②</span>        self.offsets = np.frombuffer(raw, np.uint32, n + 1, 0).astype(np.int64)</span><span class="hl"><span class="ln"> 32</span><span class="mk">③</span>        self.post = np.frombuffer(raw, np.uint16, m, o).astype(np.int64)</span><span class="hl"><span class="ln"> 33</span><span class="mk">④</span>        self.w = np.frombuffer(raw, np.int16, m, o + 2 * m).astype(np.float64) * self.meta[&quot;w_syn_mv&quot;]</span><span class="ln"> 34</span><span class="mk"> </span>        self.n, self.m = n, m
+<span class="hl"><span class="ln"> 35</span><span class="mk">⑤</span>        self.groups = {k: np.array(v) for k, v in self.meta[&quot;groups&quot;].items()}</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/lif.py</code> 第 27–35 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>讀 <code>meta.json</code>：神經元清單、分群、參數。</li>
+    <li><b class="l">②③④</b>讀 <code>edges.bin</code> 的三段，順序和 extract.py 第 111–113 行寫的時候一樣：每顆神經元的連結從第幾條開始、每條連到誰、每條的權重。權重讀進來乘 0.275 mV，變成「上游放一次電，下游的 g 加多少」（g 是下一段要講的「這顆神經元目前收到的輸入總量」）。</li>
+    <li><b class="l">⑤</b>分群：例如 <code>"LC10a_L"</code> 對到左眼那 115 顆的編號。validate.py 與 fly_doom.py 選要刺激、要讀的神經元，用的就是這個字典。</li>
+  </ul>
+
+<!-- code: lif.py 37-42 hl=37,41 lab=37:①,41:② -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 37</span><span class="mk">①</span>    def scrambled(self, seed=0):</span><span class="ln"> 38</span><span class="mk"> </span>        &quot;&quot;&quot;度保持重连对照：每个神经元的出度、入度、正负号（Dale 定律）不变，只打乱&quot;连给谁&quot;。&quot;&quot;&quot;
+<span class="ln"> 39</span><span class="mk"> </span>        c = object.__new__(Circuit)
+<span class="ln"> 40</span><span class="mk"> </span>        c.__dict__.update(self.__dict__)
+<span class="hl"><span class="ln"> 41</span><span class="mk">②</span>        c.post = np.random.default_rng(seed).permutation(self.post)</span><span class="ln"> 42</span><span class="mk"> </span>        return c</pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/lif.py</code> 第 37–42 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>打亂接線。PART 1 第 5 節寫的規則「每條連結的起點與強度不變、終點隨機換成子圖裡另一顆」，程式只有一行：</li>
+    <li><b class="l">②</b>把「每條連到誰」那一串整個隨機重排（<code>permutation</code>），起點（offsets）和權重（w）都不動。所以每顆神經元送出幾條、每條多強、正負號，全部和原本一樣，只有「連到誰」變了。<code>seed</code> 決定重排的方式；同一個 seed 永遠得到同一種重排，這就是 PART 4 第 3 節說的打亂「編號」。</li>
+  </ul>
+
+  <h3>LIF：兩條方程式、一條放電規則</h3>
+
+  <p><b>這段在做什麼。</b>先把 PART 1 第 2 節的兩條方程式用三句話說一次：V 是神經元的電壓（白話叫水位），一直往「靜止電位（沒有任何輸入時電壓停住的地方，這裡是 −52 mV）加上目前的輸入」靠近，靠近得多快由 τ<sub>m</sub> 決定，這是第一式；g 是它目前收到的輸入總量（水龍頭開度），自己會衰減，多快由 τ<sub>syn</sub> 決定，這是第二式；V 超過<b>放電閾值</b>就放電、拉回靜止電位。注意這裡的放電閾值是電壓，和前面轉向、開火的閾值（放電率）是兩回事。方程式用的是毫秒、毫伏；程式一步 0.1 ms，要先把每個參數換算成「一步要做的事」。</p>
+
+<!-- code: lif.py 86-91 hl=86,87,88,89,90,91 lab=86:①,87:②,88:③,89:④,90:⑤,91:⑥ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln"> 86</span><span class="mk">①</span>        self.v0, self.vr, self.vth = float(p[&quot;v0&quot;]), float(p[&quot;v_rst&quot;]), float(p[&quot;v_th&quot;])</span><span class="hl"><span class="ln"> 87</span><span class="mk">②</span>        self.a_v = dt * 1e3 / p[&quot;t_mbr_ms&quot;]</span><span class="hl"><span class="ln"> 88</span><span class="mk">③</span>        self.decay_g = float(np.exp(-dt * 1e3 / p[&quot;tau_ms&quot;]))</span><span class="hl"><span class="ln"> 89</span><span class="mk">④</span>        self.rfc_steps = int(round(p[&quot;t_rfc_ms&quot;] * 1e-3 / dt))</span><span class="hl"><span class="ln"> 90</span><span class="mk">⑤</span>        self.dly = int(round(p[&quot;t_dly_ms&quot;] * 1e-3 / dt))</span><span class="hl"><span class="ln"> 91</span><span class="mk">⑥</span>        self.kick = float(p[&quot;poisson_kick_mv&quot;])</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/lif.py</code> 第 86–91 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>靜止電位、放電後拉回的值、放電閾值：−52、−52、−45 mV。</li>
+    <li><b class="l">②</b><code>a_v</code> ＝ 一步的長度 ÷ τ<sub>m</sub>（0.1 ÷ 20）。第一式是 τ<sub>m</sub>·dV/dt ＝ −(V − V<sub>rest</sub>) + g，V<sub>rest</sub> 就是靜止電位；程式把它換成「每一步把 V 往目標移動 a_v 這個比例」。</li>
+    <li><b class="l">③</b><code>decay_g</code> ＝ e 的 (−0.1 ÷ 5) 次方：第二式每一步 g 要乘的那個「關回去」的係數。PART 1 第 2 節「每過 5 ms 剩約 37%」，就是這個係數連乘 50 步。</li>
+    <li><b class="l">④</b>不反應期（放電後 2.2 ms 內不再反應）換成 22 步。</li>
+    <li><b class="l">⑤</b>傳遞延遲 1.8 ms 換成 18 步。</li>
+    <li><b class="l">⑥</b>外部刺激每來一下，V 直接加 68.75 mV：作者在 extract.py 第 102 行把它設成每個突觸 0.275 mV 的 250 倍，相當於 250 個突觸同時到達，一下就超過放電閾值，所以「刺激一次等於放電一次」。</li>
+  </ul>
+
+<!-- code: lif.py 58-77 hl=59,60,65,66,67,68,69,70,71,72,73,74,75,76,77 lab=59:①,66:②,67:③,70:④,71:⑤,72:⑥,74:⑦,77:⑧ -->
+<figure class="code"><pre class="code"><span class="ln"> 58</span><span class="mk"> </span>            for i in range(n):
+<span class="hl"><span class="ln"> 59</span><span class="mk">①</span>                g[i] += buf[slot, i]</span><span class="hl"><span class="ln"> 60</span><span class="mk"> </span>                buf[slot, i] = 0.0</span><span class="ln"> 61</span><span class="mk"> </span>                if mute[i]:
+<span class="ln"> 62</span><span class="mk"> </span>                    v[i] = v0
+<span class="ln"> 63</span><span class="mk"> </span>                    g[i] = 0.0
+<span class="ln"> 64</span><span class="mk"> </span>                    continue
+<span class="hl"><span class="ln"> 65</span><span class="mk"> </span>                if rfc[i] &lt;= 0:</span><span class="hl"><span class="ln"> 66</span><span class="mk">②</span>                    v[i] += a_v * (v0 - v[i] + g[i])</span><span class="hl"><span class="ln"> 67</span><span class="mk">③</span>                    g[i] *= decay_g</span><span class="hl"><span class="ln"> 68</span><span class="mk"> </span>                rfc[i] -= 1</span><span class="hl"><span class="ln"> 69</span><span class="mk"> </span>                if p_spk[i] &gt; 0.0 and np.random.random() &lt; p_spk[i]:</span><span class="hl"><span class="ln"> 70</span><span class="mk">④</span>                    v[i] += kick</span><span class="hl"><span class="ln"> 71</span><span class="mk">⑤</span>                if v[i] &gt; vth:</span><span class="hl"><span class="ln"> 72</span><span class="mk">⑥</span>                    v[i] = vr</span><span class="hl"><span class="ln"> 73</span><span class="mk"> </span>                    g[i] = 0.0</span><span class="hl"><span class="ln"> 74</span><span class="mk">⑦</span>                    rfc[i] = rfc_steps</span><span class="hl"><span class="ln"> 75</span><span class="mk"> </span>                    counts[i] += 1</span><span class="hl"><span class="ln"> 76</span><span class="mk"> </span>                    for k in range(offsets[i], offsets[i + 1]):</span><span class="hl"><span class="ln"> 77</span><span class="mk">⑧</span>                        buf[dst, post[k]] += w[k]</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/lif.py</code> 第 58–77 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <p><b>這段在做什麼。</b>模擬的核心：每一步、每一顆神經元做的事。PART 1 第 2 節分成「隨時都在算」與「事件」兩組，這裡可以逐行對回去。</p>
+
+  <ul class="walk">
+    <li><b class="l">①</b>先收 18 步前（1.8 ms 前）別的神經元放電送過來的輸入，加進 g；收完把那個暫存格清空（暫存格是程式裡排隊用的格子，和遊戲的「格」無關）。</li>
+    <li><b class="l">②</b>第一式：V 往「靜止電位 + g」的方向移動 a_v 這麼多的比例。只在不反應期之外做（第 65 行）。</li>
+    <li><b class="l">③</b>第二式：g 乘上 decay_g，關回去一點。</li>
+    <li><b class="l">④</b>外部刺激：以這一步的機率抽一次，中了就把 V 加 68.75 mV。機率是刺激頻率 × 一步的長度，fly_doom.py 給的 150 Hz 就是每步 1.5% 的機率。</li>
+    <li><b class="l">⑤</b>放電規則：V 超過放電閾值。</li>
+    <li><b class="l">⑥</b>事件：V 拉回靜止、g 歸零（第 73 行）。</li>
+    <li><b class="l">⑦</b>開始 22 步的不反應期；放電次數加 1。</li>
+    <li><b class="l">⑧</b>對這顆神經元每一條往外的連結，把權重放進「18 步後」那個暫存格裡，等延遲到了再由第 59 行收進下游的 g。損毀的神經元（第 61–64 行）永遠被釘在靜止電位、g 清零，所以不放電、也不送東西。</li>
+  </ul>
+
+<!-- code: lif.py 105-109 hl=105,108,109 lab=105:①,108:②,109:③ -->
+<figure class="code"><pre class="code"><span class="hl"><span class="ln">105</span><span class="mk">①</span>    def run(self, n_steps, rates_hz):</span><span class="ln">106</span><span class="mk"> </span>        &quot;&quot;&quot;跑 n_steps 步，rates_hz 为每个神经元的泊松刺激频率（长度 n）。返回每个神经元的放电次数。&quot;&quot;&quot;
+<span class="ln">107</span><span class="mk"> </span>        c = self.c
+<span class="hl"><span class="ln">108</span><span class="mk">②</span>        counts = np.zeros(c.n, dtype=np.int64)</span><span class="hl"><span class="ln">109</span><span class="mk">③</span>        p_spk = np.asarray(rates_hz, dtype=np.float64) * self.dt</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/lif.py</code> 第 105–109 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
+<!-- /code -->
+
+  <ul class="walk">
+    <li><b class="l">①</b>對外的入口：跑幾步、每顆神經元的刺激頻率。validate.py 第 33 行給 10,000 步，fly_doom.py 第 99 行每一格給 286 步。</li>
+    <li><b class="l">②</b>準備放電次數的計數器。</li>
+    <li><b class="l">③</b>頻率乘一步的長度，變成每步的機率，交給上面的核心。回傳每顆神經元放了幾次電，第二層的程式再把它換成每秒放電率。</li>
+  </ul>
+
+  <div class="note">
+    <b>讀到這裡，四個零件各在哪個檔案就清楚了。</b>零件①連結體在 extract.py 切、edges.bin 存、Circuit 讀；零件②方程式在 LIF 的核心那二十行；零件③輸入編碼在 fly_doom.py 第 89–95 行（<code>stim_rates</code> 那一段）；零件④讀出規則在 fly_doom.py 第 133–135 行與校準的第 241–244 行。PART 1 第 6 節總表說「只有零件①來自資料」，對回程式就是：只有 edges.bin 的內容是從 FlyWire 的表算出來的；其餘三個零件在 lif.py 與 fly_doom.py 裡，參數除了 0.275 mV 之外都是人定的，兩個閾值則是校準程序算出來的，既不是人寫的也不是資料。
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s6"><span class="pt">6</span>停在哪裡：第三方套件與 Shiu 的全腦模型</h2>
+
+  <p>再往下就是別人寫的程式庫。本頁不展開它們的原始碼，只列出每一個被誰叫到、做什麼、吃什麼吐什麼。</p>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>套件或工具</th><th>誰叫它</th><th>做什麼</th><th>進去的是什麼、出來的是什麼</th></tr>
+    <tr><td>conda、pip</td><td>setup_envs.sh</td><td>建隔離的 Python 環境、裝指定版本的套件</td><td>進：環境名、Python 版本、套件清單；出：三個可以執行的 Python</td></tr>
+    <tr><td>git</td><td>run_all.sh 第 13–15、33 行</td><td>取得 fruitfly-lab 與 Shiu 的 repo、切到固定 commit、把改動過的檔案還原</td><td>進：網址與 commit；出：<code>repo/</code> 資料夾</td></tr>
+    <tr><td>curl、md5sum</td><td>run_all.sh 第 19、21 行</td><td>下載一個檔案；算檔案的指紋</td><td>進：網址或檔案；出：檔案或一行指紋</td></tr>
+    <tr><td>pandas</td><td>我們的 ff1、e4；作者的 extract</td><td>讀表格檔、篩選、分組加總、兩表對接</td><td>進：parquet、tsv、feather；出：表格</td></tr>
+    <tr><td>numpy</td><td>幾乎每一支</td><td>一串數字的運算：相減、平均、隨機抽樣</td><td>進出都是數字陣列</td></tr>
+    <tr><td>numba</td><td>lif.py 第 45–50 行</td><td>把核心那二十行編譯成機器碼，跑得快很多；沒裝也能跑，走第 115 行以後的純 numpy 版本</td><td>進：一個 Python 函式；出：同樣行為、更快的版本</td></tr>
+    <tr><td>ViZDoom</td><td>fly_doom.py 第 142–152、187–198 行</td><td>遊戲引擎：開一局 defend_the_center、每一格回報畫面與物體清單、接收按鍵、計分</td><td>進：三個 0 或 1 的按鍵；出：畫面、物體位置、擊殺數。版本 1.3.0 與 1.3.2 回報的敵人位置不同（PART 3 第 8 節）</td></tr>
+    <tr><td>Brian2 與 Shiu 等人的程式</td><td>validate.py 第 40–49 行；e4 讀它的輸出</td><td>用同一組方程式模擬全腦 138,639 顆神經元。MIT 授權，程式在 <code>repo/Drosophila_brain_model/</code></td><td>進：要刺激的神經元 ID、頻率、次數、時間；出：每一顆神經元每一次放電的紀錄（parquet）。沒有固定種子</td></tr>
+    <tr><td>PIL、imageio</td><td>fly_doom.py 的 <code>overlay</code> 與 <code>--record</code></td><td>把每一格的畫面疊上放電率畫成影片；只在錄影時用，重現不用</td><td>進：畫面與八個放電率；出：mp4</td></tr>
+  </table>
+  </div>
+  <p class="figsrc">表裡的行號對回各檔案的原檔（行數記在 <code>out/code_meta.json</code>）；138,639 顆出自 PART 3 第 3 節 FF1 的核對（<code>out/fruitfly/logs/ff1_conn.log</code>）；ViZDoom 的兩個版本號出自 <code>setup_envs.sh</code> 第 11、12 行。</p>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <h2 id="s7"><span class="pt">7</span>總表：每個檔案誰叫它、它產生什麼</h2>
+
+  <div class="tblwrap">
+  <table>
+    <tr><th>檔案</th><th>層</th><th>誰叫它</th><th>讀什麼</th><th>寫什麼（本課 <code>out/</code> 裡的對應）</th></tr>
+    <tr><td><code>setup_envs.sh</code></td><td>一</td><td>你</td><td>—</td><td>三個 conda 環境</td></tr>
+    <tr><td><code>run_all.sh</code></td><td>一</td><td>你</td><td>—</td><td><code>logs/</code> 每一步一個 log（<code>out/fruitfly/logs/</code>）、<code>results/</code></td></tr>
+    <tr><td><code>ff1_compare_conn.py</code></td><td>二</td><td>run_all.sh 第 20 行</td><td>Shiu 的連線表</td><td><code>results/ff1_conn.json</code>，check.py 的 FF1 三項就去這個檔取值（本課實跑時那一版的程式把同樣的 JSON 印在 log 裡，所以本課收在 <code>out/fruitfly/logs/ff1_conn.log</code>；只是存檔位置不同，數字相同）</td></tr>
+    <tr><td><code>extract.py</code></td><td>二</td><td>run_all.sh 第 21 行</td><td>連線表、FlyWire 註解表</td><td><code>circuit/meta.json</code>、<code>circuit/edges.bin</code>（md5 在 <code>out/fruitfly/logs/ff2_md5_*.txt</code>）</td></tr>
+    <tr><td><code>validate.py</code></td><td>二</td><td>run_all.sh 第 22 行</td><td>子圖兩檔；Shiu 的程式與資料</td><td><code>output/validation.json</code>（<code>out/fruitfly/validation_local.json</code>）；Shiu 模型每顆神經元的放電紀錄</td></tr>
+    <tr><td><code>fly_doom.py</code></td><td>二</td><td>run_all.sh 第 23、27 行</td><td>子圖兩檔；校準檔</td><td><code>calibration_fly.json</code>、<code>calibration_scrambled.json</code>、七個條件各一個 JSON 與第 0 局逐格紀錄（<code>out/fruitfly/local_doom_vizdoom130/</code>、<code>…132/</code>）</td></tr>
+    <tr><td><code>analyze.py</code></td><td>二</td><td>run_all.sh 第 28 行</td><td>七個條件的 JSON、校準檔</td><td><code>analysis.json</code>（同上兩個資料夾）</td></tr>
+    <tr><td><code>ff_extra.py</code></td><td>二</td><td>run_all.sh 第 31 行</td><td>作者的 fly_doom.py、lif.py、校準檔</td><td><code>E1.json</code>、<code>E2.json</code>、<code>E3.json</code>（<code>out/fruitfly/ext_vizdoom1.3.0/</code>、<code>…1.3.2/</code>）</td></tr>
+    <tr><td><code>e4_asymmetry.py</code></td><td>二</td><td>run_all.sh 第 32 行</td><td>子圖、註解表、連線表、FF3 的放電紀錄、lif.py</td><td><code>E4_asymmetry.json</code>（<code>out/fruitfly/E4_asymmetry.json</code>）</td></tr>
+    <tr><td><code>check.py</code></td><td>二</td><td>run_all.sh 第 34 行</td><td><code>expected.json</code>、上面所有輸出</td><td>終端機上的 ✓／✗／△ 清單（<code>out/fruitfly/runall_test.out</code>）</td></tr>
+    <tr><td><code>lif.py</code></td><td>三</td><td>validate、fly_doom、ff_extra、e4</td><td><code>circuit/meta.json</code>、<code>circuit/edges.bin</code></td><td>不寫檔；回傳每顆神經元的放電次數</td></tr>
+  </table>
+  </div>
+
+  <p class="figsrc">行數與常數出自 <code>out/code_meta.json</code>（由 <code>scripts/make_code.py</code> 從原檔抓）；頁面上每一個程式區塊由同一支程式產生，<code>--check</code> 逐塊對回原檔。</p>
+
+  <div class="pager">
+    <a href="part5-demo.html">← PART 5　逐格看迴路怎麼打</a>
+    <a href="index.html">回課程首頁 →</a>
+  </div>
+
+</div>
+<div class="foot">BSC 腦空間體研究中心 · 專題課程 果蠅玩 Doom · 教材由 Claude Code 產生　·　<a href="index.html">回課程首頁</a></div>
+</body>
+</html>

@@ -232,3 +232,15 @@ a.dl:hover{background:var(--accent); color:#fff}
 .shot pre{margin:0; font-size:12.8px; line-height:1.55}
 .shot figcaption{font-size:14px; color:var(--soft); line-height:1.7; margin-top:9px}
 .shot figcaption b{color:var(--ink)}
+
+/* ── PART 6：讀程式（程式區塊由 scripts/make_code.py 產生） ── */
+figure.code{margin:14px 0 22px}
+pre.code{font-size:13px; line-height:1.55; padding-left:12px}
+pre.code .ln{display:inline-block; width:3ch; text-align:right; color:#5c6f85; user-select:none}
+pre.code .mk{display:inline-block; width:2ch; margin:0 6px 0 8px; text-align:center; color:#fbbf24; font-weight:700; user-select:none}
+pre.code .hl{margin:0 -18px 0 -12px; padding:0 18px 0 12px}
+figure.code figcaption.figsrc{margin-top:6px}
+.layer{display:inline-block; white-space:nowrap; font-size:12px; font-weight:700; letter-spacing:.06em; color:#fff; background:var(--accent); border-radius:999px; padding:2px 10px; margin-right:6px; vertical-align:middle}
+.walk{margin:10px 0 18px; padding-left:0; list-style:none}
+.walk li{margin:6px 0; padding-left:2.4em; text-indent:-2.4em; font-size:15px; line-height:1.75}
+.walk li b.l{display:inline-block; min-width:2.1em; text-indent:0; color:var(--accent); font-family:"Cascadia Code",Consolas,Menlo,monospace; font-size:13px}

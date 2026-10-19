@@ -1,0 +1,89 @@
+{
+ "author_commit": "8c27fe8",
+ "files": {
+  "setup_envs.sh": {
+   "kind": "ours",
+   "path": "setup_envs.sh",
+   "lines": 13,
+   "sha256_8": "9b671d91"
+  },
+  "run_all.sh": {
+   "kind": "ours",
+   "path": "fruitfly_lab/run_all.sh",
+   "lines": 34,
+   "sha256_8": "05ec0a49"
+  },
+  "check.py": {
+   "kind": "ours",
+   "path": "check.py",
+   "lines": 63,
+   "sha256_8": "7f1f8bd5"
+  },
+  "ff1_compare_conn.py": {
+   "kind": "ours",
+   "path": "fruitfly_lab/ext/ff1_compare_conn.py",
+   "lines": 27,
+   "sha256_8": "4feef38c"
+  },
+  "ff_extra.py": {
+   "kind": "ours",
+   "path": "fruitfly_lab/ext/ff_extra.py",
+   "lines": 144,
+   "sha256_8": "d784bcea"
+  },
+  "e4_asymmetry.py": {
+   "kind": "ours",
+   "path": "fruitfly_lab/ext/e4_asymmetry.py",
+   "lines": 142,
+   "sha256_8": "208d5bcb"
+  },
+  "extract.py": {
+   "kind": "author",
+   "path": "flycircuit/extract.py",
+   "lines": 118,
+   "sha256_8": "4bf9ec73"
+  },
+  "validate.py": {
+   "kind": "author",
+   "path": "flycircuit/validate.py",
+   "lines": 72,
+   "sha256_8": "6e5f0c87"
+  },
+  "lif.py": {
+   "kind": "author",
+   "path": "flycircuit/lif.py",
+   "lines": 139,
+   "sha256_8": "a6767ea4"
+  },
+  "fly_doom.py": {
+   "kind": "author",
+   "path": "doom/fly_doom.py",
+   "lines": 266,
+   "sha256_8": "094a31a3"
+  },
+  "analyze.py": {
+   "kind": "author",
+   "path": "doom/analyze.py",
+   "lines": 78,
+   "sha256_8": "f09a972b"
+  }
+ },
+ "constants": {
+  "DT": 0.0001,
+  "HALF_FOV_DOOM": 45.0,
+  "FLY_SCALE": 2.0,
+  "BINO": 6.0,
+  "MAX_RATE": 150.0,
+  "SIGMA": 0.3,
+  "TAU_S": 0.1,
+  "STEPS_PER_TIC": 286,
+  "POISSON_KICK_MV": 68.75,
+  "THR": 5,
+  "DEPTH": 2,
+  "RATE": 100.0,
+  "N_RUN": 5,
+  "STEPS": 10000
+ },
+ "ours_total_lines": 423,
+ "author_total_lines": 673
+}
