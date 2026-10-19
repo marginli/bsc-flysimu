@@ -1,27 +1,28 @@
 {
  "file": "assets/flydoom-overview.mp4",
- "slides": 11,
- "seconds": 590.5,
- "mm": 9,
- "ss": 50,
+ "slides": 12,
+ "seconds": 652.9,
+ "mm": 10,
+ "ss": 53,
  "width": 1920,
  "height": 1080,
  "resolution": "1080p",
  "fps": 24,
- "say_chars": 2624,
+ "say_chars": 2934,
  "pad": 0.6,
  "segment_seconds": [
-  45.14,
+  49.12,
   45.36,
   58.23,
   65.06,
-  55.23,
+  54.74,
   56.36,
   52.47,
   45.38,
   56.44,
   58.96,
+  58.38,
   45.21
  ],
- "mb": 9.1
+ "mb": 9.9
 }
