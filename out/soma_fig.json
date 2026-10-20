@@ -1,0 +1,97 @@
+{
+ "model_neurons": 138639,
+ "annotation_minus_model": 609,
+ "annotation_not_in_model": 623,
+ "model_not_in_annotation": 14,
+ "background_somas_drawn": 118104,
+ "annotation_rows": 139248,
+ "annotation_without_soma": {
+  "n": 21144,
+  "by_super_class": {
+   "sensory": 16897,
+   "optic": 1862,
+   "ascending": 1750,
+   "sensory_ascending": 612,
+   "visual_projection": 18,
+   "central": 4
+  }
+ },
+ "circuit_neurons": 3963,
+ "counts": {
+  "other": 3723,
+  "LC10a": 234,
+  "AOTU025": 2,
+  "AOTU019": 2,
+  "DNa02": 2,
+  "LC10a_L": 115,
+  "LC10a_R": 119
+ },
+ "circuit_without_soma_coord": {
+  "n": 5,
+  "types": [
+   "AN_AVLP_GNG_3",
+   "AN_multi_124",
+   "AN_multi_128",
+   "AN_multi_13"
+  ]
+ },
+ "group_mean_xyz_um": {
+  "other": [
+   523.0,
+   208.0,
+   147.0
+  ],
+  "LC10a": [
+   526.0,
+   189.0,
+   168.0
+  ],
+  "AOTU025": [
+   546.0,
+   183.0,
+   56.0
+  ],
+  "AOTU019": [
+   527.0,
+   170.0,
+   36.0
+  ],
+  "DNa02": [
+   530.0,
+   170.0,
+   64.0
+  ]
+ },
+ "axis_check": {
+  "side_left_mean_xyz_um": [
+   318.0,
+   245.0,
+   186.0
+  ],
+  "side_right_mean_xyz_um": [
+   731.0,
+   259.0,
+   153.0
+  ],
+  "KC_mean_xyz_um": [
+   533.0,
+   132.0,
+   193.0
+  ],
+  "ALPN_mean_xyz_um": [
+   521.0,
+   260.0,
+   49.0
+  ],
+  "T4T5_mean_xyz_um": [
+   524.0,
+   272.0,
+   244.0
+  ],
+  "descending_mean_xyz_um": [
+   528.0,
+   287.0,
+   154.0
+  ]
+ }
+}

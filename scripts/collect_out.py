@@ -22,6 +22,11 @@ PLAN = [
 
 
 def main():
+    keep = {}
+    for f in ("porttest.json", "demo_stats.json", "code_meta.json", "video_meta.json", "soma_fig.json", "lc10a_cross.json"):   # 另幾支程式產生的檔案，收資料時保留
+        p = os.path.join(OUT, f)
+        if os.path.exists(p):
+            keep[f] = open(p, "rb").read()
     if os.path.isdir(OUT):
         shutil.rmtree(OUT)
     n = 0
@@ -47,10 +52,12 @@ def main():
     with open(os.path.join(SRC, "fruitfly_lab/repo/_vizdoom.ini")) as f:
         open(os.path.join(OUT, "upstream/fruitfly_vizdoom_ini_line1.txt"), "w").write(f.readline())
     n += 2
+    for f, b in keep.items():
+        open(os.path.join(OUT, f), "wb").write(b)
     meta = {"source": "~/claude_bscai/fly_play_game", "files": n,
             "fruitfly_commit": "8c27fe8e70903e09b1d87bae6989051d09161e92"}
     json.dump(meta, open(os.path.join(OUT, "_manifest.json"), "w"), indent=1)
-    print(f"收進 out/：{n} 個檔案")
+    print(f"收進 out/：{n} 個檔案（保留 {sorted(keep)}）")
 
 
 main()

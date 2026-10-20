@@ -244,3 +244,8 @@ figure.code figcaption.figsrc{margin-top:6px}
 .walk{margin:10px 0 18px; padding-left:0; list-style:none}
 .walk li{margin:6px 0; padding-left:2.4em; text-indent:-2.4em; font-size:15px; line-height:1.75}
 .walk li b.l{display:inline-block; min-width:2.1em; text-indent:0; color:var(--accent); font-family:"Cascadia Code",Consolas,Menlo,monospace; font-size:13px}
+
+/* 圖說後的可收合附註 */
+details.note{margin:10px 0 26px; padding:8px 14px; border:1px solid var(--border); border-radius:8px; background:var(--panel); font-size:13.5px; color:var(--soft); line-height:1.7}
+details.note summary{cursor:pointer; color:var(--ink); font-weight:600}
+details.note p{margin:8px 0 2px}

@@ -1,0 +1,34 @@
+{
+ "LC10a_L->AOTU019_L": {
+  "edges": 69,
+  "w_mv_sum": 355.0
+ },
+ "LC10a_L->AOTU019_R": {
+  "edges": 0,
+  "w_mv_sum": 0.0
+ },
+ "LC10a_L->AOTU025_L": {
+  "edges": 62,
+  "w_mv_sum": 376.2
+ },
+ "LC10a_L->AOTU025_R": {
+  "edges": 0,
+  "w_mv_sum": 0.0
+ },
+ "LC10a_R->AOTU019_L": {
+  "edges": 0,
+  "w_mv_sum": 0.0
+ },
+ "LC10a_R->AOTU019_R": {
+  "edges": 75,
+  "w_mv_sum": 438.3
+ },
+ "LC10a_R->AOTU025_L": {
+  "edges": 0,
+  "w_mv_sum": 0.0
+ },
+ "LC10a_R->AOTU025_R": {
+  "edges": 67,
+  "w_mv_sum": 377.6
+ }
+}
