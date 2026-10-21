@@ -24,7 +24,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
       # _notes/ 是給教材設計者的修正紀錄，不對外發布
-      - run: rm -rf _notes
+      # vizdoom_intro.docx 是 ViZDoom 介紹，只留在 repo，不對外發布
+      - run: rm -rf _notes vizdoom_intro.docx
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
