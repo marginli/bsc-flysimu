@@ -939,7 +939,7 @@ function view(st){
   let h=`<path d="M${cx-R} ${cy} A${R} ${R} 0 0 1 ${cx+R} ${cy} Z" fill="#f7f8fa" stroke="${BORDER}"/>`;
   const w1=P(-6),w2=P(6);h+=`<path d="M${cx} ${cy} L${w1[0]} ${w1[1]} A${R} ${R} 0 0 1 ${w2[0]} ${w2[1]} Z" fill="${GREEN}" fill-opacity=".18"/>`;
   for(const a of [-90,-45,0,45,90]){const p=P(a),q=[cx+(R+12)*Math.sin(a*Math.PI/180),cy-(R+12)*Math.cos(a*Math.PI/180)];
-    h+=`<line x1="${cx}" y1="${cy}" x2="${p[0]}" y2="${p[1]}" stroke="${BORDER}"/><text x="${q[0]}" y="${q[1]+4}" font-size="10" text-anchor="middle" fill="${FAINT}">${a>0?'+':''}${String(a).replace('-','−')}°</text>`}
+    if(Math.abs(a)===90){q[0]=cx+Math.sign(a)*(R-6);q[1]=cy+12}h+=`<line x1="${cx}" y1="${cy}" x2="${p[0]}" y2="${p[1]}" stroke="${BORDER}"/><text x="${q[0]}" y="${q[1]+4}" font-size="10" text-anchor="middle" fill="${FAINT}">${a>0?'+':''}${String(a).replace('-','−')}°</text>`}
   h+=`<text x="${cx}" y="${cy-R-22}" font-size="10" text-anchor="middle" fill="${GREEN}">雙眼重疊 ±6°</text>`;
   h+=`<ellipse cx="${cx}" cy="${cy}" rx="11" ry="8" fill="${INK}"/>`;
   for(const a of st.en){const p=[cx+R*0.78*Math.sin(a*Math.PI/180),cy-R*0.78*Math.cos(a*Math.PI/180)];
@@ -957,7 +957,7 @@ function bars(st,F){
     for(const [sd,dir,col] of [['_L',-1,BLUE],['_R',1,ORANGE]]){const v=cur[g+sd],w=Math.min(300,v)*S,x0=C+dir*GAP;
       h+=`<rect x="${dir<0?x0-w:x0}" y="${y-12}" width="${w}" height="24" rx="3" fill="${col}" fill-opacity=".8"/>`;
       h+=`<line x1="${x0}" x2="${x0+dir*140}" y1="${y+12}" y2="${y+12}" stroke="${BORDER}"/>`;
-      const inb=w>110;h+=`<text x="${x0+dir*(inb?w-4:w+4)}" y="${y+4}" font-size="11" text-anchor="${(dir<0)!==inb?'end':'start'}" fill="${inb?'#fff':INK}">${fmt(v,1)}</text>`;
+      const rw=step===1&&st.raw?Math.min(300,st.raw[g+sd])*S:0,inb=w>110&&rw<=w,ow=Math.max(w,rw);h+=`<text x="${x0+dir*(inb?w-4:ow+4)}" y="${y+4}" font-size="11" text-anchor="${(dir<0)!==inb?'end':'start'}" fill="${inb?'#fff':INK}">${fmt(v,1)}</text>`;
       if(step===1&&st.raw){const rx=x0+dir*Math.min(300,st.raw[g+sd])*S;h+=`<line x1="${rx}" x2="${rx}" y1="${y-17}" y2="${y+17}" stroke="${INK}" stroke-width="2"/>`}
       if(F.fthr&&g==='AOTU019'){const tx=x0+dir*FT*S;h+=`<line x1="${tx}" x2="${tx}" y1="${y-18}" y2="${y+18}" stroke="${RED}" stroke-width="1.5" stroke-dasharray="4 3"/>`;
         if(dir>0)h+=`<text x="${tx}" y="${y-21}" font-size="10" text-anchor="middle" fill="${RED}">${fmt(FT,2)}</text>`}}
@@ -1009,7 +1009,7 @@ function meters(st,o,F){
     for(const [tv,lab] of thr)t+=`<line x1="${X(tv)}" x2="${X(tv)}" y1="${y-18}" y2="${y+18}" stroke="${RED}" stroke-width="1.5" stroke-dasharray="4 3"/><text x="${X(tv)}" y="${y-22}" font-size="10" text-anchor="middle" fill="${RED}">${lab}</text>`;
     t+=`<text x="${M0}" y="${y+42}" font-size="10" fill="${FAINT}">${String(lo).replace('-','−')}</text><text x="${M1}" y="${y+42}" font-size="10" text-anchor="end" fill="${FAINT}">${hi}${v>hi?'（超出）':''}</text>`;
     const mx=X(v);t+=`<path d="M${mx-7} ${y-22} L${mx+7} ${y-22} L${mx} ${y-10} Z" fill="${INK}"/><line x1="${mx}" x2="${mx}" y1="${y-10}" y2="${y+14}" stroke="${INK}" stroke-width="2.5"/>`;
-    const lr=mx>M1-60;t+=`<text x="${lr?mx-11:mx+11}" y="${y-11}" font-size="12" font-weight="700" text-anchor="${lr?'end':'start'}" fill="${INK}" paint-order="stroke" stroke="#fff" stroke-width="4">${fmt(v,1)}${unit}</text></g>`;return t};
+    const near=thr.some(([tv])=>X(tv)>mx&&X(tv)-mx<64);const lr=mx>M1-60||(near&&mx-M0>50);t+=`<text x="${lr?mx-11:mx+11}" y="${y-11}" font-size="12" font-weight="700" text-anchor="${lr?'end':'start'}" fill="${INK}" paint-order="stroke" stroke="#fff" stroke-width="4">${fmt(v,1)}${unit}</text></g>`;return t};
   h+=meter(368,'轉向訊號',-350,350,cur.s,[[-350,-TT,BLUE,'按左轉'],[-TT,TT,SOFT,'不轉'],[TT,350,ORANGE,'按右轉']],F.thr?[[-TT,'−'+fmt(TT,2)],[TT,'+'+fmt(TT,2)]]:[],F.steer,'');
   h+=meter(466,'開火：兩側 AOTU019 較小的那個（Hz）',0,300,cur.m,[[FT,300,RED,'按開火']],[[FT,fmt(FT,2)]],F.fire,'');
   h+=meter(564,'沒有敵人時：八群加總（Hz）',0,60,cur.sum,[[0,QT,ORANGE,'安靜 → 按右轉']],[[QT,fmt(QT,0)]],F.quiet&&!st.has,'');
@@ -1056,7 +1056,9 @@ for(const li of box.querySelectorAll('.enc-steps li'))li.onclick=()=>go(+li.data
 box.ro={get step(){return step},check(){let bad=0;for(let i=0;i<DATA.tr.a.length;i++){const r={};for(const g of G)for(const sd of ['_L','_R'])r[g+sd]=DATA.tr[g+sd][i];
     if(readout(r,DATA.tr.e[i].length>0).code!==DATA.tr.a[i])bad++}return bad},
   set(o){if(o.step)go(Math.max(1,Math.min(7,o.step)));if(o.az!=null){const i=DATA.rows.findIndex(r=>r.az===o.az);if(i>=0)azi=i}
-    if(o.tic!=null)tic=o.tic;if(o.speed!=null){speed=o.speed;Q('.ro-speed').value=speed}if(o.play!=null)playing=!!o.play;cur=null;render()}};
+    if(o.tic!=null)tic=o.tic;if(o.speed!=null){speed=o.speed;Q('.ro-speed').value=speed}if(o.play!=null)playing=!!o.play;cur=null;render()},
+  // 鍵盤微調：校準那幾步換方位，逐格那幾步換格（停在那裡）
+  nudge(d){playing=false;if(cfg.mode==='cal')azi=Math.max(0,Math.min(16,azi+d));else tic=Math.max(cfg.arg[0],Math.min(cfg.arg[1],tic+d));render()}};
 go(1);requestAnimationFrame(frame);
 })();
 </script>
@@ -1064,6 +1066,7 @@ go(1);requestAnimationFrame(frame);
     <figcaption><b>圖 5　讀出規則，一步一步看。</b>按「下一步」從 ① 走到 ⑦。左上是敵人在果蠅視野裡的方向（綠色扇形是 ±6° 的雙眼重疊區）；中上是八群的放電率，藍色是左半腦、橘色是右半腦；右上是這一刻的算式。下排三條刻度由上往下是轉向訊號、開火、沒有敵人時的安靜判斷，紅色虛線是門檻；右下是這一格按的鍵。第 ② 到 ⑤ 步可以拖「敵人方位」，或按「▶ 播放」掃過 17 個方位；第 ①、⑥、⑦ 步可以拖「第幾格」、換速度。
     <span class="figsrc">讀出照抄作者 <code>doom/fly_doom.py</code> 的 <code>make_policy()</code>（轉向、開火、安靜三條規則）與 <code>FlyBrain.step()</code>（平滑）；校準表與閾值在 <code>out/fruitfly/local_doom_vizdoom130/calibration_fly.json</code>；逐格紀錄是 PART 5 那一局（<code>out/demo_data.json</code>）。整理與核對（用規則重算紀錄、481 格全部相同）由 <code>scripts/readout_fig_data.py</code> 做，結果在 <code>out/readout_fig.json</code>；圖由 <code>scripts/make_readout_anim.py</code> 產生（圖裡的文字要改在那裡）。</span></figcaption>
   </figure>
+  <p class="figsrc">簡報要演示的話：<a href="readout.html">圖 5 單獨頁</a>只有這張圖，版面配合 16:9 投影片，功能和上面一樣，可以用 PowerPoint 的網頁增益集嵌進投影片（要能上網），也可以下載後用瀏覽器直接開（單一檔案，不用網路）；鍵盤 ← → 換步驟、↑ ↓ 換敵人方位或換一格（Shift 一次 10 格）、空白鍵暫停、S 換速度、D 顯示這一步的說明。不想用瀏覽器的話，<a href="downloads/readout/flydoom-readout.zip">投影片用圖</a>有十個畫面（七步，第 ③ 步多一張敵人在 −10°、第 ④ 步多一張敵人在 +10°、第 ⑥ 步多一張剛轉為安靜的第 41 格），每個都有 PNG 與 SVG，一張投影片放一個畫面即可；壓縮檔裡也附了單獨頁。</p>
 
   <p><b>門檻怎麼定。</b>兩條門檻叫<b>閾值</b>。轉向訊號的大小由迴路決定，事先不知道「多大算敵人在右邊」，所以要先量一次，這一步叫<b>校準</b>。怎麼量：沒有遊戲畫面，程式直接給一個方位角，跳過第 1 步「畫面換算成方位角」那一半，從「分左右眼」往下照第 1 到 4 步做，把一個假想敵人依序放在 −90° 到 +90° 共 17 個方位（中央密、外圍疏：0、±5、±10、±20、±30、±45、±60、±75、±90°），每個方位先讓迴路跑 10 格暖機、再跑 20 格（每格 28.6 ms，共約半秒），記錄這 20 格平均的 LC10a、AOTU019、AOTU025、DNa02 放電率與轉向訊號。量出來的表叫校準表（PART 3 第 6 節）。</p>
   <p>量到什麼：敵人在 0° 時左 AOTU019 是 219.94 Hz、右 191.35 Hz，在 +10° 時左側只剩 17 Hz、右側 250.04 Hz，這就是上面白話說的「只有正前方兩側才一起亮」；轉向訊號 0° 時是 −28.59（＝ 191.35 − 219.94，因為兩側 DNa02 都是 0），+10° 時 233.27（＝ 250.04 − 16.77，17 是四捨五入），−10° 時 −238.8。這幾個數就是下面定閾值用的材料。</p>

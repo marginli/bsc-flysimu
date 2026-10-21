@@ -1,7 +1,7 @@
 """PART 1 第 4 節〈讀出規則〉的圖 5：八群放電率 → 轉向訊號 → 跟門檻比 → 按鍵，七步可逐步看。
 數字全部讀 out/readout_fig.json（scripts/readout_fig_data.py：作者 fly_doom.py 的常數、calibration_fly.json 的校準表與閾值、
 PART 5 那一局的逐格紀錄）。瀏覽器裡的讀出照抄作者 make_policy() 裡的 act()。
-產出：part1-what.html 裡 <!-- readout:start --> … <!-- readout:end --> 之間的片段。圖的文字要改在這裡，不要直接改頁面。
+產出：part1-what.html 裡 <!-- readout:start --> … <!-- readout:end --> 之間的片段，與簡報用的單獨頁 readout.html。圖的文字要改在這裡，不要直接改頁面。
 用法：python3 scripts/make_readout_anim.py"""
 import json
 import os
@@ -129,7 +129,7 @@ function view(st){
   let h=`<path d="M${cx-R} ${cy} A${R} ${R} 0 0 1 ${cx+R} ${cy} Z" fill="#f7f8fa" stroke="${BORDER}"/>`;
   const w1=P(-6),w2=P(6);h+=`<path d="M${cx} ${cy} L${w1[0]} ${w1[1]} A${R} ${R} 0 0 1 ${w2[0]} ${w2[1]} Z" fill="${GREEN}" fill-opacity=".18"/>`;
   for(const a of [-90,-45,0,45,90]){const p=P(a),q=[cx+(R+12)*Math.sin(a*Math.PI/180),cy-(R+12)*Math.cos(a*Math.PI/180)];
-    h+=`<line x1="${cx}" y1="${cy}" x2="${p[0]}" y2="${p[1]}" stroke="${BORDER}"/><text x="${q[0]}" y="${q[1]+4}" font-size="10" text-anchor="middle" fill="${FAINT}">${a>0?'+':''}${String(a).replace('-','−')}°</text>`}
+    if(Math.abs(a)===90){q[0]=cx+Math.sign(a)*(R-6);q[1]=cy+12}h+=`<line x1="${cx}" y1="${cy}" x2="${p[0]}" y2="${p[1]}" stroke="${BORDER}"/><text x="${q[0]}" y="${q[1]+4}" font-size="10" text-anchor="middle" fill="${FAINT}">${a>0?'+':''}${String(a).replace('-','−')}°</text>`}
   h+=`<text x="${cx}" y="${cy-R-22}" font-size="10" text-anchor="middle" fill="${GREEN}">雙眼重疊 ±6°</text>`;
   h+=`<ellipse cx="${cx}" cy="${cy}" rx="11" ry="8" fill="${INK}"/>`;
   for(const a of st.en){const p=[cx+R*0.78*Math.sin(a*Math.PI/180),cy-R*0.78*Math.cos(a*Math.PI/180)];
@@ -147,7 +147,7 @@ function bars(st,F){
     for(const [sd,dir,col] of [['_L',-1,BLUE],['_R',1,ORANGE]]){const v=cur[g+sd],w=Math.min(300,v)*S,x0=C+dir*GAP;
       h+=`<rect x="${dir<0?x0-w:x0}" y="${y-12}" width="${w}" height="24" rx="3" fill="${col}" fill-opacity=".8"/>`;
       h+=`<line x1="${x0}" x2="${x0+dir*140}" y1="${y+12}" y2="${y+12}" stroke="${BORDER}"/>`;
-      const inb=w>110;h+=`<text x="${x0+dir*(inb?w-4:w+4)}" y="${y+4}" font-size="11" text-anchor="${(dir<0)!==inb?'end':'start'}" fill="${inb?'#fff':INK}">${fmt(v,1)}</text>`;
+      const rw=step===1&&st.raw?Math.min(300,st.raw[g+sd])*S:0,inb=w>110&&rw<=w,ow=Math.max(w,rw);h+=`<text x="${x0+dir*(inb?w-4:ow+4)}" y="${y+4}" font-size="11" text-anchor="${(dir<0)!==inb?'end':'start'}" fill="${inb?'#fff':INK}">${fmt(v,1)}</text>`;
       if(step===1&&st.raw){const rx=x0+dir*Math.min(300,st.raw[g+sd])*S;h+=`<line x1="${rx}" x2="${rx}" y1="${y-17}" y2="${y+17}" stroke="${INK}" stroke-width="2"/>`}
       if(F.fthr&&g==='AOTU019'){const tx=x0+dir*FT*S;h+=`<line x1="${tx}" x2="${tx}" y1="${y-18}" y2="${y+18}" stroke="${RED}" stroke-width="1.5" stroke-dasharray="4 3"/>`;
         if(dir>0)h+=`<text x="${tx}" y="${y-21}" font-size="10" text-anchor="middle" fill="${RED}">${fmt(FT,2)}</text>`}}
@@ -199,7 +199,7 @@ function meters(st,o,F){
     for(const [tv,lab] of thr)t+=`<line x1="${X(tv)}" x2="${X(tv)}" y1="${y-18}" y2="${y+18}" stroke="${RED}" stroke-width="1.5" stroke-dasharray="4 3"/><text x="${X(tv)}" y="${y-22}" font-size="10" text-anchor="middle" fill="${RED}">${lab}</text>`;
     t+=`<text x="${M0}" y="${y+42}" font-size="10" fill="${FAINT}">${String(lo).replace('-','−')}</text><text x="${M1}" y="${y+42}" font-size="10" text-anchor="end" fill="${FAINT}">${hi}${v>hi?'（超出）':''}</text>`;
     const mx=X(v);t+=`<path d="M${mx-7} ${y-22} L${mx+7} ${y-22} L${mx} ${y-10} Z" fill="${INK}"/><line x1="${mx}" x2="${mx}" y1="${y-10}" y2="${y+14}" stroke="${INK}" stroke-width="2.5"/>`;
-    const lr=mx>M1-60;t+=`<text x="${lr?mx-11:mx+11}" y="${y-11}" font-size="12" font-weight="700" text-anchor="${lr?'end':'start'}" fill="${INK}" paint-order="stroke" stroke="#fff" stroke-width="4">${fmt(v,1)}${unit}</text></g>`;return t};
+    const near=thr.some(([tv])=>X(tv)>mx&&X(tv)-mx<64);const lr=mx>M1-60||(near&&mx-M0>50);t+=`<text x="${lr?mx-11:mx+11}" y="${y-11}" font-size="12" font-weight="700" text-anchor="${lr?'end':'start'}" fill="${INK}" paint-order="stroke" stroke="#fff" stroke-width="4">${fmt(v,1)}${unit}</text></g>`;return t};
   h+=meter(368,'轉向訊號',-350,350,cur.s,[[-350,-TT,BLUE,'按左轉'],[-TT,TT,SOFT,'不轉'],[TT,350,ORANGE,'按右轉']],F.thr?[[-TT,'−'+fmt(TT,2)],[TT,'+'+fmt(TT,2)]]:[],F.steer,'');
   h+=meter(466,'開火：兩側 AOTU019 較小的那個（Hz）',0,300,cur.m,[[FT,300,RED,'按開火']],[[FT,fmt(FT,2)]],F.fire,'');
   h+=meter(564,'沒有敵人時：八群加總（Hz）',0,60,cur.sum,[[0,QT,ORANGE,'安靜 → 按右轉']],[[QT,fmt(QT,0)]],F.quiet&&!st.has,'');
@@ -246,7 +246,9 @@ for(const li of box.querySelectorAll('.enc-steps li'))li.onclick=()=>go(+li.data
 box.ro={get step(){return step},check(){let bad=0;for(let i=0;i<DATA.tr.a.length;i++){const r={};for(const g of G)for(const sd of ['_L','_R'])r[g+sd]=DATA.tr[g+sd][i];
     if(readout(r,DATA.tr.e[i].length>0).code!==DATA.tr.a[i])bad++}return bad},
   set(o){if(o.step)go(Math.max(1,Math.min(7,o.step)));if(o.az!=null){const i=DATA.rows.findIndex(r=>r.az===o.az);if(i>=0)azi=i}
-    if(o.tic!=null)tic=o.tic;if(o.speed!=null){speed=o.speed;Q('.ro-speed').value=speed}if(o.play!=null)playing=!!o.play;cur=null;render()}};
+    if(o.tic!=null)tic=o.tic;if(o.speed!=null){speed=o.speed;Q('.ro-speed').value=speed}if(o.play!=null)playing=!!o.play;cur=null;render()},
+  // 鍵盤微調：校準那幾步換方位，逐格那幾步換格（停在那裡）
+  nudge(d){playing=false;if(cfg.mode==='cal')azi=Math.max(0,Math.min(16,azi+d));else tic=Math.max(cfg.arg[0],Math.min(cfg.arg[1],tic+d));render()}};
 go(1);requestAnimationFrame(frame);
 })();
 </script>'''
@@ -258,3 +260,90 @@ new, cnt = re.subn(r"<!-- readout:start -->.*?<!-- readout:end -->", lambda m: "
 assert cnt == 1, "頁面裡找不到 <!-- readout:start --> … <!-- readout:end -->"
 open(PAGE, "w", encoding="utf-8").write(new)
 print("圖 5（讀出規則）已寫入 part1-what.html")
+
+STANDALONE = """<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>讀出規則｜果蠅玩 Doom</title>
+<style>
+/* PART 1 圖 5 的單獨頁：給簡報嵌入（PowerPoint 網頁增益集）或離線用瀏覽器全螢幕開。由 scripts/make_readout_anim.py 產生，不要手改。
+   單一檔案、不依賴其他檔，file:// 也能用。版面照視窗大小縮放，16:9 剛好填滿。
+   網址參數：s=1–7 第幾步；az=−90–90 第 2–5 步的敵人方位；tic=第 1、6、7 步的第幾格；speed=0–2；play=0 停住；d=1 顯示說明；clean=1 只留圖 */
+:root{--ink:#1b2733;--soft:#5a6b7b;--faint:#8b98a5;--border:#e4e8ee;--panel:#f7f8fa;--accent:#2563eb;--accent-soft:#eef3fe;--fs:clamp(11px,1.05vw,24px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#fff;color:var(--ink);font-size:var(--fs);line-height:1.6;overflow:hidden;
+  font-family:-apple-system,"Segoe UI","Noto Sans TC","Microsoft JhengHei","PingFang TC",Roboto,Helvetica,Arial,sans-serif;
+  display:flex;flex-direction:column;gap:.4em;padding:.6em 1em}
+#p1ro{display:contents}
+.enc-ctl{order:0;display:flex;flex-wrap:wrap;align-items:center;gap:.4em .9em;color:var(--soft)}
+.name{font-weight:700;color:var(--ink);margin-right:.3em}
+.enc-ctl button,.enc-ctl select{font:inherit;font-size:.95em;padding:.2em .8em;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
+.enc-ctl button:disabled{opacity:.4;cursor:default}
+.enc-ctl button:hover:not(:disabled){border-color:var(--accent)}
+.enc-ctl button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.enc-ctl button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.enc-ctl label{display:inline-flex;align-items:center;gap:.4em}
+.enc-ctl input[type=range]{width:9em}
+.right{margin-left:auto;display:flex;gap:.4em}
+.lif-wrap{order:1;flex:1 1 0;min-height:0;display:flex}
+.ro-svg{width:100%;height:100%;display:block;font-size:16px}
+.ro-svg g{transition:opacity .3s}
+.enc-read{order:2;margin:0;font-family:Menlo,Consolas,monospace;font-size:.9em;color:var(--ink);background:var(--panel);border-radius:8px;padding:.2em .7em}
+.enc-steps{order:3;display:none;margin:0;padding:0;list-style:none;font-size:.95em;max-height:24vh;overflow:auto}
+body.showdesc .enc-steps,body.showdesc .figsrc{display:block}
+.figsrc{order:4;display:none;margin:0;font-size:.8em;color:var(--faint)}
+.enc-steps li{display:none;padding:.2em .7em;border-left:3px solid var(--accent);background:var(--accent-soft)}
+.enc-steps li.on{display:block}
+body.clean{padding:0}
+body.clean .enc-ctl,body.clean .enc-read,body.clean .enc-steps,body.clean .figsrc{display:none!important}
+</style>
+</head>
+<body>
+%FRAG%
+<p class="figsrc">讀出照抄作者 doom/fly_doom.py 的 make_policy() 與 FlyBrain.step()；校準表與閾值在 calibration_fly.json，逐格紀錄是 PART 5 那一局，數字在 out/readout_fig.json。說明全文：https://marginli.github.io/bsc-flysimu/part1-what.html#s4</p>
+<script>
+(function(){
+  var box=document.getElementById("p1ro"),q=new URLSearchParams(location.search),ctl=box.querySelector(".enc-ctl");
+  ctl.insertAdjacentHTML("afterbegin",'<span class="name">讀出規則：八群放電率怎麼變成按鍵</span>');
+  ctl.insertAdjacentHTML("beforeend",'<span class="right"><button type="button" id="roDesc" aria-pressed="false">說明</button><button type="button" id="roFull">全螢幕</button></span>');
+  if(q.get("clean")==="1")document.body.classList.add("clean");
+  if(q.get("d")==="1")document.body.classList.add("showdesc");
+  if(q.get("s"))box.ro.set({step:+q.get("s")});
+  var o={};
+  if(q.get("az"))o.az=+q.get("az");if(q.get("tic"))o.tic=+q.get("tic");if(q.get("speed"))o.speed=+q.get("speed");
+  if(q.get("play")==="0"||o.az!=null||o.tic!=null)o.play=false;
+  box.ro.set(o);
+  var dBtn=document.getElementById("roDesc"),fs=document.getElementById("roFull"),de=document.documentElement;
+  dBtn.onclick=function(){dBtn.setAttribute("aria-pressed",document.body.classList.toggle("showdesc"))};
+  dBtn.setAttribute("aria-pressed",document.body.classList.contains("showdesc"));
+  if(!(document.fullscreenEnabled||document.webkitFullscreenEnabled))fs.style.display="none";
+  fs.onclick=function(){if(document.fullscreenElement||document.webkitFullscreenElement)(document.exitFullscreen||document.webkitExitFullscreen).call(document);else(de.requestFullscreen||de.webkitRequestFullscreen).call(de)};
+  var Q=function(s){return box.querySelector(s)},next=Q(".ro-next"),prev=Q(".ro-prev");
+  document.addEventListener("keydown",function(e){
+    if(e.altKey||e.ctrlKey||e.metaKey)return;
+    if(e.target.tagName==="INPUT"&&e.target.type==="range")return;
+    if(e.target.tagName==="SELECT")return;
+    var k=e.key,sp=Q(".ro-speed");
+    if(k==="ArrowRight"||k==="PageDown"){e.preventDefault();if(!next.disabled)next.click()}
+    else if(k==="ArrowLeft"||k==="PageUp"){e.preventDefault();if(!prev.disabled)prev.click()}
+    else if(k==="ArrowUp"){e.preventDefault();box.ro.nudge(e.shiftKey?10:1)}
+    else if(k==="ArrowDown"){e.preventDefault();box.ro.nudge(e.shiftKey?-10:-1)}
+    else if(k==="Home"){e.preventDefault();box.ro.set({step:1})}
+    else if(k==="End"){e.preventDefault();box.ro.set({step:7})}
+    else if("1234567".indexOf(k)>=0&&k.length===1)box.ro.set({step:+k});
+    else if(k===" "||k==="p"||k==="P"){e.preventDefault();Q(".ro-play").click()}
+    else if(k==="s"||k==="S"){sp.value=(+sp.value+1)%3;sp.dispatchEvent(new Event("change"))}
+    else if(k==="d"||k==="D")dBtn.click();
+    else if(k==="f"||k==="F")fs.click();
+  });
+})();
+</script>
+</body>
+</html>
+"""
+open(os.path.join(D, "readout.html"), "w", encoding="utf-8").write(STANDALONE.replace("%FRAG%", frag))
+print("單獨頁 readout.html 已寫入")
