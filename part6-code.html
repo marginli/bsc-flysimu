@@ -667,7 +667,7 @@
 <span class="hl"><span class="ln"> 72</span><span class="mk">②</span>    out = con[con.Presynaptic_ID == n]</span><span class="hl"><span class="ln"> 73</span><span class="mk">③</span>    w19 = out.Connectivity[out.Postsynaptic_ID.isin(aotu[(&quot;AOTU019&quot;, s)])].sum()</span><span class="hl"><span class="ln"> 74</span><span class="mk"> </span>    w25 = out.Connectivity[out.Postsynaptic_ID.isin(aotu[(&quot;AOTU025&quot;, s)])].sum()</span><span class="hl"><span class="ln"> 75</span><span class="mk">④</span>    central[n] = float(w19 / (w19 + w25)) if w19 + w25 &gt; 0 else 0.5</span></pre><figcaption class="figsrc">fruitfly-lab 的 <code>flycircuit/extract.py</code> 第 66–75 行（commit <code>8c27fe8</code>；repo 沒有授權檔，本頁只引片段，請對照你自己 clone 下來的檔案）</figcaption></figure>
 <!-- /code -->
 
-  <p><b>這段在做什麼。</b>PART 1 第 3 節追問過的那件事：「AOTU019 負責視野中央、AOTU025 負責視野外圍」是論文來的，作者在這裡把它變成每顆 LC10a 的偏好位置。</p>
+  <p><b>這段在做什麼。</b>PART 1 第 3 節追問過的那件事：「AOTU019 負責視野中央、AOTU025 負責視野外圍」，分工的方向是論文來的，作者在這裡把它變成每顆 LC10a 的偏好位置。註解裡的「0–40°」是作者 README 的概括，論文沒有這個分界，而且論文是用每顆 LC10a 在小葉上的位置推估視野，不是這裡的突觸占比（見 <a href="part1-what.html#s3">PART 1 第 3 節的附註</a>）。</p>
 
   <ul class="walk">
     <li><b class="l">①</b>對子圖裡每一顆 LC10a 做一次。</li>

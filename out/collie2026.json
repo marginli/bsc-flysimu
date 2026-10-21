@@ -1,0 +1,13 @@
+{
+ "_note": "PART 1 第 3 節附註「AOTU019 管中央、AOTU025 管外圍的生物依據」的查證紀錄（2026-10-21 人工讀原文；Neuron 正式版網頁 403，讀 bioRxiv v1 與 v2 全文，卷期頁碼由 Europe PMC 核對）",
+ "citation": "Collie MF, Jin C, Rockwell V, Kellogg E, Vanderbeck QX, Hartman AK, Holtz SL, Wilson RI. Specialized parallel pathways for adaptive control of visual object pursuit. Neuron 114(10):1833-1847.e9 (2026).",
+ "journal_volume": 114, "journal_issue": 10, "pages": "1833-1847.e9", "page_first": 1833, "page_last": 1847,
+ "doi": "doi:10.1016/j.neuron.2026.01.001", "pmid": 41713413,
+ "preprint": "bioRxiv 10.1101/2025.04.23.650240", "preprint_v1": "2025-04-29", "preprint_v2": "2025-11-01",
+ "binocular_overlap_deg_in_rf_estimate": 15,
+ "motion_pulse_sweep_deg": 22.5, "motion_pulse_speed_deg_s": 25,
+ "recorded_cells": {"male_AOTU019": 25, "male_AOTU025": 22, "female_AOTU019": 9, "female_AOTU025": 9},
+ "angle_split_0_40_40_90_in_paper": false,
+ "receptive_fields_overlap": "We also found considerable overlap in the receptive fields of these cell types (v2, Fig. 3)",
+ "readme_lines": [21, 22]
+}
