@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>漏電整合發放｜果蠅玩 Doom</title>
+<style>
+/* PART 1 圖 1 的單獨頁：給簡報嵌入（PowerPoint 網頁增益集）或離線用瀏覽器全螢幕開。由 scripts/make_lif_anim.py 產生，不要手改。
+   單一檔案、不依賴其他檔，file:// 也能用。版面照視窗大小縮放，16:9 剛好填滿。
+   網址參數：s=1–7 第幾步；speed=0–2 很慢／慢／快；nup=0–200 第 6 步上游顆數；rate=0–150 第 7 步的 r；seed 固定隨機；
+   at=毫秒 直接算到那一刻並暫停；d=1 顯示說明；clean=1 只留圖 */
+:root{--ink:#1b2733;--soft:#5a6b7b;--faint:#8b98a5;--border:#e4e8ee;--panel:#f7f8fa;--accent:#2563eb;--accent-soft:#eef3fe;--fs:clamp(11px,1.05vw,24px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#fff;color:var(--ink);font-size:var(--fs);line-height:1.6;overflow:hidden;
+  font-family:-apple-system,"Segoe UI","Noto Sans TC","Microsoft JhengHei","PingFang TC",Roboto,Helvetica,Arial,sans-serif;
+  display:flex;flex-direction:column;gap:.4em;padding:.6em 1em}
+#p1lif{display:contents}
+.enc-ctl{order:0;display:flex;flex-wrap:wrap;align-items:center;gap:.4em .9em;color:var(--soft)}
+.name{font-weight:700;color:var(--ink);margin-right:.3em}
+.enc-ctl button,.enc-ctl select{font:inherit;font-size:.95em;padding:.2em .8em;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
+.enc-ctl button:disabled{opacity:.4;cursor:default}
+.enc-ctl button:hover:not(:disabled){border-color:var(--accent)}
+.enc-ctl button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.enc-ctl button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.enc-ctl label{display:inline-flex;align-items:center;gap:.4em}
+.enc-ctl input[type=range]{width:8em}
+.right{margin-left:auto;display:flex;gap:.4em}
+.lif-wrap{order:1;flex:1 1 0;min-height:0;display:flex}
+.lif-svg{width:100%;height:100%;display:block;font-size:16px}
+.lif-svg g{transition:opacity .3s}
+.enc-read{order:2;margin:0;font-family:Menlo,Consolas,monospace;font-size:.9em;color:var(--ink);background:var(--panel);border-radius:8px;padding:.2em .7em}
+.enc-steps{order:3;display:none;margin:0;padding:0;list-style:none;font-size:.95em;max-height:24vh;overflow:auto}
+body.showdesc .enc-steps,body.showdesc .figsrc{display:block}
+.figsrc{order:4;display:none;margin:0;font-size:.8em;color:var(--faint)}
+.enc-steps li{display:none;padding:.2em .7em;border-left:3px solid var(--accent);background:var(--accent-soft)}
+.enc-steps li.on{display:block}
+body.clean{padding:0}
+body.clean .enc-ctl,body.clean .enc-read,body.clean .enc-steps,body.clean .figsrc{display:none!important}
+</style>
+</head>
+<body>
+<div class="enc lif" id="p1lif">
+<div class="lif-wrap"><svg class="enc-svg lif-svg" viewBox="0 0 900 530" role="img" aria-labelledby="lifTitle" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,-apple-system,'Segoe UI','Microsoft JhengHei',sans-serif">
+<title id="lifTitle">漏電整合發放示意：左邊水桶的水位是膜電位 V，水龍頭開度是 g，桶底的洞是漏電；右邊是上游輸入、g、V 與輸出放電隨時間的變化</title>
+<defs>
+  <clipPath id="lifBucket"><rect x="63" y="80" width="154" height="387"/></clipPath>
+  <clipPath id="lifTr"><rect x="368" y="0" width="516" height="530"/></clipPath>
+  <marker id="lifArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker>
+</defs>
+<text x="20" y="24" font-size="15" font-weight="700" fill="#1b2733">水桶比喻</text>
+<!-- 上游與水管：上游放電後訊號沿管子走 1.8 ms 才到水龍頭 -->
+<circle cx="30" cy="62" r="11" fill="#fff" stroke="#2563eb" stroke-width="2"/><text x="30" y="66" font-size="11" text-anchor="middle" fill="#2563eb">興</text>
+<circle cx="30" cy="96" r="11" fill="#fff" stroke="#9333ea" stroke-width="2"/><text x="30" y="100" font-size="11" text-anchor="middle" fill="#9333ea">抑</text>
+<path d="M41 62 H70 V78 H150 M41 96 H70 V78" fill="none" stroke="#8b98a5" stroke-width="6" stroke-linejoin="round" stroke-opacity=".45"/>
+<text x="74" y="97" font-size="10" fill="#5a6b7b">沿管子走 1.8 ms</text>
+<rect x="148" y="66" width="34" height="24" rx="5" fill="#cbd5e1" stroke="#5a6b7b"/>
+<rect x="158" y="90" width="14" height="12" fill="#cbd5e1" stroke="#5a6b7b"/>
+<g class="lif-handle"><rect x="162" y="52" width="6" height="14" fill="#5a6b7b"/><rect x="150" y="47" width="30" height="6" rx="3" fill="#5a6b7b"/></g>
+<g class="lif-travel"></g>
+<text class="lif-gtxt" x="190" y="74" font-size="12" fill="#1b2733"></text>
+<text x="190" y="90" font-size="11" fill="#5a6b7b">水龍頭開度 g</text>
+<!-- 水 -->
+<g clip-path="url(#lifBucket)"><rect class="lif-stream" x="160" y="102" width="0" height="0" fill="#7cb6f0"/>
+<rect class="lif-water" x="60" y="470" width="160" height="0" fill="#7cb6f0" fill-opacity=".85"/>
+<g class="lif-suck"></g></g>
+<path d="M60 134 V470 H134.0 M146.0 470 H220 V134" fill="none" stroke="#1b2733" stroke-width="3" class="lif-wall"/>
+<line x1="60" x2="224" y1="222.5" y2="222.5" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="228" y="220.5" font-size="12" fill="#dc2626">刻度 V<tspan font-size="9" dy="3">th</tspan><tspan dy="-3"> −45</tspan></text>
+<line x1="60" x2="224" y1="338.0" y2="338.0" stroke="#5a6b7b" stroke-width="1.5" stroke-dasharray="3 3"/>
+<text x="228" y="342.0" font-size="12" fill="#5a6b7b">V<tspan font-size="9" dy="3">rest</tspan><tspan dy="-3"> −52</tspan></text>
+<text x="228" y="144" font-size="11" fill="#8b98a5">−40</text>
+<text x="228" y="474" font-size="11" fill="#8b98a5">−60 mV</text>
+<text class="lif-vtxt" x="66" y="462" font-size="12" font-weight="600" fill="#1b2733"></text>
+<g class="lif-drips"></g>
+<text x="140.0" y="516" font-size="11" text-anchor="middle" fill="#5a6b7b">桶底的洞（漏電）：水位往 V<tspan font-size="8" dy="3">rest</tspan><tspan dy="-3"> 拉</tspan></text>
+<g class="lif-over" opacity="0"><text x="140.0" y="116" font-size="12" text-anchor="middle" fill="#ea580c">↑ 加 68.75 mV，滿出桶口</text></g>
+<g class="lif-fire" opacity="0"><text x="140.0" y="130" font-size="18" font-weight="800" text-anchor="middle" fill="#ea580c">放電！</text>
+<line x1="222" y1="190" x2="280" y2="190" stroke="#ea580c" stroke-width="3" marker-end="url(#lifArr)"/>
+<text x="228" y="184" font-size="11" fill="#ea580c">送給下游</text></g>
+<g class="lif-rfc" opacity="0"><rect x="63" y="140" width="154" height="330" fill="#94a3b8" fill-opacity=".35"/>
+<text x="140.0" y="170" font-size="13" font-weight="700" text-anchor="middle" fill="#1b2733">不反應期</text>
+<text x="140.0" y="188" font-size="11" text-anchor="middle" fill="#1b2733">2.2 ms 內兩式暫停</text>
+<rect class="lif-rfcbar" x="90" y="196" width="0" height="5" fill="#1b2733"/></g>
+<!-- 右邊：軌跡 -->
+<line x1="338" x2="338" y1="20" y2="510" stroke="#e4e8ee"/>
+<text x="368" y="38" font-size="12" fill="#5a6b7b">上游送出的放電（<tspan fill="#2563eb">↑ 興奮</tspan>、<tspan fill="#9333ea">↓ 抑制</tspan>，數字＝同一刻幾個）</text>
+<line x1="368" x2="884" y1="58.0" y2="58.0" stroke="#e4e8ee"/>
+<text x="368" y="102" font-size="12" fill="#5a6b7b">g：水龍頭開度（mV）</text>
+<g class="lif-gaxis"></g>
+<text x="368" y="226" font-size="12" fill="#5a6b7b">V：膜電位＝水位（mV）</text>
+<line x1="368" x2="884" y1="284.5" y2="284.5" stroke="#dc2626" stroke-dasharray="6 4"/>
+<line x1="368" x2="884" y1="355.2" y2="355.2" stroke="#5a6b7b" stroke-dasharray="3 3"/>
+<text x="364" y="288.5" font-size="11" text-anchor="end" fill="#dc2626">−45</text>
+<text x="364" y="359.2" font-size="11" text-anchor="end" fill="#5a6b7b">−52</text>
+<text x="364" y="238" font-size="11" text-anchor="end" fill="#8b98a5">−40</text>
+<text x="364" y="440" font-size="11" text-anchor="end" fill="#8b98a5">−60</text>
+<rect x="368" y="234" width="516" height="202" fill="none" stroke="#e4e8ee"/>
+<text x="368" y="454" font-size="12" fill="#5a6b7b">輸出放電（送給下游）</text>
+<line x1="368" x2="884" y1="478" y2="478" stroke="#e4e8ee"/>
+<g clip-path="url(#lifTr)"><g class="lif-shade"></g><g class="lif-up"></g><path class="lif-g" fill="none" stroke="#2563eb" stroke-width="1.8"/>
+<path class="lif-v" fill="none" stroke="#1b2733" stroke-width="1.8"/><g class="lif-spk"></g><g class="lif-out"></g><g class="lif-notes"></g>
+<line class="lif-now" y1="46" y2="478" stroke="#ea580c" stroke-opacity=".5"/></g>
+<g class="lif-taxis"></g>
+</svg></div>
+<div class="enc-read" aria-live="off"></div>
+<div class="enc-ctl">
+  <button type="button" class="lif-prev">← 上一步</button><button type="button" class="lif-next">下一步 →</button>
+  <button type="button" class="lif-play">⏸ 暫停</button><button type="button" class="lif-replay">↻ 重播這一步</button>
+  <label>速度 <select class="lif-speed"><option value="0">很慢（1 ms 演 0.2 秒）</option><option value="1">慢（1 ms 演 0.05 秒）</option><option value="2">快（1 ms 演 0.01 秒）</option></select></label>
+</div>
+<div class="enc-ctl">
+  自己送輸入：<button type="button" class="lif-add" data-n="1" data-s="1">＋1 興奮</button><button type="button" class="lif-add" data-n="1" data-s="-1">＋1 抑制</button>
+  <button type="button" class="lif-add" data-n="15" data-s="1">＋15 興奮（同一刻）</button>
+  <label class="lif-nup">上游顆數 <input type="range" min="0" max="200" step="5" value="50"> <b></b></label>
+  <label class="lif-rate">設定放電率 r <input type="range" min="0" max="150" step="5" value="100"> <b></b></label>
+</div>
+<ol class="enc-steps">
+    <li data-k="1"><b>① 漏電：</b>水位比 V<sub>rest</sub> 高 5 mV，沒有任何輸入。桶底的洞讓水位往 V<sub>rest</sub> 回落，離得愈遠落得愈快，愈接近落得愈慢。過 20 ms（τ<sub>m</sub>）差距從 5 mV 剩 1.84 mV，約 37%。</li>
+    <li data-k="2"><b>② 一次輸入：</b>一顆上游神經元放電一次（假設兩顆之間有 11 個突觸：11 × 0.275 ≈ 3.03 mV，和第 3 節圖 2 裡一顆 LC10a 的平均差不多）。1.8 ms 後訊號到達，g 跳高 3.03 mV，接著每 5 ms 剩 37%。水位跟著 g 慢慢升，到達後約 9.1 ms 到頂，只升 0.48 mV，離刻度還差 7 mV 的一大截。</li>
+    <li data-k="3"><b>③ 整合：</b>同樣是 15 個輸入，送法不同。前面每 5 ms 送一個：每一個留下的水還沒漏完下一個就來，水位疊到 −49.01 mV 左右就上不去（進來的和漏掉的打平），沒到刻度。120 ms 時 15 個同時送：水位在 127.5 ms 過刻度、放電。15 個是同一刻送最少要的個數，少一個水位只到 −45.25 mV。這就是「整合」：神經元把短時間內的輸入加起來，加得夠多才放電。</li>
+    <li data-k="4"><b>④ 放電與不反應期：</b>10 ms 時 30 個同時送，13.7 ms 放電：水位拉回 V<sub>rest</sub>、g 歸零，接下來 2.2 ms 是不反應期（灰底），兩條方程式暫停。12.9 ms 又送出 20 個，14.7 ms 到達時正在不反應期裡：先存在 g（60.5 mV，不衰減、也不推水位）。15.9 ms 不反應期結束，存著的 g 才開始推水位，19.5 ms 再放電一次。右邊軌跡裡放電畫成一根直線，只是記號：模型裡沒有這個尖峰，水位一過刻度就直接拉回 V<sub>rest</sub>。</li>
+    <li data-k="5"><b>⑤ 抑制：</b>10 ms 送 20 個興奮輸入，15.3 ms 放電。60 ms 同樣 20 個興奮，但同時來了 10 個抑制輸入（每個 −3.03 mV，上游是 GABA 或麩胺酸的神經元）：g 只淨增 30.25 mV，水位最高 −47.18 mV，沒放電。抑制等於把水龍頭往負的方向開、從桶裡抽水。</li>
+    <li data-k="6"><b>⑥ 持續輸入 → 放電率：</b>真實的迴路裡，輸入是好幾顆上游神經元在隨機時刻各自放電。拉「上游顆數」：假設每顆上游平均每秒放電 20 次、每次 3.03 mV（20 次是為了示範挑的）。上游愈多，水位愈常被推過刻度，這顆神經元每秒放電的次數（放電率）就愈高。照作者程式各跑 20 秒：25 顆 → 17.5 Hz、50 顆 → 54.9 Hz、75 顆 → 79.8 Hz、100 顆 → 100 Hz、150 顆 → 131.9 Hz、200 顆 → 157.7 Hz。下面的讀數是最近 1 秒的放電次數，會跟著隨機輸入上下跳。</li>
+    <li data-k="7"><b>⑦ LC10a 的外部刺激：</b>LC10a 的輸入不是來自上游神經元，而是程式直接刺激（第 4 節、圖 4 第 ⑥ 步）：每 0.1 ms 抽一次籤，抽中的機率 ＝ r × 0.1 ms，抽中就把水位直接加 68.75 mV（不經過 g，所以 g 一直是 0），一定過刻度、馬上放電；V 的圖上紫色小箭頭是抽中的時刻。所以輸出的放電率幾乎就等於設定的 r。照作者程式各跑 20 秒：r ＝ 10 → 10.8 Hz、r ＝ 50 → 51.2 Hz、r ＝ 100 → 100 Hz、r ＝ 150 → 149.2 Hz。注意：程式檢查「過刻度」時不看是不是在不反應期，所以抽中時就算正在不反應期裡，也會馬上再放電一次；不反應期擋得住的只有經過 g 的輸入（第 ④ 步）。</li>
+  </ol>
+</div>
+<script>
+(function(){
+const DATA={"v0":-52,"vrst":-52,"vth":-45,"av":0.005,"dg":0.9801986733067553,"rfc":22,"dly":18,"kick":68.75,"w":3.025,"steps":[{"k":1,"g":[-1,4],"speed":1,"notes":[{"ms":0,"row":"V","v":-47.0,"dx":8,"dy":-10,"t":"起點：比 V_rest 高 5 mV"},{"ms":20,"row":"V","v":-50.17,"dx":8,"dy":-12,"vline":1,"t":"20 ms 後：差距剩 1.84 mV（約 37%）"}],"win":60,"vinit":-47.0,"sends":[],"expect":[]},{"k":2,"g":[-1,4],"speed":0,"notes":[{"ms":5.0,"row":"up","dx":6,"dy":0,"t":"上游放電"},{"ms":6.8,"row":"g","v":3.025,"dx":8,"dy":4,"t":"1.8 ms 後到達：g 跳高 3.03 mV"},{"ms":11.8,"row":"g","v":1.113,"dx":8,"dy":-6,"t":"再過 5 ms：剩 1.11 mV（37%）"},{"ms":15.9,"row":"V","v":-51.52,"dx":8,"dy":-12,"t":"水位到頂：只升 0.48 mV"}],"win":45,"vinit":null,"sends":[[5.0,3.0250000000000004,1]],"expect":[]},{"k":3,"g":[-3,50],"speed":1,"notes":[{"ms":5.0,"row":"up","dx":6,"dy":0,"t":"每 5 ms 送 1 個"},{"ms":79.1,"row":"V","v":-49.01,"dx":-4,"dy":-12,"anchor":"end","t":"最高 −49.01 mV，沒到刻度"},{"ms":120.0,"row":"up","dx":6,"dy":0,"t":"同一刻 15 個"},{"ms":127.5,"row":"V","v":-45,"dx":-6,"dy":-16,"anchor":"end","t":"127.5 ms 過刻度 → 放電"}],"win":170,"vinit":null,"sends":[[5.0,3.0250000000000004,1],[10.0,3.0250000000000004,1],[15.0,3.0250000000000004,1],[20.0,3.0250000000000004,1],[25.0,3.0250000000000004,1],[30.0,3.0250000000000004,1],[35.0,3.0250000000000004,1],[40.0,3.0250000000000004,1],[45.0,3.0250000000000004,1],[50.0,3.0250000000000004,1],[55.0,3.0250000000000004,1],[60.0,3.0250000000000004,1],[65.0,3.0250000000000004,1],[70.0,3.0250000000000004,1],[75.0,3.0250000000000004,1],[120.0,3.0250000000000004,15]],"expect":[127.5]},{"k":4,"g":[-5,100],"speed":0,"notes":[{"ms":10.0,"row":"up","dx":-6,"dy":0,"anchor":"end","t":"同一刻 30 個"},{"ms":12.9,"row":"up","dx":6,"dy":0,"t":"再送 20 個"},{"ms":13.7,"row":"V","v":-45,"dx":-6,"dy":-40,"anchor":"end","t":"放電：拉回 V_rest、g 歸零"},{"ms":14.7,"row":"g","v":60.5,"dx":8,"dy":-4,"t":"不反應期裡到達：先存在 g"},{"ms":15.9,"row":"V","v":-52,"dx":6,"dy":18,"t":"不反應期結束（放電後 2.2 ms）"},{"ms":19.5,"row":"V","v":-45,"dx":6,"dy":-40,"t":"再放電一次"}],"win":30,"vinit":null,"sends":[[10.0,3.0250000000000004,30],[12.9,3.0250000000000004,20]],"expect":[13.7,19.5]},{"k":5,"g":[-35,65],"speed":1,"notes":[{"ms":10.0,"row":"up","dx":6,"dy":0,"t":"20 個興奮"},{"ms":15.3,"row":"V","v":-45,"dx":6,"dy":-16,"t":"放電"},{"ms":60.0,"row":"up","dx":6,"dy":0,"t":"20 個興奮 ＋ 10 個抑制"},{"ms":70.9,"row":"V","v":-47.18,"dx":8,"dy":-12,"t":"最高 −47.18 mV，沒放電"}],"win":110,"vinit":null,"sends":[[10.0,3.0250000000000004,20],[60.0,3.0250000000000004,20],[60.0,-3.0250000000000004,10]],"expect":[15.3]},{"k":6,"g":[-5,90],"speed":2,"notes":[],"win":200,"vinit":null,"sends":[],"expect":null},{"k":7,"g":[-5,90],"speed":2,"notes":[],"win":200,"vinit":null,"sends":[],"expect":null}]};
+const box=document.getElementById('p1lif'),Q=s=>box.querySelector(s),svg=Q('.lif-svg');
+const TX0=368,TX1=884,UP0=46,UP1=70,G0=110,G1=202,V0Y=234,V1Y=436,OUT0=460,OUT1=478;
+const BX0=60,BX1=220,BY0=140,BY1=470;
+const SPEEDS=[1/200,1/50,1/10];                  // 模擬 1 ms 用真實幾 ms
+const BLUE='#2563eb',PURPLE='#9333ea',ORANGE='#ea580c',INK='#1b2733',SOFT='#5a6b7b',FAINT='#8b98a5';
+const by=v=>BY1-(v+60)/20*(BY1-BY0),ty=v=>V1Y-(Math.max(-60,Math.min(-40,v))+60)/20*(V1Y-V0Y);
+let step=1,cfg,t,v,g,rfc,arrive,sends,spikes,kicks,H,playing=true,ended=false,speed=1,acc=0,last=null,nup=50,rate=100,rnd=Math.random;
+const fmt=(x,d)=>x.toFixed(d).replace('-','−');
+function send(at,w,n){arrive.set(at+DATA.dly,(arrive.get(at+DATA.dly)||0)+w*n);sends.push({t:at,w,n})}
+function reset(){
+  cfg=DATA.steps[step-1];t=0;g=0;rfc=0;v=cfg.vinit==null?DATA.v0:cfg.vinit;arrive=new Map();sends=[];spikes=[];kicks=[];H={v:[],g:[]};ended=false;acc=0;
+  for(const [ms,w,n] of cfg.sends)send(Math.round(ms/0.1),w,n);
+}
+// 一步 0.1 ms，順序照抄 lif.py 的 _kernel
+function tick1(){
+  if(step===6&&nup>0){const pr=nup*20*1e-4;if(rnd()<pr)send(t,DATA.w,1)}
+  if(arrive.has(t)){const add=arrive.get(t);arrive.delete(t);g+=add}   // 同一步到達的照送出順序加總（與 Python 相同）
+  if(rfc<=0){v+=DATA.av*(DATA.v0-v+g);g*=DATA.dg}
+  rfc-=1;
+  if(step===7&&rate>0&&rnd()<rate*1e-4){v+=DATA.kick;kicks.push(t)}
+  if(v>DATA.vth){v=DATA.vrst;g=0;rfc=DATA.rfc;spikes.push(t)}
+  H.v.push(v);H.g.push(g);t++;
+  if(H.v.length>40000){const cut=20000;H.v.splice(0,cut);H.g.splice(0,cut);H.off=(H.off||0)+cut}
+}
+const histAt=(arr,i)=>arr[i-(H.off||0)];
+function view(){const W=cfg.win*10;const end=Math.max(W,t);return [end-W,end]}
+function draw(now){
+  const [va,vb]=view(),W=vb-va,X=i=>TX0+(i-va)/W*(TX1-TX0);
+  const [gl,gh]=cfg.g,gy=x=>G1-(Math.max(gl,Math.min(gh,x))-gl)/(gh-gl)*(G1-G0);
+  // 軸
+  let ga=`<line x1="${TX0}" x2="${TX1}" y1="${gy(0)}" y2="${gy(0)}" stroke="#e4e8ee"/><text x="${TX0-4}" y="${gy(0)+4}" font-size="11" text-anchor="end" fill="${FAINT}">0</text>`;
+  ga+=`<text x="${TX0-4}" y="${G0+8}" font-size="11" text-anchor="end" fill="${FAINT}">${gh}</text>`;
+  if(gy(0)-G1<-22)ga+=`<text x="${TX0-4}" y="${G1}" font-size="11" text-anchor="end" fill="${FAINT}">${fmt(gl,0)}</text>`;
+  Q('.lif-gaxis').innerHTML=ga;
+  const span=cfg.win,stepT=span<=50?5:span<=120?10:span<=200?20:50;let ta='';
+  for(let ms=Math.ceil(va/10/stepT)*stepT;ms<=vb/10+1e-9;ms+=stepT){const x=X(ms*10);ta+=`<line x1="${x}" x2="${x}" y1="${OUT1}" y2="${OUT1+4}" stroke="${FAINT}"/><text x="${x}" y="${OUT1+16}" font-size="11" text-anchor="middle" fill="${FAINT}">${ms}</text>`}
+  ta+=`<text x="${TX1}" y="${OUT1+32}" font-size="11" text-anchor="end" fill="${SOFT}">時間（ms）</text>`;
+  Q('.lif-taxis').innerHTML=ta;
+  // 軌跡：每個像素取一點，g 的跳升用該段最大絕對值保留
+  const i0=Math.max(va,H.off||0),i1=t,k=Math.max(1,Math.floor(W/520));let pv='',pg='';
+  for(let i=i0;i<i1;i+=k){let gv=histAt(H.g,i);for(let j=i+1;j<Math.min(i+k,i1);j++){const q=histAt(H.g,j);if(Math.abs(q)>Math.abs(gv))gv=q}
+    pv+=(pv?'L':'M')+X(i).toFixed(1)+' '+ty(histAt(H.v,i)).toFixed(1);pg+=(pg?'L':'M')+X(i).toFixed(1)+' '+gy(gv).toFixed(1)}
+  Q('.lif-v').setAttribute('d',pv);Q('.lif-g').setAttribute('d',pg);
+  // 上游、不反應期灰底、放電
+  const mid=(UP0+UP1)/2;let up='';const byT=new Map();
+  for(const s of sends){if(s.t>t||s.t<va)continue;const key=s.t+(s.w>0?'+':'-');byT.set(key,(byT.get(key)||{t:s.t,w:s.w,n:0}));byT.get(key).n+=s.n}
+  for(const s of byT.values()){const x=X(s.t),c=s.w>0?BLUE:PURPLE,y2=s.w>0?UP0:UP1;
+    up+=`<line x1="${x}" x2="${x}" y1="${mid}" y2="${y2}" stroke="${c}" stroke-width="2"/>`;
+    if(s.n>1)up+=`<text x="${x+3}" y="${s.w>0?UP0+8:UP1}" font-size="10" fill="${c}">${s.n}</text>`}
+  Q('.lif-up').innerHTML=up;
+  let sh='',sp='',ou='';
+  for(const s of spikes){if(s+DATA.rfc<va)continue;const x=X(s);
+    sh+=`<rect x="${x}" y="${V0Y}" width="${Math.max(1,X(s+DATA.rfc)-x)}" height="${V1Y-V0Y}" fill="#94a3b8" fill-opacity=".25"/>`;
+    sp+=`<line x1="${x}" x2="${x}" y1="${ty(DATA.vth)}" y2="${V0Y}" stroke="${ORANGE}" stroke-width="2"/><circle cx="${x}" cy="${V0Y}" r="3" fill="${ORANGE}"/>`;
+    ou+=`<line x1="${x}" x2="${x}" y1="${OUT0+2}" y2="${OUT1}" stroke="${ORANGE}" stroke-width="2"/>`}
+  for(const s of kicks){if(s<va)continue;const x=X(s);sp+=`<path d="M${x-3} ${V0Y+12} L${x} ${V0Y+4} L${x+3} ${V0Y+12}" fill="none" stroke="${PURPLE}" stroke-width="1.5"/>`}
+  Q('.lif-shade').innerHTML=sh;Q('.lif-spk').innerHTML=sp;Q('.lif-out').innerHTML=ou;
+  // 註記
+  let no='';
+  for(const m of cfg.notes){const i=Math.round(m.ms*10);if(i>t||i<va)continue;const x=X(i);
+    let y=m.row==='up'?UP1+12:m.row==='g'?gy(m.v):ty(m.v);
+    if(m.vline)no+=`<line x1="${x}" x2="${x}" y1="${V0Y}" y2="${V1Y}" stroke="${ORANGE}" stroke-dasharray="3 3"/>`;
+    if(m.row!=='up')no+=`<circle cx="${x}" cy="${y}" r="3.5" fill="none" stroke="${ORANGE}" stroke-width="1.5"/>`;
+    const tx=m.row==='up'?x+(m.anchor==='end'?-4:4):x+m.dx;
+    no+=`<text x="${tx}" y="${y+m.dy}" font-size="12" font-weight="600" text-anchor="${m.anchor||'start'}" fill="${ORANGE}" paint-order="stroke" stroke="#fff" stroke-width="4">${m.t}</text>`}
+  Q('.lif-notes').innerHTML=no;
+  const nx=X(t);const nl=Q('.lif-now');nl.setAttribute('x1',nx);nl.setAttribute('x2',nx);
+  // 水桶
+  const vy=Math.max(BY0-50,by(Math.min(v,-37.5)));const wa=Q('.lif-water');wa.setAttribute('y',vy);wa.setAttribute('height',BY1-vy);
+  Q('.lif-vtxt').textContent='水位 V = '+fmt(v,2)+' mV';
+  Q('.lif-gtxt').textContent='g = '+fmt(g,2)+' mV';
+  const st=Q('.lif-stream'),wdt=Math.min(14,Math.abs(g)*1.2);
+  if(g>0.02){st.setAttribute('x',165-wdt/2);st.setAttribute('width',wdt);st.setAttribute('y',102);st.setAttribute('height',Math.max(0,vy-102));st.setAttribute('fill','#7cb6f0')}
+  else st.setAttribute('width',0);
+  let su='';if(g<-0.02){const n=Math.min(5,1+Math.floor(-g/6));for(let j=0;j<n;j++){const ph=((now/600+j/n)%1);su+=`<text x="${150+j*8%30}" y="${vy-6-ph*40}" font-size="13" fill="${PURPLE}" opacity="${1-ph}">↑</text>`}
+    su+=`<text x="${(BX0+BX1)/2}" y="${vy+18}" font-size="11" text-anchor="middle" fill="${PURPLE}">g 是負的：抽水</text>`}
+  Q('.lif-suck').innerHTML=su;
+  Q('.lif-handle').setAttribute('transform',`rotate(${Math.max(-40,Math.min(40,g*2))} 165 66)`);
+  // 訊號沿管子走
+  let tr='';for(const s of byT.values()){if(t-s.t>=DATA.dly)continue;const f=(t-s.t)/DATA.dly,y0=s.w>0?62:96;
+    const x=f<.3?41+f/.3*29:70+(f-.3)/.7*80,y=f<.3?y0:78;tr+=`<circle cx="${x}" cy="${y}" r="5" fill="${s.w>0?BLUE:PURPLE}"/>`;if(s.n>1)tr+=`<text x="${x}" y="${y-8}" font-size="10" text-anchor="middle" fill="${s.w>0?BLUE:PURPLE}">×${s.n}</text>`}
+  Q('.lif-travel').innerHTML=tr;
+  // 漏水：水位高於 V_rest 才往下滴，滴的快慢跟離 V_rest 多遠成正比
+  let dp='';const gap=v-DATA.v0,cx=(BX0+BX1)/2;
+  if(rfc<=0&&gap>0.05){const n=3,sp2=Math.min(1,gap/5);for(let j=0;j<n;j++){const ph=((now/1000*(0.6+2.4*sp2)+j/n)%1);dp+=`<circle cx="${cx}" cy="${BY1+4+ph*26}" r="${2+2*sp2}" fill="#7cb6f0" opacity="${(1-ph)*Math.min(1,0.3+sp2)}"/>`}}
+  else if(rfc<=0&&gap<-0.05)dp+=`<text x="${cx}" y="${BY1+22}" font-size="13" text-anchor="middle" fill="#7cb6f0">↑</text>`;
+  Q('.lif-drips').innerHTML=dp;
+  const lastS=spikes.length?spikes[spikes.length-1]:-1e9,since=t-lastS;
+  Q('.lif-fire').setAttribute('opacity',since<=DATA.rfc+30?1:0);
+  Q('.lif-rfc').setAttribute('opacity',rfc>0?1:0);
+  Q('.lif-rfcbar').setAttribute('width',rfc>0?(BX1-BX0-60)*rfc/DATA.rfc:0);
+  const lastK=kicks.length?kicks[kicks.length-1]:-1e9;Q('.lif-over').setAttribute('opacity',t-lastK<=DATA.rfc+30?1:0);
+  // 讀數
+  let r='t = '+fmt(t/10,1)+' ms　V = '+fmt(v,2)+' mV　g = '+fmt(g,2)+' mV　輸出放電 '+spikes.length+' 次';
+  if(step>=6){const recent=spikes.filter(s=>s>t-10000).length;r+=t>=10000?'　最近 1 秒：'+recent+' Hz':'　（跑滿 1 秒才算放電率：還差 '+fmt((10000-t)/10,0)+' ms）'}
+  if(ended)r+='　｜ 這一步播完了：按「重播這一步」，或自己送輸入';
+  Q('.enc-read').textContent=r;
+}
+function frame(ts){
+  if(last==null)last=ts;const dt=Math.min(100,ts-last);last=ts;
+  if(playing&&!ended){acc+=dt*SPEEDS[speed]*10;let k=Math.floor(acc);acc-=k;
+    const W=cfg.win*10;
+    while(k-->0){if(step<=5&&t>=W&&!manual){ended=true;break}tick1()}}
+  draw(ts);requestAnimationFrame(frame);
+}
+let manual=false;
+function render(){
+  for(const li of box.querySelectorAll('.enc-steps li')){const k=+li.dataset.k;li.className=k===step?'on':k<step?'done':''}
+  Q('.lif-prev').disabled=step===1;Q('.lif-next').disabled=step===7;
+  Q('.lif-nup').style.display=step===6?'':'none';Q('.lif-rate').style.display=step===7?'':'none';
+}
+function go(s){step=s;speed=DATA.steps[s-1].speed;Q('.lif-speed').value=speed;manual=false;reset();playing=true;Q('.lif-play').textContent='⏸ 暫停';render()}
+Q('.lif-prev').onclick=()=>{if(step>1)go(step-1)};
+Q('.lif-next').onclick=()=>{if(step<7)go(step+1)};
+Q('.lif-replay').onclick=()=>go(step);
+Q('.lif-play').onclick=()=>{playing=!playing;Q('.lif-play').textContent=playing?'⏸ 暫停':'▶ 播放'};
+Q('.lif-speed').onchange=e=>{speed=+e.target.value};
+for(const b of box.querySelectorAll('.lif-add'))b.onclick=()=>{send(t,DATA.w*(+b.dataset.s),+b.dataset.n);manual=true;ended=false;playing=true;Q('.lif-play').textContent='⏸ 暫停'};
+const nu=Q('.lif-nup input'),ra=Q('.lif-rate input');
+const showN=()=>{nup=+nu.value;Q('.lif-nup b').textContent=nup+' 顆（每秒共 '+(nup*20).toLocaleString()+' 個輸入）'};
+const showR=()=>{rate=+ra.value;Q('.lif-rate b').textContent=rate+' Hz'};
+nu.oninput=showN;ra.oninput=showR;showN();showR();
+for(const li of box.querySelectorAll('.enc-steps li'))li.onclick=()=>go(+li.dataset.k);
+// 給單獨頁與自我檢查用：box.lif.set({step, speed, seed})；box.lif.run(ms) 直接算完不播
+box.lif={get step(){return step},get spikes(){return spikes.map(s=>+(s/10).toFixed(1))},
+  set(o){if(o.seed!=null){let a=o.seed>>>0;rnd=()=>{a=a+0x6D2B79F5|0;let x=Math.imul(a^a>>>15,1|a);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296}}
+    if(o.step)go(Math.max(1,Math.min(7,o.step)));if(o.speed!=null){speed=o.speed;Q('.lif-speed').value=speed}if(o.nup!=null){nu.value=o.nup;showN()}if(o.rate!=null){ra.value=o.rate;showR()}if(o.play!=null){playing=!!o.play;Q('.lif-play').textContent=playing?'⏸ 暫停':'▶ 播放'}},
+  run(ms){const end=t+Math.round(ms*10);while(t<end)tick1();if(step<=5&&t>=cfg.win*10)ended=true;draw(0)}};
+go(1);requestAnimationFrame(frame);
+})();
+</script>
+<p class="figsrc">更新規則照抄 fruitfly-lab 的 flycircuit/lif.py（_kernel）；參數讀 circuit/meta.json，步驟裡的數字在 out/lif_fig.json。說明全文：https://marginli.github.io/bsc-flysimu/part1-what.html#s2</p>
+<script>
+(function(){
+  var box=document.getElementById("p1lif"),q=new URLSearchParams(location.search),ctl=box.querySelector(".enc-ctl");
+  ctl.insertAdjacentHTML("afterbegin",'<span class="name">漏電整合發放：一顆神經元怎麼整合輸入、決定放電</span>');
+  ctl.insertAdjacentHTML("beforeend",'<span class="right"><button type="button" id="lifDesc" aria-pressed="false">說明</button><button type="button" id="lifFull">全螢幕</button></span>');
+  if(q.get("clean")==="1")document.body.classList.add("clean");
+  if(q.get("d")==="1")document.body.classList.add("showdesc");
+  var o={};
+  if(q.get("seed"))o.seed=+q.get("seed");if(q.get("s"))o.step=+q.get("s");
+  box.lif.set(o);o={};
+  if(q.get("speed"))o.speed=+q.get("speed");if(q.get("nup"))o.nup=+q.get("nup");if(q.get("rate"))o.rate=+q.get("rate");
+  box.lif.set(o);
+  if(q.get("at")){box.lif.set({play:false});box.lif.run(+q.get("at"))}
+  var dBtn=document.getElementById("lifDesc"),fs=document.getElementById("lifFull"),de=document.documentElement;
+  dBtn.onclick=function(){dBtn.setAttribute("aria-pressed",document.body.classList.toggle("showdesc"))};
+  dBtn.setAttribute("aria-pressed",document.body.classList.contains("showdesc"));
+  if(!(document.fullscreenEnabled||document.webkitFullscreenEnabled))fs.style.display="none";
+  fs.onclick=function(){if(document.fullscreenElement||document.webkitFullscreenElement)(document.exitFullscreen||document.webkitExitFullscreen).call(document);else(de.requestFullscreen||de.webkitRequestFullscreen).call(de)};
+  var Q=function(s){return box.querySelector(s)},next=Q(".lif-next"),prev=Q(".lif-prev");
+  document.addEventListener("keydown",function(e){
+    if(e.altKey||e.ctrlKey||e.metaKey)return;
+    if(e.target.tagName==="INPUT"&&e.target.type==="range"&&(e.key==="ArrowLeft"||e.key==="ArrowRight"))return;
+    if(e.target.tagName==="SELECT")return;
+    var k=e.key,sp=Q(".lif-speed");
+    if(k==="ArrowRight"||k==="PageDown"){e.preventDefault();if(!next.disabled)next.click()}
+    else if(k==="ArrowLeft"||k==="PageUp"){e.preventDefault();if(!prev.disabled)prev.click()}
+    else if(k==="Home"){e.preventDefault();box.lif.set({step:1})}
+    else if(k==="End"){e.preventDefault();box.lif.set({step:7})}
+    else if("1234567".indexOf(k)>=0&&k.length===1)box.lif.set({step:+k});
+    else if(k===" "||k==="p"||k==="P"){e.preventDefault();Q(".lif-play").click()}
+    else if(k==="r"||k==="R")Q(".lif-replay").click();
+    else if(k==="e"||k==="E")box.querySelectorAll(".lif-add")[0].click();
+    else if(k==="i"||k==="I")box.querySelectorAll(".lif-add")[1].click();
+    else if(k==="b"||k==="B")box.querySelectorAll(".lif-add")[2].click();
+    else if(k==="s"||k==="S"){sp.value=(+sp.value+1)%3;sp.dispatchEvent(new Event("change"))}
+    else if(k==="d"||k==="D")dBtn.click();
+    else if(k==="f"||k==="F")fs.click();
+  });
+})();
+</script>
+</body>
+</html>

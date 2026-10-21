@@ -1,7 +1,7 @@
 """PART 1 第 2 節〈漏電整合發放〉的圖 1：左邊水桶（水位＝膜電位 V、水龍頭開度＝g、桶底的洞＝漏電），右邊 V 與 g 隨時間的軌跡，七步可逐步看。
 數字全部讀 out/lif_fig.json（scripts/lif_fig_data.py 從作者 meta.json 讀參數、照 lif.py 逐步算的結果）；
 瀏覽器裡的更新照抄作者 flycircuit/lif.py 的 _kernel（單顆神經元）：先收到期的輸入 → 不反應期外才積分與衰減 → 倒數 → 外部刺激 → 過閾值就放電。
-產出：part1-what.html 裡 <!-- lif:start --> … <!-- lif:end --> 之間的片段。圖的文字要改在這裡，不要直接改頁面。
+產出：part1-what.html 裡 <!-- lif:start --> … <!-- lif:end --> 之間的片段，與簡報用的單獨頁 lif.html。圖的文字要改在這裡，不要直接改頁面。
 用法：python3 scripts/make_lif_anim.py"""
 import json
 import os
@@ -327,7 +327,7 @@ for(const li of box.querySelectorAll('.enc-steps li'))li.onclick=()=>go(+li.data
 // 給單獨頁與自我檢查用：box.lif.set({step, speed, seed})；box.lif.run(ms) 直接算完不播
 box.lif={get step(){return step},get spikes(){return spikes.map(s=>+(s/10).toFixed(1))},
   set(o){if(o.seed!=null){let a=o.seed>>>0;rnd=()=>{a=a+0x6D2B79F5|0;let x=Math.imul(a^a>>>15,1|a);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296}}
-    if(o.step)go(Math.max(1,Math.min(7,o.step)));if(o.speed!=null){speed=o.speed;Q('.lif-speed').value=speed}if(o.nup!=null){nu.value=o.nup;showN()}if(o.rate!=null){ra.value=o.rate;showR()}},
+    if(o.step)go(Math.max(1,Math.min(7,o.step)));if(o.speed!=null){speed=o.speed;Q('.lif-speed').value=speed}if(o.nup!=null){nu.value=o.nup;showN()}if(o.rate!=null){ra.value=o.rate;showR()}if(o.play!=null){playing=!!o.play;Q('.lif-play').textContent=playing?'⏸ 暫停':'▶ 播放'}},
   run(ms){const end=t+Math.round(ms*10);while(t<end)tick1();if(step<=5&&t>=cfg.win*10)ended=true;draw(0)}};
 go(1);requestAnimationFrame(frame);
 })();
@@ -343,3 +343,94 @@ new, cnt = re.subn(r"<!-- lif:start -->.*?<!-- lif:end -->", lambda m: "<!-- lif
 assert cnt == 1, "頁面裡找不到 <!-- lif:start --> … <!-- lif:end -->"
 open(PAGE, "w", encoding="utf-8").write(new)
 print("圖 1（漏電整合發放）已寫入 part1-what.html")
+
+STANDALONE = """<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>漏電整合發放｜果蠅玩 Doom</title>
+<style>
+/* PART 1 圖 1 的單獨頁：給簡報嵌入（PowerPoint 網頁增益集）或離線用瀏覽器全螢幕開。由 scripts/make_lif_anim.py 產生，不要手改。
+   單一檔案、不依賴其他檔，file:// 也能用。版面照視窗大小縮放，16:9 剛好填滿。
+   網址參數：s=1–7 第幾步；speed=0–2 很慢／慢／快；nup=0–200 第 6 步上游顆數；rate=0–150 第 7 步的 r；seed 固定隨機；
+   at=毫秒 直接算到那一刻並暫停；d=1 顯示說明；clean=1 只留圖 */
+:root{--ink:#1b2733;--soft:#5a6b7b;--faint:#8b98a5;--border:#e4e8ee;--panel:#f7f8fa;--accent:#2563eb;--accent-soft:#eef3fe;--fs:clamp(11px,1.05vw,24px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#fff;color:var(--ink);font-size:var(--fs);line-height:1.6;overflow:hidden;
+  font-family:-apple-system,"Segoe UI","Noto Sans TC","Microsoft JhengHei","PingFang TC",Roboto,Helvetica,Arial,sans-serif;
+  display:flex;flex-direction:column;gap:.4em;padding:.6em 1em}
+#p1lif{display:contents}
+.enc-ctl{order:0;display:flex;flex-wrap:wrap;align-items:center;gap:.4em .9em;color:var(--soft)}
+.name{font-weight:700;color:var(--ink);margin-right:.3em}
+.enc-ctl button,.enc-ctl select{font:inherit;font-size:.95em;padding:.2em .8em;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
+.enc-ctl button:disabled{opacity:.4;cursor:default}
+.enc-ctl button:hover:not(:disabled){border-color:var(--accent)}
+.enc-ctl button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.enc-ctl button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.enc-ctl label{display:inline-flex;align-items:center;gap:.4em}
+.enc-ctl input[type=range]{width:8em}
+.right{margin-left:auto;display:flex;gap:.4em}
+.lif-wrap{order:1;flex:1 1 0;min-height:0;display:flex}
+.lif-svg{width:100%;height:100%;display:block;font-size:16px}
+.lif-svg g{transition:opacity .3s}
+.enc-read{order:2;margin:0;font-family:Menlo,Consolas,monospace;font-size:.9em;color:var(--ink);background:var(--panel);border-radius:8px;padding:.2em .7em}
+.enc-steps{order:3;display:none;margin:0;padding:0;list-style:none;font-size:.95em;max-height:24vh;overflow:auto}
+body.showdesc .enc-steps,body.showdesc .figsrc{display:block}
+.figsrc{order:4;display:none;margin:0;font-size:.8em;color:var(--faint)}
+.enc-steps li{display:none;padding:.2em .7em;border-left:3px solid var(--accent);background:var(--accent-soft)}
+.enc-steps li.on{display:block}
+body.clean{padding:0}
+body.clean .enc-ctl,body.clean .enc-read,body.clean .enc-steps,body.clean .figsrc{display:none!important}
+</style>
+</head>
+<body>
+%FRAG%
+<p class="figsrc">更新規則照抄 fruitfly-lab 的 flycircuit/lif.py（_kernel）；參數讀 circuit/meta.json，步驟裡的數字在 out/lif_fig.json。說明全文：https://marginli.github.io/bsc-flysimu/part1-what.html#s2</p>
+<script>
+(function(){
+  var box=document.getElementById("p1lif"),q=new URLSearchParams(location.search),ctl=box.querySelector(".enc-ctl");
+  ctl.insertAdjacentHTML("afterbegin",'<span class="name">漏電整合發放：一顆神經元怎麼整合輸入、決定放電</span>');
+  ctl.insertAdjacentHTML("beforeend",'<span class="right"><button type="button" id="lifDesc" aria-pressed="false">說明</button><button type="button" id="lifFull">全螢幕</button></span>');
+  if(q.get("clean")==="1")document.body.classList.add("clean");
+  if(q.get("d")==="1")document.body.classList.add("showdesc");
+  var o={};
+  if(q.get("seed"))o.seed=+q.get("seed");if(q.get("s"))o.step=+q.get("s");
+  box.lif.set(o);o={};
+  if(q.get("speed"))o.speed=+q.get("speed");if(q.get("nup"))o.nup=+q.get("nup");if(q.get("rate"))o.rate=+q.get("rate");
+  box.lif.set(o);
+  if(q.get("at")){box.lif.set({play:false});box.lif.run(+q.get("at"))}
+  var dBtn=document.getElementById("lifDesc"),fs=document.getElementById("lifFull"),de=document.documentElement;
+  dBtn.onclick=function(){dBtn.setAttribute("aria-pressed",document.body.classList.toggle("showdesc"))};
+  dBtn.setAttribute("aria-pressed",document.body.classList.contains("showdesc"));
+  if(!(document.fullscreenEnabled||document.webkitFullscreenEnabled))fs.style.display="none";
+  fs.onclick=function(){if(document.fullscreenElement||document.webkitFullscreenElement)(document.exitFullscreen||document.webkitExitFullscreen).call(document);else(de.requestFullscreen||de.webkitRequestFullscreen).call(de)};
+  var Q=function(s){return box.querySelector(s)},next=Q(".lif-next"),prev=Q(".lif-prev");
+  document.addEventListener("keydown",function(e){
+    if(e.altKey||e.ctrlKey||e.metaKey)return;
+    if(e.target.tagName==="INPUT"&&e.target.type==="range"&&(e.key==="ArrowLeft"||e.key==="ArrowRight"))return;
+    if(e.target.tagName==="SELECT")return;
+    var k=e.key,sp=Q(".lif-speed");
+    if(k==="ArrowRight"||k==="PageDown"){e.preventDefault();if(!next.disabled)next.click()}
+    else if(k==="ArrowLeft"||k==="PageUp"){e.preventDefault();if(!prev.disabled)prev.click()}
+    else if(k==="Home"){e.preventDefault();box.lif.set({step:1})}
+    else if(k==="End"){e.preventDefault();box.lif.set({step:7})}
+    else if("1234567".indexOf(k)>=0&&k.length===1)box.lif.set({step:+k});
+    else if(k===" "||k==="p"||k==="P"){e.preventDefault();Q(".lif-play").click()}
+    else if(k==="r"||k==="R")Q(".lif-replay").click();
+    else if(k==="e"||k==="E")box.querySelectorAll(".lif-add")[0].click();
+    else if(k==="i"||k==="I")box.querySelectorAll(".lif-add")[1].click();
+    else if(k==="b"||k==="B")box.querySelectorAll(".lif-add")[2].click();
+    else if(k==="s"||k==="S"){sp.value=(+sp.value+1)%3;sp.dispatchEvent(new Event("change"))}
+    else if(k==="d"||k==="D")dBtn.click();
+    else if(k==="f"||k==="F")fs.click();
+  });
+})();
+</script>
+</body>
+</html>
+"""
+open(os.path.join(D, "lif.html"), "w", encoding="utf-8").write(STANDALONE.replace("%FRAG%", frag))
+print("單獨頁 lif.html 已寫入")

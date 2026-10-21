@@ -307,7 +307,7 @@ for(const li of box.querySelectorAll('.enc-steps li'))li.onclick=()=>go(+li.data
 // 給單獨頁與自我檢查用：box.lif.set({step, speed, seed})；box.lif.run(ms) 直接算完不播
 box.lif={get step(){return step},get spikes(){return spikes.map(s=>+(s/10).toFixed(1))},
   set(o){if(o.seed!=null){let a=o.seed>>>0;rnd=()=>{a=a+0x6D2B79F5|0;let x=Math.imul(a^a>>>15,1|a);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296}}
-    if(o.step)go(Math.max(1,Math.min(7,o.step)));if(o.speed!=null){speed=o.speed;Q('.lif-speed').value=speed}if(o.nup!=null){nu.value=o.nup;showN()}if(o.rate!=null){ra.value=o.rate;showR()}},
+    if(o.step)go(Math.max(1,Math.min(7,o.step)));if(o.speed!=null){speed=o.speed;Q('.lif-speed').value=speed}if(o.nup!=null){nu.value=o.nup;showN()}if(o.rate!=null){ra.value=o.rate;showR()}if(o.play!=null){playing=!!o.play;Q('.lif-play').textContent=playing?'⏸ 暫停':'▶ 播放'}},
   run(ms){const end=t+Math.round(ms*10);while(t<end)tick1();if(step<=5&&t>=cfg.win*10)ended=true;draw(0)}};
 go(1);requestAnimationFrame(frame);
 })();
@@ -316,6 +316,7 @@ go(1);requestAnimationFrame(frame);
     <figcaption><b>圖 1　漏電整合發放，一步一步看。</b>按「下一步」從 ① 走到 ⑦，每一步會自動播放；時間放慢很多倍（「很慢」是模型的 1 ms 演 0.2 秒），可以換速度、暫停、重播。左邊水桶：水位是膜電位 V，紅色虛線是刻度 V<sub>th</sub>，灰色虛線是 V<sub>rest</sub>；水龍頭的開度是 g，水柱愈粗 g 愈大，g 是負的（抑制）時改成往上抽水；桶底的洞是漏電，水滴愈快表示水位離 V<sub>rest</sub> 愈遠。右邊由上往下：上游送出的放電、g、V、這顆神經元送出的放電；灰底是不反應期，橘色直線是放電的記號。這是<b>單獨一顆</b>神經元，上游輸入是示範用的（每個輸入 3.03 mV，即 11 個突觸 × 0.275 mV），不是模型裡哪一顆真正收到的輸入。
     <span class="figsrc">更新規則照抄作者 <code>flycircuit/lif.py</code> 的 <code>_kernel</code>（每 0.1 ms 一步：收到期的輸入 → 不反應期外才積分與衰減 → 外部刺激 → 過刻度就放電）；參數讀作者 <code>circuit/meta.json</code>。步驟裡的數字由 <code>scripts/lif_fig_data.py</code> 用同一套規則在 Python 裡算出，在 <code>out/lif_fig.json</code>；圖由 <code>scripts/make_lif_anim.py</code> 產生（圖裡的文字要改在那裡）。</span></figcaption>
   </figure>
+  <p class="figsrc">簡報要演示的話：<a href="lif.html">圖 1 單獨頁</a>只有這張圖，版面配合 16:9 投影片，功能和上面一樣，可以用 PowerPoint 的網頁增益集嵌進投影片（要能上網），也可以下載後用瀏覽器直接開（單一檔案，不用網路）；鍵盤 ← → 換步驟、空白鍵暫停、R 重播、E／I 送興奮／抑制輸入、S 換速度、D 顯示這一步的說明。不想用瀏覽器的話，<a href="downloads/lif/flydoom-lif.zip">投影片用圖</a>有九個畫面（七步，第 ④ 步多一張不反應期當下、第 ⑥ 步多一張上游 150 顆），每個都有 PNG 與 SVG，一張投影片放一個畫面即可；壓縮檔裡也附了單獨頁。</p>
 
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s3"><span class="pt">3</span>從全腦切出一段迴路</h2>
