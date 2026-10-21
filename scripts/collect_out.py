@@ -23,7 +23,7 @@ PLAN = [
 
 def main():
     keep = {}
-    for f in ("porttest.json", "demo_stats.json", "code_meta.json", "video_meta.json", "soma_fig.json", "lc10a_cross.json", "subgraph_types.json", "encode_fig.json", "collie2026.json"):   # 另幾支程式產生的檔案，收資料時保留
+    for f in ("porttest.json", "demo_stats.json", "code_meta.json", "video_meta.json", "soma_fig.json", "lc10a_cross.json", "subgraph_types.json", "encode_fig.json", "collie2026.json", "shiu2024.json"):   # 另幾支程式產生的檔案，收資料時保留
         p = os.path.join(OUT, f)
         if os.path.exists(p):
             keep[f] = open(p, "rb").read()

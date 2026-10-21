@@ -1,0 +1,14 @@
+{
+ "_note": "PART 1 第 4 節「68.75 mV 與 150 Hz 從哪來」的查證紀錄（2026-10-21 人工讀 Shiu et al. 2024 開放全文 PMC11446845，與作者 repo 裡 clone 的 Drosophila_brain_model commit 91bdd1e 的 model.py）",
+ "citation": "Shiu PK et al. A Drosophila computational brain model reveals sensorimotor processing. Nature 634(8032):210-219 (2024). doi:10.1038/s41586-024-07763-9",
+ "journal_volume": 634, "page_first": 210, "page_last": 219, "pmid": 39358519, "pmcid": "PMC11446845",
+ "code_defaults": {"w_syn_mv": 0.275, "r_poi_hz": 150, "f_poi": 250, "f_poi_comment": "scaling factor for Poisson synapse; 250 is sufficient to cause spiking", "kick_mv": 68.75},
+ "paper_methods": {
+  "poisson": "We stimulated particular neurons with Poisson distributed input.",
+  "w_syn": "W syn = 0.275 mV (free parameter; synaptic weight)",
+  "sugar_grn_hz": [10, 200], "water_grn_hz": [20, 260], "jon_hz": [20, 220],
+  "absolute_rates": "the absolute firing rates of the model are unlikely to be accurate"
+ },
+ "f_poi_or_150hz_default_justified_in_paper": false,
+ "threshold_gap_mv": 7
+}
