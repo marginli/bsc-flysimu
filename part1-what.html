@@ -176,11 +176,439 @@
   <h3>輸入編碼：遊戲畫面怎麼變成 LC10a 的輸入</h3>
   <p>模型<b>沒有</b>看遊戲畫面的像素。ViZDoom 會直接回報畫面上每個物體的位置，程式從中換算出 LC10a 的刺激，分四步：</p>
   <ol>
-    <li><b>哪一側：</b>把畫面裡最近的敵人換算成「在果蠅視野裡的方位角」（只算畫面裡看得到的敵人，畫面外的不管；遊戲的畫面標籤只列看得到的物件）（−90° 是最左、+90° 是最右）。Doom 的畫面橫向只有 90°，作者把敵人在畫面上的橫座標換算成角度之後再放大兩倍，讓畫面左緣就是 −90°、右緣就是 +90°，把 90° 的畫面攤成果蠅 180° 的視野（<code>fly_doom.py</code> 的 <code>FLY_SCALE = 2.0</code>，作者的設定）。敵人在右邊就刺激右眼的 LC10a，在左邊就刺激左眼的；正前方 ±6° 以內兩側同時受刺激（這一塊叫雙眼重疊區；±6° 是作者定的常數，<code>fly_doom.py</code> 的 <code>BINO = 6.0</code>，人為設定）。</li>
-    <li><b>哪幾顆：</b>作者給同一側的每顆 LC10a 一個「偏好位置」：這顆連到 AOTU019（負責中央視野）的突觸占比愈高，就當它偏好中央；連到 AOTU025（外圍視野）愈多，就當它偏好外圍。占比 ＝ 接到 AOTU019 的突觸數 ÷（接到 AOTU019 ＋ 接到 AOTU025 的突觸數），只算這兩種。換算規則全用 0 到 1 的數：偏好位置 ＝ 1 − 占比（0 是正前方、1 是最外圍；<code>fly_doom.py</code> 的 pref_ecc）；敵人的方位取絕對值（左右已在第 1 步分開）再除以 90°，也變成 0 到 1；兩者相減，差愈小刺激愈強。換成角度說，就是占比 1 當作偏好 0°、占比 0 當作偏好 90°。偏好位置和敵人方位接近的那幾顆刺激最強，離得遠的幾乎不刺激。這是用接線「代替」真正的視野位置（真實果蠅每顆 LC10a 看哪一塊視野，要由複眼的光學量測決定，資料裡沒有），README 把它標為人為設定。</li>
-    <li><b>多強：</b>敵人在畫面上愈大（愈近），刺激愈強。</li>
-    <li><b>隨機放電：</b>「刺激」的做法是每 0.1 ms 以一個小機率讓那顆 LC10a 放電一次，機率由前三步決定，平均起來最高每秒 150 次。所以同一個畫面，每次跑出來的 LC10a 放電時刻都不同，這就是 PART 3 第 1 節判定標準裡「模型有隨機雜訊」的來源。</li>
+    <li><b>哪一側：</b>把畫面裡<b>每一個</b>敵人各自換算成「在果蠅視野裡的方位角」（只算畫面裡看得到的敵人，畫面外的不管；遊戲的畫面標籤只列看得到的物件。已經倒下的敵人——方框寬度超過高度的 1.3 倍——和方框高不到 4 像素的也不算）（−90° 是最左、+90° 是最右）。Doom 的畫面橫向只有 90°，作者把敵人在畫面上的橫座標換算成角度之後再放大兩倍，讓畫面左緣就是 −90°、右緣就是 +90°，把 90° 的畫面攤成果蠅 180° 的視野（<code>fly_doom.py</code> 的 <code>FLY_SCALE = 2.0</code>，作者的設定）。敵人在右邊就刺激右眼的 LC10a，在左邊就刺激左眼的；正前方 ±6° 以內兩側同時受刺激（這一塊叫雙眼重疊區；±6° 是作者定的常數，<code>fly_doom.py</code> 的 <code>BINO = 6.0</code>，人為設定）。</li>
+    <li><b>哪幾顆：</b>作者給同一側的每顆 LC10a 一個「偏好位置」：這顆連到 AOTU019（負責中央視野）的突觸占比愈高，就當它偏好中央；連到 AOTU025（外圍視野）愈多，就當它偏好外圍。占比 ＝ 接到 AOTU019 的突觸數 ÷（接到 AOTU019 ＋ 接到 AOTU025 的突觸數），只算這兩種。換算規則全用 0 到 1 的數：偏好位置 ＝ 1 − 占比（0 是正前方、1 是最外圍；<code>fly_doom.py</code> 的 pref_ecc）；敵人的方位取絕對值（左右已在第 1 步分開）再除以 90°，也變成 0 到 1。接著看這兩個數差多少：差 ＝ |偏好位置 − 敵人方位|，代進一條鐘形曲線得到「接近程度」＝ e<sup>−差² ÷ (2 × 0.3²)</sup>（0.3 是作者定的調諧寬度，<code>fly_doom.py</code> 的 <code>SIGMA = 0.3</code>，人為設定）。差 0 時接近程度是 1（滿格），差 0.3 剩 61%，差 0.5 剩 25%，差 0.9 只剩約 1%。舉例：敵人在右方 45°，換成 0.5；右眼偏好位置 0.5 的 LC10a 差 0，拿滿格；偏好 0.2 或 0.8 的差 0.3，拿 61%；偏好 0（正前方）或 1（最外圍）的差 0.5，只拿 25%。下面圖 3 的第 ④ 步畫的就是這條曲線。換成角度說，就是占比 1 當作偏好 0°、占比 0 當作偏好 90°。有 49 顆 LC10a（左 25、右 24）跟同側的 AOTU019、AOTU025 一條連結都沒有，算不出占比，程式一律給它們偏好位置 0.5（正前方與最外圍的中間），這是程式的預設值，不是資料。偏好位置和敵人方位接近的那幾顆刺激最強，離得遠的幾乎不刺激。這是用接線「代替」真正的視野位置（真實果蠅每顆 LC10a 看哪一塊視野，要由複眼的光學量測決定，資料裡沒有），README 把它標為人為設定。</li>
+    <li><b>多強：</b>敵人在畫面上愈大（愈近），刺激愈強：強度 ＝ 0.35 ＋ 方框高度（像素）÷ 60，最多 1。所以再遠再小的敵人也有 0.35，方框高 39 像素以上就是滿格。強度乘上第 2 步的「接近程度」，再乘每秒 150 次，就是這顆 LC10a 這一格的平均放電率。</li>
+    <li><b>隨機放電：</b>「刺激」的做法是每 0.1 ms 以一個小機率讓那顆 LC10a 放電一次，機率由前三步決定，平均起來最高每秒 150 次。畫面上同時有好幾個敵人時，每個敵人各自走完前三步，落在同一顆 LC10a 上的放電率加起來，加到 150 次就不再加。所以同一個畫面，每次跑出來的 LC10a 放電時刻都不同，這就是 PART 3 第 1 節判定標準裡「模型有隨機雜訊」的來源。</li>
   </ol>
+
+  <figure class="fig">
+<!-- encode:start -->
+<div class="enc" id="p1enc">
+<svg class="enc-svg" viewBox="0 0 900 622" role="img" aria-labelledby="encTitle" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,-apple-system,'Segoe UI','Microsoft JhengHei',sans-serif">
+<title id="encTitle">輸入編碼示意：遊戲回報敵人方框的位置與大小，換成方位角，決定刺激哪一眼、哪幾顆 LC10a、多強，最後變成隨機放電</title>
+<text id="encHead" x="24" y="32" font-size="17" font-weight="700" fill="#1b2733"></text>
+<g id="encA">
+<text x="30" y="52" font-size="13" font-weight="700" fill="#5a6b7b">遊戲畫面（320×240 像素，橫向 90°）</text>
+<rect x="30" y="62" width="368" height="138" fill="#3b4048"/>
+<rect x="30" y="200" width="368" height="138" fill="#6b5b47"/>
+<line x1="214.0" y1="62" x2="214.0" y2="338" stroke="#fff" stroke-opacity=".35" stroke-dasharray="4 4"/>
+<g id="encMon"></g><g id="encMon2"></g>
+<rect x="30" y="62" width="368" height="276" fill="none" stroke="#1b2733" stroke-width="1.2"/>
+</g>
+<g id="encAx" font-size="11" fill="#5a6b7b">
+<text x="404" y="358.0">像素</text>
+<text x="30.0" y="358.0" text-anchor="start">0</text>
+<text x="214.0" y="358.0" text-anchor="middle">160</text>
+<text x="398.0" y="358.0" text-anchor="end">320</text>
+<text x="404" y="375.0">Doom 角度</text>
+<text x="30.0" y="375.0" text-anchor="start">−45°</text>
+<text x="214.0" y="375.0" text-anchor="middle">0°</text>
+<text x="398.0" y="375.0" text-anchor="end">+45°</text>
+<text x="404" y="392.0" font-weight="700" id="encAxFly">果蠅方位角</text>
+<text x="30.0" y="392.0" text-anchor="start" font-weight="700" fill="#1b2733">−90°</text>
+<text x="214.0" y="392.0" text-anchor="middle" font-weight="700" fill="#1b2733">0°</text>
+<text x="398.0" y="392.0" text-anchor="end" font-weight="700" fill="#1b2733">+90°</text>
+<path id="encMark" d="M0,0 L5,8 L-5,8 Z" fill="#1b2733"/>
+</g>
+<g id="encB">
+<text x="668" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#5a6b7b">果蠅的視野（從上往下看，頭朝上）</text>
+<path id="encEyeL" d="M668,330 L490.0,330.0 A178,178 0 0 1 668.0,152.0 Z" fill="#2563eb" fill-opacity=".06" stroke="#e4e8ee"/>
+<path id="encEyeR" d="M668,330 L668.0,152.0 A178,178 0 0 1 846.0,330.0 Z" fill="#d97706" fill-opacity=".06" stroke="#e4e8ee"/>
+<path id="encBino" d="M668,330 L649.4,153.0 A178,178 0 0 1 686.6,153.0 Z" fill="#9333ea" fill-opacity=".10"/>
+<text x="476.0" y="334.0" text-anchor="end" font-size="11" fill="#5a6b7b">−90°</text>
+<text x="532.2" y="198.2" text-anchor="end" font-size="11" fill="#5a6b7b">−45°</text>
+<text x="668.0" y="142.0" text-anchor="middle" font-size="11" fill="#5a6b7b">0°</text>
+<text x="803.8" y="198.2" text-anchor="start" font-size="11" fill="#5a6b7b">+45°</text>
+<text x="860.0" y="334.0" text-anchor="start" font-size="11" fill="#5a6b7b">+90°</text>
+<text x="576" y="290" text-anchor="middle" font-size="13" font-weight="700" fill="#2563eb">左眼</text>
+<text x="760" y="290" text-anchor="middle" font-size="13" font-weight="700" fill="#d97706">右眼</text>
+<text id="encBinoLab" x="668.0" y="124.0" text-anchor="middle" font-size="11" fill="#9333ea">兩眼都看到 ±6°</text>
+<line id="encRay2" x1="668" y1="330" x2="668" y2="152" stroke="#8b98a5" stroke-width="2" stroke-dasharray="5 4" visibility="hidden"/>
+<line id="encRay" x1="668" y1="330" x2="668" y2="152" stroke="#1b2733" stroke-width="2.5"/>
+<circle id="encRayDot" cx="668" cy="152" r="6" fill="#8b3a2b"/>
+<ellipse cx="668" cy="332" rx="9" ry="15" fill="#1b2733"/><circle cx="668" cy="315" r="6" fill="#1b2733"/>
+<text id="encAzTxt" x="668" y="364" text-anchor="middle" font-size="13" font-weight="700" fill="#1b2733"></text>
+</g>
+<g id="encC">
+<text x="24" y="416" font-size="13" font-weight="700" fill="#5a6b7b">234 顆 LC10a，依作者指定的「偏好位置」排開（不是真的視野位置）</text>
+<line x1="64" y1="478" x2="836" y2="478" stroke="#e4e8ee"/>
+<line x1="450" y1="426" x2="450" y2="596" stroke="#8b98a5" stroke-dasharray="3 3"/>
+<path id="encCurveL" d="" fill="#2563eb" fill-opacity=".14" stroke="#2563eb" stroke-width="1.5"/>
+<path id="encCurveR" d="" fill="#d97706" fill-opacity=".14" stroke="#d97706" stroke-width="1.5"/>
+<text id="encCurveLab" x="0" y="0" font-size="12" font-weight="700" fill="#1b2733" text-anchor="end"></text>
+<g id="encDots">
+<circle cx="70.0" cy="540" r="2.7"/>
+<circle cx="67.0" cy="534" r="2.7"/>
+<circle cx="442.0" cy="540" r="2.7"/>
+<circle cx="67.0" cy="546" r="2.7"/>
+<circle cx="439.0" cy="534" r="2.7"/>
+<circle cx="259.0" cy="540" r="2.7"/>
+<circle cx="439.0" cy="546" r="2.7"/>
+<circle cx="256.0" cy="534" r="2.7"/>
+<circle cx="448.0" cy="537" r="2.7"/>
+<circle cx="256.0" cy="546" r="2.7"/>
+<circle cx="76.0" cy="537" r="2.7"/>
+<circle cx="253.0" cy="528" r="2.7"/>
+<circle cx="123.2" cy="543" r="2.7"/>
+<circle cx="445.0" cy="531" r="2.7"/>
+<circle cx="445.0" cy="549" r="2.7"/>
+<circle cx="210.6" cy="540" r="2.7"/>
+<circle cx="193.5" cy="540" r="2.7"/>
+<circle cx="73.0" cy="531" r="2.7"/>
+<circle cx="73.0" cy="549" r="2.7"/>
+<circle cx="451.0" cy="543" r="2.7"/>
+<circle cx="91.9" cy="540" r="2.7"/>
+<circle cx="253.0" cy="552" r="2.7"/>
+<circle cx="442.0" cy="525" r="2.7"/>
+<circle cx="262.0" cy="531" r="2.7"/>
+<circle cx="61.0" cy="540" r="2.7"/>
+<circle cx="183.8" cy="534" r="2.7"/>
+<circle cx="262.0" cy="549" r="2.7"/>
+<circle cx="327.1" cy="540" r="2.7"/>
+<circle cx="79.0" cy="543" r="2.7"/>
+<circle cx="70.0" cy="525" r="2.7"/>
+<circle cx="442.0" cy="555" r="2.7"/>
+<circle cx="70.0" cy="555" r="2.7"/>
+<circle cx="64.0" cy="528" r="2.7"/>
+<circle cx="64.0" cy="552" r="2.7"/>
+<circle cx="265.0" cy="537" r="2.7"/>
+<circle cx="436.0" cy="528" r="2.7"/>
+<circle cx="79.0" cy="528" r="2.7"/>
+<circle cx="247.0" cy="534" r="2.7"/>
+<circle cx="126.2" cy="537" r="2.7"/>
+<circle cx="247.0" cy="546" r="2.7"/>
+<circle cx="436.0" cy="552" r="2.7"/>
+<circle cx="79.0" cy="552" r="2.7"/>
+<circle cx="225.9" cy="543" r="2.7"/>
+<circle cx="173.8" cy="540" r="2.7"/>
+<circle cx="259.0" cy="525" r="2.7"/>
+<circle cx="166.0" cy="540" r="2.7"/>
+<circle cx="58.0" cy="534" r="2.7"/>
+<circle cx="259.0" cy="555" r="2.7"/>
+<circle cx="244.0" cy="540" r="2.7"/>
+<circle cx="406.7" cy="537" r="2.7"/>
+<circle cx="268.0" cy="543" r="2.7"/>
+<circle cx="58.0" cy="546" r="2.7"/>
+<circle cx="250.0" cy="522" r="2.7"/>
+<circle cx="98.3" cy="540" r="2.7"/>
+<circle cx="287.6" cy="540" r="2.7"/>
+<circle cx="451.0" cy="528" r="2.7"/>
+<circle cx="250.8" cy="540" r="2.7"/>
+<circle cx="433.1" cy="540" r="2.7"/>
+<circle cx="451.0" cy="552" r="2.7"/>
+<circle cx="400.7" cy="540" r="2.7"/>
+<circle cx="141.1" cy="540" r="2.7"/>
+<circle cx="384.7" cy="540" r="2.7"/>
+<circle cx="250.0" cy="558" r="2.7"/>
+<circle cx="318.1" cy="540" r="2.7"/>
+<circle cx="237.4" cy="540" r="2.7"/>
+<circle cx="82.0" cy="534" r="2.7"/>
+<circle cx="430.0" cy="534" r="2.7"/>
+<circle cx="76.0" cy="522" r="2.7"/>
+<circle cx="430.0" cy="546" r="2.7"/>
+<circle cx="256.0" cy="519" r="2.7"/>
+<circle cx="171.6" cy="534" r="2.7"/>
+<circle cx="454.0" cy="534" r="2.7"/>
+<circle cx="256.0" cy="561" r="2.7"/>
+<circle cx="448.0" cy="522" r="2.7"/>
+<circle cx="448.0" cy="558" r="2.7"/>
+<circle cx="289.5" cy="534" r="2.7"/>
+<circle cx="244.0" cy="528" r="2.7"/>
+<circle cx="96.0" cy="534" r="2.7"/>
+<circle cx="76.0" cy="558" r="2.7"/>
+<circle cx="439.0" cy="519" r="2.7"/>
+<circle cx="337.5" cy="540" r="2.7"/>
+<circle cx="118.4" cy="537" r="2.7"/>
+<circle cx="439.0" cy="561" r="2.7"/>
+<circle cx="229.6" cy="537" r="2.7"/>
+<circle cx="433.0" cy="522" r="2.7"/>
+<circle cx="222.1" cy="534" r="2.7"/>
+<circle cx="369.8" cy="540" r="2.7"/>
+<circle cx="244.0" cy="552" r="2.7"/>
+<circle cx="305.8" cy="540" r="2.7"/>
+<circle cx="104.6" cy="540" r="2.7"/>
+<circle cx="131.0" cy="543" r="2.7"/>
+<circle cx="413.4" cy="540" r="2.7"/>
+<circle cx="268.0" cy="528" r="2.7"/>
+<circle cx="268.0" cy="552" r="2.7"/>
+<circle cx="186.1" cy="540" r="2.7"/>
+<circle cx="433.0" cy="558" r="2.7"/>
+<circle cx="457.0" cy="540" r="2.7"/>
+<circle cx="112.4" cy="540" r="2.7"/>
+<circle cx="89.7" cy="534" r="2.7"/>
+<circle cx="445.0" cy="516" r="2.7"/>
+<circle cx="67.0" cy="519" r="2.7"/>
+<circle cx="265.0" cy="522" r="2.7"/>
+<circle cx="445.0" cy="564" r="2.7"/>
+<circle cx="281.3" cy="540" r="2.7"/>
+<circle cx="457.0" cy="549" r="2.7"/>
+<circle cx="427.0" cy="528" r="2.7"/>
+<circle cx="220.3" cy="540" r="2.7"/>
+<circle cx="265.0" cy="558" r="2.7"/>
+<circle cx="271.0" cy="534" r="2.7"/>
+<circle cx="262.0" cy="516" r="2.7"/>
+<circle cx="427.0" cy="552" r="2.7"/>
+<circle cx="262.0" cy="564" r="2.7"/>
+<circle cx="67.0" cy="561" r="2.7"/>
+<circle cx="89.7" cy="546" r="2.7"/>
+<circle cx="202.8" cy="540" r="2.7"/>
+<circle cx="517.1" cy="540" r="2.7"/>
+<circle cx="830.0" cy="540" r="2.7"/>
+<circle cx="461.0" cy="534" r="2.7"/>
+<circle cx="827.0" cy="534" r="2.7"/>
+<circle cx="827.0" cy="546" r="2.7"/>
+<circle cx="464.0" cy="540" r="2.7"/>
+<circle cx="458.0" cy="528" r="2.7"/>
+<circle cx="770.9" cy="540" r="2.7"/>
+<circle cx="677.9" cy="534" r="2.7"/>
+<circle cx="697.6" cy="534" r="2.7"/>
+<circle cx="614.6" cy="540" r="2.7"/>
+<circle cx="464.0" cy="549" r="2.7"/>
+<circle cx="647.0" cy="540" r="2.7"/>
+<circle cx="461.0" cy="555" r="2.7"/>
+<circle cx="836.0" cy="537" r="2.7"/>
+<circle cx="640.7" cy="540" r="2.7"/>
+<circle cx="572.6" cy="540" r="2.7"/>
+<circle cx="644.0" cy="534" r="2.7"/>
+<circle cx="467.0" cy="531" r="2.7"/>
+<circle cx="833.0" cy="531" r="2.7"/>
+<circle cx="803.2" cy="537" r="2.7"/>
+<circle cx="644.0" cy="546" r="2.7"/>
+<circle cx="747.4" cy="534" r="2.7"/>
+<circle cx="681.2" cy="540" r="2.7"/>
+<circle cx="833.0" cy="549" r="2.7"/>
+<circle cx="641.0" cy="528" r="2.7"/>
+<circle cx="782.4" cy="540" r="2.7"/>
+<circle cx="494.5" cy="540" r="2.7"/>
+<circle cx="839.0" cy="543" r="2.7"/>
+<circle cx="754.5" cy="534" r="2.7"/>
+<circle cx="641.0" cy="552" r="2.7"/>
+<circle cx="650.0" cy="531" r="2.7"/>
+<circle cx="627.6" cy="540" r="2.7"/>
+<circle cx="650.0" cy="549" r="2.7"/>
+<circle cx="673.4" cy="540" r="2.7"/>
+<circle cx="523.1" cy="537" r="2.7"/>
+<circle cx="815.1" cy="540" r="2.7"/>
+<circle cx="464.0" cy="525" r="2.7"/>
+<circle cx="455.0" cy="522" r="2.7"/>
+<circle cx="711.7" cy="537" r="2.7"/>
+<circle cx="653.0" cy="537" r="2.7"/>
+<circle cx="455.0" cy="558" r="2.7"/>
+<circle cx="647.0" cy="525" r="2.7"/>
+<circle cx="647.0" cy="555" r="2.7"/>
+<circle cx="686.8" cy="537" r="2.7"/>
+<circle cx="470.0" cy="537" r="2.7"/>
+<circle cx="470.0" cy="546" r="2.7"/>
+<circle cx="797.3" cy="540" r="2.7"/>
+<circle cx="706.1" cy="540" r="2.7"/>
+<circle cx="830.0" cy="525" r="2.7"/>
+<circle cx="635.0" cy="531" r="2.7"/>
+<circle cx="461.0" cy="519" r="2.7"/>
+<circle cx="635.0" cy="549" r="2.7"/>
+<circle cx="478.5" cy="534" r="2.7"/>
+<circle cx="656.0" cy="543" r="2.7"/>
+<circle cx="638.0" cy="522" r="2.7"/>
+<circle cx="830.0" cy="555" r="2.7"/>
+<circle cx="824.0" cy="528" r="2.7"/>
+<circle cx="540.6" cy="540" r="2.7"/>
+<circle cx="467.0" cy="558" r="2.7"/>
+<circle cx="747.4" cy="546" r="2.7"/>
+<circle cx="718.4" cy="540" r="2.7"/>
+<circle cx="661.5" cy="540" r="2.7"/>
+<circle cx="730.7" cy="546" r="2.7"/>
+<circle cx="788.7" cy="540" r="2.7"/>
+<circle cx="824.0" cy="552" r="2.7"/>
+<circle cx="638.0" cy="558" r="2.7"/>
+<circle cx="758.9" cy="540" r="2.7"/>
+<circle cx="601.2" cy="540" r="2.7"/>
+<circle cx="808.8" cy="540" r="2.7"/>
+<circle cx="839.0" cy="528" r="2.7"/>
+<circle cx="839.0" cy="552" r="2.7"/>
+<circle cx="458.0" cy="564" r="2.7"/>
+<circle cx="728.4" cy="534" r="2.7"/>
+<circle cx="452.0" cy="516" r="2.7"/>
+<circle cx="470.0" cy="522" r="2.7"/>
+<circle cx="732.9" cy="540" r="2.7"/>
+<circle cx="644.0" cy="519" r="2.7"/>
+<circle cx="821.5" cy="540" r="2.7"/>
+<circle cx="818.0" cy="534" r="2.7"/>
+<circle cx="644.0" cy="561" r="2.7"/>
+<circle cx="473.0" cy="528" r="2.7"/>
+<circle cx="656.0" cy="528" r="2.7"/>
+<circle cx="656.0" cy="552" r="2.7"/>
+<circle cx="664.1" cy="546" r="2.7"/>
+<circle cx="653.0" cy="522" r="2.7"/>
+<circle cx="473.0" cy="552" r="2.7"/>
+<circle cx="458.0" cy="513" r="2.7"/>
+<circle cx="653.0" cy="558" r="2.7"/>
+<circle cx="818.0" cy="546" r="2.7"/>
+<circle cx="693.1" cy="540" r="2.7"/>
+<circle cx="742.2" cy="540" r="2.7"/>
+<circle cx="467.0" cy="516" r="2.7"/>
+<circle cx="806.2" cy="546" r="2.7"/>
+<circle cx="726.6" cy="540" r="2.7"/>
+<circle cx="476.0" cy="540" r="2.7"/>
+<circle cx="632.0" cy="525" r="2.7"/>
+<circle cx="452.0" cy="567" r="2.7"/>
+<circle cx="558.8" cy="540" r="2.7"/>
+<circle cx="464.0" cy="567" r="2.7"/>
+<circle cx="470.0" cy="564" r="2.7"/>
+<circle cx="842.0" cy="534" r="2.7"/>
+<circle cx="464.0" cy="510" r="2.7"/>
+<circle cx="836.0" cy="522" r="2.7"/>
+<circle cx="786.8" cy="534" r="2.7"/>
+<circle cx="632.0" cy="555" r="2.7"/>
+<circle cx="532.4" cy="540" r="2.7"/>
+<circle cx="634.0" cy="540" r="2.7"/>
+<circle cx="458.0" cy="573" r="2.7"/>
+<circle cx="608.3" cy="540" r="2.7"/>
+<circle cx="449.0" cy="510" r="2.7"/>
+<circle cx="504.5" cy="540" r="2.7"/>
+<circle cx="836.0" cy="558" r="2.7"/>
+<circle cx="749.7" cy="540" r="2.7"/>
+<circle cx="455.0" cy="507" r="2.7"/>
+<circle cx="827.0" cy="519" r="2.7"/>
+<circle cx="678.2" cy="546" r="2.7"/>
+<circle cx="659.0" cy="534" r="2.7"/>
+<circle cx="827.0" cy="561" r="2.7"/>
+</g>
+<text x="70" y="610" font-size="11" fill="#5a6b7b">← 外圍</text>
+<text x="450" y="610" text-anchor="middle" font-size="11" fill="#5a6b7b">正前方</text>
+<text x="830" y="610" text-anchor="end" font-size="11" fill="#5a6b7b">外圍 →</text>
+<text x="256" y="610" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb">左眼 115 顆</text>
+<text x="644" y="610" text-anchor="middle" font-size="12" font-weight="700" fill="#d97706">右眼 119 顆</text>
+</g>
+</svg>
+  <div class="enc-ctl">
+    <button class="enc-prev" type="button">◀ 上一步</button>
+    <button class="enc-next" type="button">下一步 ▶</button>
+    <button class="enc-walk" type="button">▶ 讓敵人走動</button>
+    <label>敵人位置 <input class="enc-cx" type="range" min="0" max="320" step="1"></label>
+    <label>敵人大小 <input class="enc-h" type="range" min="4" max="70" step="1"></label>
+    <label><input class="enc-two" type="checkbox"> 加第二個敵人</label>
+  </div>
+  <p class="enc-read" aria-live="polite"></p>
+  <ol class="enc-steps">
+    <li data-k="1"><b>① 遊戲回報方框</b>：ViZDoom 不給模型看像素，而是回報畫面上每個物件的<b>方框</b>（標籤）：左緣、寬、高，單位是像素。程式只取敵人方框的<b>橫向中心</b>與<b>高度</b>。</li>
+    <li data-k="2"><b>② 換成方位角</b>：橫向中心從 0 到 320 像素，對到 Doom 的 −45° 到 +45°，再乘 2，攤成果蠅的 −90° 到 +90°。</li>
+    <li data-k="3"><b>③ 哪一眼</b>：方位角是正的刺激右眼的 LC10a，負的刺激左眼；在正前方 ±6° 以內兩眼都刺激。另一眼的 LC10a 完全不刺激。</li>
+    <li data-k="4"><b>④ 哪幾顆</b>：每顆 LC10a 有一個作者指定的偏好位置（下排的橫軸）。敵人方位愈接近它的偏好位置，刺激愈強，像一座鐘形的山：差 0 是滿格，差 0.3 剩 61%，差 0.5 剩 25%。</li>
+    <li data-k="5"><b>⑤ 多強</b>：強度 ＝ 0.35 ＋ 方框高度 ÷ 60，最多 1。敵人愈近、方框愈高，整座山愈高；高 39 像素以上就是滿格（最強那顆每秒 150 次）。</li>
+    <li data-k="6"><b>⑥ 隨機放電</b>：山的高度只是「平均每秒放電幾次」。每 0.1 ms 依這個機率擲一次骰子決定放不放電，所以放電時刻每次都不同。畫面上放慢 20 倍播放。</li>
+  </ol>
+</div>
+<script>
+(()=>{
+const D={"C":{"HALF_FOV_DOOM":45.0,"FLY_SCALE":2.0,"BINO":6.0,"MAX_RATE":150.0,"SIGMA":0.3,"screen_w":320,"screen_h":240,"screen_center":160,"min_height":4,"corpse_ratio":1.3,"strength_base":0.35,"strength_div":60,"dt_ms":0.1},"pref":{"L":[1.0,1.0,0.0,1.0,0.0,0.5,0.0,0.5,0.0,0.5,1.0,0.5,0.857,0.0,0.0,0.63,0.676,1.0,1.0,0.0,0.941,0.5,0.0,0.5,1.0,0.686,0.5,0.309,1.0,1.0,0.0,1.0,1.0,1.0,0.5,0.0,1.0,0.5,0.857,0.5,0.0,1.0,0.581,0.729,0.5,0.742,1.0,0.5,0.5,0.095,0.5,1.0,0.5,0.932,0.415,0.0,0.514,0.024,0.0,0.111,0.809,0.154,0.5,0.333,0.55,1.0,0.0,1.0,0.0,0.5,0.727,0.0,0.5,0.0,0.0,0.41,0.5,0.93,1.0,0.0,0.281,0.87,0.0,0.579,0.0,0.591,0.194,0.5,0.366,0.907,0.844,0.077,0.5,0.5,0.688,0.0,0.0,0.886,0.939,0.0,1.0,0.5,0.0,0.432,0.0,0.0,0.596,0.5,0.5,0.5,0.0,0.5,1.0,0.939,0.643],"R":[0.159,1.0,0.0,1.0,1.0,0.0,0.0,0.841,0.583,0.636,0.421,0.0,0.5,0.0,1.0,0.491,0.308,0.5,0.0,1.0,0.92,0.5,0.778,0.6,1.0,0.5,0.872,0.098,1.0,0.789,0.5,0.5,0.456,0.5,0.579,0.167,0.96,0.0,0.0,0.674,0.5,0.0,0.5,0.5,0.615,0.0,0.0,0.912,0.667,1.0,0.5,0.0,0.5,0.039,0.5,0.5,1.0,1.0,0.214,0.0,0.778,0.7,0.531,0.741,0.881,1.0,0.5,0.809,0.385,0.943,1.0,1.0,0.0,0.727,0.0,0.0,0.731,0.5,0.969,1.0,0.5,0.0,0.5,0.5,0.538,0.5,0.0,0.0,0.5,1.0,0.632,0.764,0.0,0.944,0.714,0.0,0.5,0.0,0.271,0.0,0.0,1.0,0.0,1.0,0.892,0.5,0.2,0.473,0.0,0.396,0.0,0.125,1.0,0.776,0.0,1.0,0.6,0.5,1.0]},"dots":{"L":[[70.0,540],[67.0,534],[442.0,540],[67.0,546],[439.0,534],[259.0,540],[439.0,546],[256.0,534],[448.0,537],[256.0,546],[76.0,537],[253.0,528],[123.2,543],[445.0,531],[445.0,549],[210.6,540],[193.5,540],[73.0,531],[73.0,549],[451.0,543],[91.9,540],[253.0,552],[442.0,525],[262.0,531],[61.0,540],[183.8,534],[262.0,549],[327.1,540],[79.0,543],[70.0,525],[442.0,555],[70.0,555],[64.0,528],[64.0,552],[265.0,537],[436.0,528],[79.0,528],[247.0,534],[126.2,537],[247.0,546],[436.0,552],[79.0,552],[225.9,543],[173.8,540],[259.0,525],[166.0,540],[58.0,534],[259.0,555],[244.0,540],[406.7,537],[268.0,543],[58.0,546],[250.0,522],[98.3,540],[287.6,540],[451.0,528],[250.8,540],[433.1,540],[451.0,552],[400.7,540],[141.1,540],[384.7,540],[250.0,558],[318.1,540],[237.4,540],[82.0,534],[430.0,534],[76.0,522],[430.0,546],[256.0,519],[171.6,534],[454.0,534],[256.0,561],[448.0,522],[448.0,558],[289.5,534],[244.0,528],[96.0,534],[76.0,558],[439.0,519],[337.5,540],[118.4,537],[439.0,561],[229.6,537],[433.0,522],[222.1,534],[369.8,540],[244.0,552],[305.8,540],[104.6,540],[131.0,543],[413.4,540],[268.0,528],[268.0,552],[186.1,540],[433.0,558],[457.0,540],[112.4,540],[89.7,534],[445.0,516],[67.0,519],[265.0,522],[445.0,564],[281.3,540],[457.0,549],[427.0,528],[220.3,540],[265.0,558],[271.0,534],[262.0,516],[427.0,552],[262.0,564],[67.0,561],[89.7,546],[202.8,540]],"R":[[517.1,540],[830.0,540],[461.0,534],[827.0,534],[827.0,546],[464.0,540],[458.0,528],[770.9,540],[677.9,534],[697.6,534],[614.6,540],[464.0,549],[647.0,540],[461.0,555],[836.0,537],[640.7,540],[572.6,540],[644.0,534],[467.0,531],[833.0,531],[803.2,537],[644.0,546],[747.4,534],[681.2,540],[833.0,549],[641.0,528],[782.4,540],[494.5,540],[839.0,543],[754.5,534],[641.0,552],[650.0,531],[627.6,540],[650.0,549],[673.4,540],[523.1,537],[815.1,540],[464.0,525],[455.0,522],[711.7,537],[653.0,537],[455.0,558],[647.0,525],[647.0,555],[686.8,537],[470.0,537],[470.0,546],[797.3,540],[706.1,540],[830.0,525],[635.0,531],[461.0,519],[635.0,549],[478.5,534],[656.0,543],[638.0,522],[830.0,555],[824.0,528],[540.6,540],[467.0,558],[747.4,546],[718.4,540],[661.5,540],[730.7,546],[788.7,540],[824.0,552],[638.0,558],[758.9,540],[601.2,540],[808.8,540],[839.0,528],[839.0,552],[458.0,564],[728.4,534],[452.0,516],[470.0,522],[732.9,540],[644.0,519],[821.5,540],[818.0,534],[644.0,561],[473.0,528],[656.0,528],[656.0,552],[664.1,546],[653.0,522],[473.0,552],[458.0,513],[653.0,558],[818.0,546],[693.1,540],[742.2,540],[467.0,516],[806.2,546],[726.6,540],[476.0,540],[632.0,525],[452.0,567],[558.8,540],[464.0,567],[470.0,564],[842.0,534],[464.0,510],[836.0,522],[786.8,534],[632.0,555],[532.4,540],[634.0,540],[458.0,573],[608.3,540],[449.0,510],[504.5,540],[836.0,558],[749.7,540],[455.0,507],[827.0,519],[678.2,546],[659.0,534],[827.0,561]]},"slowMs":2.5,"frameMs":50,"geo":{"SX":30,"SY":62,"K":1.15,"SW":368.0,"SH":276.0,"FX":668,"FY":330,"FR":178,"MID":450,"SPAN":372,"GAP":8,"CB":478,"CH":48,"AXY":378.0,"R":2.7},"heads":["① 遊戲回報方框","② 換成方位角","③ 哪一眼","④ 哪幾顆","⑤ 多強","⑥ 隨機放電"]},C=D.C,G=D.geo,$=s=>document.querySelector('#p1enc '+s),NS="http://www.w3.org/2000/svg";
+const box=document.getElementById('p1enc');if(!box)return;
+const dots=[...$('#encDots').children],side=dots.map((_,i)=>i<D.pref.L.length?'L':'R'),pref=[...D.pref.L,...D.pref.R];
+const flash=new Float32Array(dots.length);
+let step=1,cx=232,h=26,two=false,walk=false,t0=null,acc=0,last=0,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+// 照抄作者 enemies()：方位角與強度
+const az=c=>Math.max(-90,Math.min(90,(c-C.screen_center)/C.screen_center*C.HALF_FOV_DOOM*C.FLY_SCALE));
+const strength=hh=>Math.min(1,C.strength_base+hh/C.strength_div);
+const targets=()=>{const t=[[az(cx),strength(h),cx,h]];if(two)t.push([az(70),strength(14),70,14]);return t};
+// 照抄作者 stim_rates()：多個敵人疊加，每顆最多 MAX_RATE
+function rates(){
+  const r=new Float32Array(dots.length);
+  for(const [a,st] of targets()){
+    const ecc=Math.min(Math.abs(a)/90,1),sides=Math.abs(a)<C.BINO?['L','R']:(a>0?['R']:['L']);
+    for(let i=0;i<dots.length;i++)if(sides.includes(side[i])){
+      const tune=Math.exp(-((pref[i]-ecc)**2)/(2*C.SIGMA**2));r[i]=Math.min(C.MAX_RATE,r[i]+C.MAX_RATE*st*tune)}
+  }
+  return r;
+}
+function monster(g,c,hh,main){
+  g.innerHTML='';const k=G.K,w=Math.round(hh*0.6),x=G.SX+c*k,feet=Math.min(G.SY+G.SH-6,G.SY+G.SH/2+hh*k*0.9),top=feet-hh*k;
+  const add=(t,a)=>{const e=document.createElementNS(NS,t);for(const n in a)e.setAttribute(n,a[n]);g.appendChild(e);return e};
+  add('rect',{x:x-w*k*0.42,y:top+hh*k*0.3,width:w*k*0.84,height:hh*k*0.7,rx:hh*k*0.12,fill:main?'#8b3a2b':'#6d3a30'});
+  add('circle',{cx:x,cy:top+hh*k*0.18,r:hh*k*0.17,fill:main?'#8b3a2b':'#6d3a30'});
+  add('circle',{cx:x-hh*k*0.06,cy:top+hh*k*0.16,r:Math.max(1,hh*k*0.035),fill:'#fde047'});
+  add('circle',{cx:x+hh*k*0.06,cy:top+hh*k*0.16,r:Math.max(1,hh*k*0.035),fill:'#fde047'});
+  if(step>=1){
+    add('rect',{x:x-w*k/2,y:top,width:w*k,height:hh*k,fill:'none',stroke:'#facc15','stroke-width':1.6,'stroke-dasharray':'4 3'});
+    const lab=add('text',{x:x,y:top-6,'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#facc15'});
+    lab.textContent=main?`中心 ${c} px・高 ${hh} px`:`第二個敵人`;
+    if(x-w*k/2<G.SX+60)lab.setAttribute('text-anchor','start'),lab.setAttribute('x',G.SX+4);
+    if(x+w*k/2>G.SX+G.SW-60)lab.setAttribute('text-anchor','end'),lab.setAttribute('x',G.SX+G.SW-4);
+  }
+}
+const sx=(s,p)=>s==='L'?G.MID-G.GAP-p*G.SPAN:G.MID+G.GAP+p*G.SPAN;
+function curve(s,list){
+  if(!list.length)return'';let d='';
+  for(let j=0;j<=60;j++){const p=j/60;let v=0;for(const [ecc,st] of list)v+=C.MAX_RATE*st*Math.exp(-((p-ecc)**2)/(2*C.SIGMA**2));v=Math.min(C.MAX_RATE,v);
+    d+=(j?'L':'M')+sx(s,p).toFixed(1)+','+(G.CB-v/C.MAX_RATE*G.CH).toFixed(1)}
+  return d+`L${sx(s,1).toFixed(1)},${G.CB}L${sx(s,0).toFixed(1)},${G.CB}Z`;
+}
+let R=new Float32Array(dots.length);
+function render(){
+  const T=targets(),a=T[0][0],st=T[0][1];
+  $('#encHead').textContent=`第 ${step} 步　`+D.heads[step-1].slice(2);
+  monster($('#encMon'),cx,h,true);two?monster($('#encMon2'),70,14,false):$('#encMon2').innerHTML='';
+  // 尺上的記號與俯視圖的射線
+  $('#encMark').setAttribute('transform',`translate(${G.SX+cx*G.K},${G.SY+G.SH+1})`);
+  const ray=(id,dot,aa)=>{const r=Math.PI*aa/180,x=G.FX+G.FR*Math.sin(r),y=G.FY-G.FR*Math.cos(r);const L=$(id);L.setAttribute('x2',x);L.setAttribute('y2',y);if(dot){$(dot).setAttribute('cx',x);$(dot).setAttribute('cy',y)}};
+  ray('#encRay','#encRayDot',a);
+  $('#encRay2').setAttribute('visibility',two&&step>=2?'visible':'hidden');ray('#encRay2',null,az(70));
+  $('#encAzTxt').textContent=`方位角 ${a>0?'+':a<0?'−':''}${Math.abs(a).toFixed(1)}°`;
+  const sidesOf=aa=>Math.abs(aa)<C.BINO?['L','R']:(aa>0?['R']:['L']),on=new Set(T.flatMap(t=>sidesOf(t[0])));
+  $('#encEyeL').setAttribute('fill-opacity',step>=3&&on.has('L')?.28:.06);
+  $('#encEyeR').setAttribute('fill-opacity',step>=3&&on.has('R')?.28:.06);
+  $('#encBino').setAttribute('fill-opacity',step>=3&&Math.abs(a)<C.BINO?.45:.10);
+  // 鐘形的山：④ 起顯示；⑤ 起高度乘上強度（④ 先固定用滿格看形狀）
+  const k4=step===4;const by={L:[],R:[]};
+  for(const [aa,s2] of T)for(const sd of sidesOf(aa))by[sd].push([Math.min(Math.abs(aa)/90,1),k4?1:s2]);
+  for(const sd of ['L','R'])$('#encCurve'+sd).setAttribute('d',step>=4?curve(sd,by[sd]):'');
+  const lab=$('#encCurveLab');
+  if(step>=4){const sd=sidesOf(a)[sidesOf(a).length-1],ecc=Math.min(Math.abs(a)/90,1),pk=Math.min(C.MAX_RATE,C.MAX_RATE*(k4?1:st));
+    lab.setAttribute('x',876);lab.setAttribute('y',G.CB-G.CH-14);
+    lab.textContent=k4?'鐘形曲線的形狀（還沒乘強度）':`山頂 ${pk.toFixed(0)} 次／秒（強度 ${st.toFixed(2)}）`}else lab.textContent='';
+  R=rates();
+  paintDots();
+  for(const li of box.querySelectorAll('.enc-steps li'))li.classList.toggle('on',+li.dataset.k===step),li.classList.toggle('done',+li.dataset.k<step);
+  const op=(id,v)=>$(id).style.opacity=v;
+  op('#encB',step>=2?1:.15);op('#encAx',step>=2?1:.15);op('#encC',step>=3?1:.15);
+  box.querySelector('.enc-prev').disabled=step===1;box.querySelector('.enc-next').disabled=step===6;
+  const ro=box.querySelector('.enc-read');
+  ro.textContent=`中心 ${cx} px → 方位角 ${a>0?'+':a<0?'−':''}${Math.abs(a).toFixed(1)}° → `+
+    (Math.abs(a)<C.BINO?'兩眼':a>0?'右眼':'左眼')+` → 強度 ${st.toFixed(2)} → 最強那顆 ${Math.max(...R).toFixed(0)} 次／秒`+(two?'（含第二個敵人）':'');
+}
+function paintDots(){
+  for(let i=0;i<dots.length;i++){
+    const c=side[i]==='L'?'#2563eb':'#d97706',d=dots[i];let v=step>=4?R[i]/C.MAX_RATE:0;
+    if(step===4){/* ④ 只看形狀：除掉強度 */const st=strength(h);v=Math.min(1,v/st)}
+    const lit=step>=3&&R[i]>0;
+    if(step>=6&&flash[i]>0){d.setAttribute('fill','#111827');d.setAttribute('r',G.R+2.2*flash[i]);d.setAttribute('fill-opacity',1);continue}
+    d.setAttribute('r',G.R);
+    if(step===3){d.setAttribute('fill',lit?c:'#cbd5e1');d.setAttribute('fill-opacity',lit?.75:1);continue}
+    d.setAttribute('fill',v>0.02?c:'#cbd5e1');d.setAttribute('fill-opacity',v>0.02?0.2+0.8*v:1);
+  }
+}
+function tick(now){
+  if(t0===null)t0=now,last=now;const dt=now-last;last=now;
+  if(walk&&!reduce){const t=(now-t0)/1000;cx=Math.round(160+148*Math.sin(t*0.45));h=Math.round(22+18*Math.sin(t*0.27+1));syncSliders();render()}
+  if(step>=6){acc+=dt;
+    while(acc>=D.frameMs){acc-=D.frameMs;
+      for(let i=0;i<dots.length;i++){flash[i]=Math.max(0,flash[i]-0.5);const pr=1-Math.exp(-R[i]*D.slowMs/1000);if(Math.random()<pr)flash[i]=1}}
+    paintDots()}
+  requestAnimationFrame(tick);
+}
+function syncSliders(){box.querySelector('.enc-cx').value=cx;box.querySelector('.enc-h').value=h}
+box.querySelector('.enc-prev').onclick=()=>{if(step>1){step--;flash.fill(0);render()}};
+box.querySelector('.enc-next').onclick=()=>{if(step<6){step++;render()}};
+box.querySelector('.enc-cx').oninput=e=>{cx=+e.target.value;walk=false;wb.textContent='▶ 讓敵人走動';render()};
+box.querySelector('.enc-h').oninput=e=>{h=+e.target.value;walk=false;wb.textContent='▶ 讓敵人走動';render()};
+const wb=box.querySelector('.enc-walk');wb.onclick=()=>{walk=!walk;wb.textContent=walk?'⏸ 停住':'▶ 讓敵人走動'};
+box.querySelector('.enc-two').onchange=e=>{two=e.target.checked;render()};
+for(const li of box.querySelectorAll('.enc-steps li'))li.onclick=()=>{step=+li.dataset.k;render()};
+syncSliders();render();requestAnimationFrame(tick);
+})();
+</script>
+<!-- encode:end -->
+    <figcaption><b>圖 3　輸入編碼，一步一步看。</b>按「下一步」從 ① 走到 ⑥；拖「敵人位置」「敵人大小」，或按「讓敵人走動」，看每一步跟著怎麼變；勾「加第二個敵人」看兩個敵人的刺激怎麼疊加。上排左邊是遊戲畫面（怪物是示意畫的，程式只用黃色虛線方框的位置與高度），右邊是同一個敵人在果蠅視野裡的方向；下排是全部 234 顆 LC10a，每顆一點，<b>橫軸是作者用接線指定的偏好位置，不是這顆神經元真正看的方向</b>（上面第 2 步）。偏好位置剛好是 0、0.5、1 的各有二、三十顆，點擠在一起，所以往上下錯開排；0.5 那一堆大半是沒接到兩種 AOTU、拿預設值的那 49 顆。顏色愈深＝平均放電率愈高；⑥ 的黑點是那一刻放電的神經元，放慢 20 倍播放。
+    <span class="figsrc">算法照抄作者 <code>doom/fly_doom.py</code> 的 <code>enemies()</code> 與 <code>FlyBrain.stim_rates()</code>；常數與 234 顆的偏好位置由 <code>scripts/encode_fig_data.py</code> 從作者原始碼與 <code>circuit/meta.json</code> 抓出，在 <code>out/encode_fig.json</code>；圖由 <code>scripts/make_encode_anim.py</code> 產生（圖裡的文字要改在那裡）。</span></figcaption>
+  </figure>
 
   <h3>讀出規則：神經元的放電怎麼變成按鍵</h3>
   <div class="formula">轉向訊號 ＝ (DNa02<sub>右</sub> − DNa02<sub>左</sub>) ＋ (AOTU019<sub>右</sub> − AOTU019<sub>左</sub>)</div>

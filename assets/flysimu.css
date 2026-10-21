@@ -249,3 +249,16 @@ figure.code figcaption.figsrc{margin-top:6px}
 details.note{margin:10px 0 26px; padding:8px 14px; border:1px solid var(--border); border-radius:8px; background:var(--panel); font-size:13.5px; color:var(--soft); line-height:1.7}
 details.note summary{cursor:pointer; color:var(--ink); font-weight:600}
 details.note p{margin:8px 0 2px}
+/* PART 1 圖 3：輸入編碼互動圖（scripts/make_encode_anim.py） */
+.enc svg.enc-svg{display:block; width:100%; height:auto; border:1px solid var(--border); border-radius:10px; background:#fff}
+.enc-svg g{transition:opacity .3s}
+.enc-ctl{display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; margin:10px 0 4px; font-size:14px; color:var(--soft)}
+.enc-ctl button{font:inherit; padding:5px 12px; border:1px solid var(--border); border-radius:8px; background:var(--panel); color:var(--ink); cursor:pointer}
+.enc-ctl button:disabled{opacity:.4; cursor:default}
+.enc-ctl label{display:inline-flex; align-items:center; gap:6px}
+.enc-ctl input[type=range]{width:130px}
+.enc-read{font-family:Menlo,Consolas,monospace; font-size:13px; color:var(--ink); background:var(--panel); border-radius:8px; padding:6px 10px; margin:6px 0}
+.enc-steps{margin:8px 0 0; padding-left:0; list-style:none; font-size:14px; line-height:1.7}
+.enc-steps li{padding:5px 10px; border-left:3px solid transparent; color:var(--faint); cursor:pointer}
+.enc-steps li.done{color:var(--soft)}
+.enc-steps li.on{color:var(--ink); border-left-color:var(--accent); background:var(--accent-soft)}
