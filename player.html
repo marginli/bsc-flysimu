@@ -107,7 +107,8 @@ body{background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.5;
       <span class="lab">本格按鍵</span>
       <div class="chips"><span class="chip l" id="cL">左轉</span><span class="chip r" id="cR">右轉</span><span class="chip f" id="cF">開火</span><span class="chip s" id="cS">搜尋</span></div>
     </div>
-    <p class="note">圓圈與曲線上的數字是放電率（Hz），和前幾格平滑過，大約是最近十分之一秒的放電率，不是從開局累積的次數；敵人離開畫面後會一格一格降回 0。每一局在玩家被打死時結束：擊倒得越少，走到身邊的敵人越多，局就越短。同一個種子整局什麼鍵都不按，也是撐到第 218 格被打死，和打亂接線那局一樣長。</p>
+    <p class="note">圓圈與曲線上的數字是放電率（Hz），和前幾格平滑過，大約是最近十分之一秒的放電率，不是從開局累積的次數；敵人離開畫面後會一格一格降回 0。每一局在玩家被打死時結束：擊倒得越少，走到身邊的敵人越多，局就越短。同一個種子整局什麼鍵都不按，也是撐到第 218 格被打死，和打亂接線那局一樣長。圓圈之間的線是兩群之間連結權重的加總，只畫絕對值 30 mV 以上的；一條連結的權重 ＝ 突觸數 × 正負號 × 0.275 mV，正負號看上游神經元（GABA、麩胺酸為負，其餘為正），沒有正規化。</p>
+    <p class="figsrc" hidden>數字出處：放電率與局長在 out/demo_data.json、out/vizdoom_probe.json；連線加總在 out/demo_data.json 的 circuit.edges；權重定義在 out/weight_def.json。說明全文：https://marginli.github.io/bsc-flysimu/part5-demo.html 與 part1-what.html#wdef</p>
   </div>
 </div>
 <div class="bottom">
