@@ -1,0 +1,81 @@
+{
+ "_note": "權重定義的實測（作者 extract.py 第 109 行、lif.py 第 33 行；Shiu 等人 model.py 第 183 行 syn.w = Excitatory x Connectivity × w_syn）",
+ "shiu_table": {
+  "rows": 15091983,
+  "connectivity_min": 1,
+  "connectivity_max": 2405,
+  "excitatory_values": [
+   -1,
+   1
+  ],
+  "product_equals_sign_times_count": true,
+  "presyn_neurons": 138005,
+  "presyn_with_one_sign": 138005
+ },
+ "sign_vs_flywire_top_nt": {
+  "acetylcholine": {
+   "minus": 1719,
+   "plus": 84162,
+   "total": 85881
+  },
+  "dopamine": {
+   "minus": 3,
+   "plus": 5897,
+   "total": 5900
+  },
+  "gaba": {
+   "minus": 17731,
+   "plus": 1348,
+   "total": 19079
+  },
+  "glutamate": {
+   "minus": 21863,
+   "plus": 2941,
+   "total": 24804
+  },
+  "octopamine": {
+   "minus": 1,
+   "plus": 192,
+   "total": 193
+  },
+  "serotonin": {
+   "minus": 9,
+   "plus": 2127,
+   "total": 2136
+  }
+ },
+ "subgraph": {
+  "n": 3963,
+  "m": 354879,
+  "w_syn_mv": 0.275,
+  "signed_synapses_min": -2405,
+  "signed_synapses_max": 598,
+  "abs_min": 1,
+  "negative_edges": 134437,
+  "clipped_int16": 0,
+  "w_mv_min": -661.375,
+  "w_mv_max": 164.45,
+  "w_mv_min_abs": 661.375
+ },
+ "group_sum_examples": {
+  "LC10a_L->AOTU019_L": {
+   "edges": 69,
+   "signed_synapses": 1291,
+   "w_mv": 355.025
+  },
+  "LC10a_R->AOTU019_R": {
+   "edges": 75,
+   "signed_synapses": 1594,
+   "w_mv": 438.35
+  }
+ },
+ "shiu2024_methods": {
+  "source": "Shiu PK et al., Nature 634:210–219 (2024), Methods；Europe PMC 開放全文 PMC11446845，2026-10-21 讀",
+  "w_ji": "The connection weight, w j,i, between neuron j and neuron i is the synaptic connectivity weight from the Flywire connectivity multiplied by either 1, if neuron j is excitatory or −1, if neuron j [is inhibitory]",
+  "sign_rule": "We assume GABAergic and glutamatergic neurons are inhibitory, and that each neuron is either exclusively inhibitory or excitatory. As in ref. 67, we used a cleft score cutoff of 50, and identified the highest neurotransmitter prediction for each presynaptic site and, if greater than half of all the presynaptic sites across the entire neuron are predicted to be inhibitory (GABA or Glut), we assigned this neuron as inhibitory. Neurons predicted to be dopaminergic, octopaminergic or serotonergic are assigned to the excitatory category.",
+  "w_syn": "W syn = 0.275 mV (free parameter; synaptic weight, that is, how much each synapse influences downstream membrane potential) ... We chose W syn such that activation of sugar GRNs at 100 Hz resulted in roughly 80% of maximal MN9 firing",
+  "cleft_score_cutoff": 50,
+  "sugar_grn_hz": 100,
+  "mn9_fraction_pct": 80
+ }
+}

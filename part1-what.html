@@ -73,13 +73,27 @@
     <tr><td>τ<sub>m</sub></td><td>20 ms</td><td>膜時間常數：漏得多快</td></tr>
     <tr><td>τ<sub>syn</sub></td><td>5 ms</td><td>突觸時間常數：上游一次放電把 g 推高之後，g 衰減得多快。「每過 5 ms 剩約 37%」是指數衰減的定義：時間常數 τ 的意思就是每過一個 τ，剩下的量變成原來的 1/e ≈ 37%，再過一個 τ 又乘 37%。它決定一次輸入能推膜電位多久，也決定幾個輸入要多靠近才疊得起來。為什麼是這樣衰減、5 ms 從哪來，見表下的附註</td></tr>
     <tr><td>不反應期</td><td>2.2 ms</td><td>放電後這段時間內不會再放電（受外部刺激的 LC10a 例外：抽中就放電，見圖 1 第 ⑦ 步）。順序是：放電那一刻 g 歸零 → 接下來 2.2 ms 兩條方程式暫停，V 停在 V<sub>rest</sub>、g 不衰減，但期間到達的輸入照樣加進 g → 結束後兩式恢復，存起來的 g 才開始推 V 並衰減</td></tr>
-    <tr><td>每個突觸的權重</td><td>0.275 mV</td><td>一條連結的強度 ＝ 突觸數 × 正負號 × 0.275 mV。0.275 mV 是 Shiu 等人為全腦模型挑的單一突觸強度，不是量出來的；正負號看上游那顆神經元的傳導物質（放電時釋放給下游的化學訊號）：乙醯膽鹼為正、GABA 與麩胺酸為負。傳導物質是 FlyWire（做出這份連結體的計畫，第 3 節細講）用電子顯微鏡影像以機器學習預測的，附在資料裡，所以算資料，但是預測值，不是逐顆實驗確認的</td></tr>
+    <tr><td>每個突觸的權重</td><td>0.275 mV</td><td>一條連結的強度 ＝ 突觸數 × 正負號 × 0.275 mV。0.275 mV 是 Shiu 等人為全腦模型挑的單一突觸強度，不是量出來的；正負號看上游那顆神經元的傳導物質（放電時釋放給下游的化學訊號）：GABA 與麩胺酸為負，其餘（乙醯膽鹼、多巴胺、章魚胺、血清素）為正；精確的算法見表下附註「連結權重的精確定義」。傳導物質是 FlyWire（做出這份連結體的計畫，第 3 節細講）用電子顯微鏡影像以機器學習預測的，附在資料裡，所以算資料，但是預測值，不是逐顆實驗確認的</td></tr>
     <tr><td>傳遞延遲</td><td>1.8 ms</td><td>上游放電到下游收到的時間</td></tr>
     <tr><td>模擬時間步長</td><td>0.1 ms</td><td>電腦每 0.1 ms 更新一次所有神經元</td></tr>
   </table>
   </div>
   <p>這張表哪些是量出來的：只有「正負號」來自資料（FlyWire 的預測）。其餘每一個數值都是 Shiu 等人為全腦模型採用的同一組通用值，整顆腦 13 萬多顆神經元都用這一組，不是逐顆量出來的；真實神經元的這些性質各不相同。所以第 1 節把方程式整個歸在「人為設定」。</p>
   <p class="figsrc">參數出自 fruitfly-lab 的 README 第 32–33 行（程式庫本身叫 repo，後面會一直用這個詞）（引用 Shiu et al. 2024, <i>Nature</i>）；程式在 <code>flycircuit/lif.py</code>。</p>
+
+  <details class="note" id="wdef"><summary>附註：連結權重的精確定義（已查原文與程式）</summary>
+    <p><b>定義。</b>上游神經元 i 到下游神經元 j 的權重是<br>
+    <span class="formula" style="display:block">w<sub>ij</sub> ＝ s<sub>i</sub> × n<sub>ij</sub> × W<sub>syn</sub>，　W<sub>syn</sub> ＝ 0.275 mV</span>
+    i 每放電一次，1.8 ms 後 j 的 g 加上 w<sub>ij</sub>：g<sub>j</sub> ← g<sub>j</sub> ＋ Σ<sub>i</sub> w<sub>ij</sub>（Σ 只加 1.8 ms 前那一步有放電的 i）。w<sub>ij</sub> 的單位是 mV，就是上面第一式裡 g 的單位。</p>
+    <p><b>n<sub>ij</sub>：突觸數。</b>i 到 j 之間的突觸個數，取自 Shiu 等人的連線表 <code>Connectivity_783.parquet</code> 的 <code>Connectivity</code> 欄。這張表 15,091,983 列，每列是一對有連結的神經元，突觸數最少 1 個、最多 2,405 個。子圖內部的連結全部保留，不論幾個突觸；第 3 節的「突觸數 5 個以上」只用在挑神經元。</p>
+    <p><b>s<sub>i</sub>：正負號，只看上游。</b>s<sub>i</sub> 是 +1 或 −1，由上游 i 一顆決定，i 送出的每一條連結都同號（表上 138,005 顆有送出連結的神經元全部如此）。Shiu 等人論文 Methods 的規則：FlyWire 替每個突觸預測一種傳導物質，只用預測可信度（cleft score）50 以上的突觸；一顆神經元若超過一半的突觸被預測為 GABA 或麩胺酸，s ＝ −1，否則 s ＝ +1；多巴胺、章魚胺、血清素都歸 +1。連線表的 <code>Excitatory</code> 欄存的就是 s<sub>i</sub>，<code>Excitatory x Connectivity</code> 欄存 s<sub>i</sub> × n<sub>ij</sub>（逐列核對過，全部相符）。作者 <code>extract.py</code> 第 109 行讀的就是這一欄，<code>lif.py</code> 第 33 行再乘 0.275 mV。</p>
+    <p>因為是逐個突觸投票，s<sub>i</sub> 和 FlyWire 註解檔的 <code>top_nt</code> 欄（整顆神經元最可能的那一種傳導物質）不完全一致：<code>top_nt</code> 標 GABA 的 19,079 顆裡有 1,348 顆是 +1，標乙醯膽鹼的 85,881 顆裡有 1,719 顆是 −1。模型用的是 s<sub>i</sub>，不是 <code>top_nt</code>。</p>
+    <p><b>沒有正規化。</b>w<sub>ij</sub> 不除以任何總數：下游收到的突觸越多，被推得越用力。子圖的 354,879 條連結裡，s<sub>i</sub> × n<sub>ij</sub> 從 −2,405 到 +598，換成權重是 −661.375 mV 到 +164.45 mV；134,437 條是負的。作者存檔時壓成 16 位元整數，這個範圍放得下，沒有任何一條被截斷。</p>
+    <p><b>兩群之間的加總（圖 2 的數字）。</b>W<sub>AB</sub> ＝ Σ<sub>i∈A</sub> Σ<sub>j∈B</sub> w<sub>ij</sub>。例如左 LC10a → 左 AOTU019 有 69 條連結，s × n 加起來 1,291，× 0.275 mV ＝ 355.025 mV，圖上寫 +355；除以 LC10a 左側的 115 顆，就是第 2 節說的「平均一顆約 3 mV」。</p>
+    <p><b>0.275 mV 怎麼挑的。</b>論文說 W<sub>syn</sub> 是整個模型唯一的自由參數，挑法是讓糖味受器以 100 Hz 刺激時，控制伸口器的運動神經元 MN9 放電達到最大值的約 80%。</p>
+    <p><b>和 21 點那一課不同。</b>fly_blackjack 的權重是突觸數 ÷ 下游神經元在那一層收到的突觸總數，每顆下游神經元的輸入權重加起來是 1，而且全部是正的，不看傳導物質。</p>
+    <p class="figsrc">原文：Shiu et al. 2024, <i>Nature</i> 634:210–219，Methods（Europe PMC 開放全文 PMC11446845）；實測數字出自 <code>out/weight_def.json</code>（<code>scripts/weight_def_probe.py</code> 直接讀連線表與作者的 <code>circuit/edges.bin</code>）。</p>
+  </details>
 
   <details class="note"><summary>附註：g 為什麼照 τ<sub>syn</sub> · dg/dt = −g 衰減？5 ms 從哪來？（已查原文）</summary>
     <p><b>生物上的意思。</b>上游放電時，突觸釋放傳導物質，打開下游細胞膜上的受體通道，離子流進來，這股電流就是 g 代表的東西。傳導物質很快被清掉或脫離，打開的通道一個一個關上。假設每個打開的通道在每一瞬間都有同樣的機率關上、彼此不相干，那麼還開著的通道愈多，每毫秒關掉的就愈多：g 減少的速度和 g 本身成正比，寫成式子就是 dg/dt = −g ÷ τ<sub>syn</sub>，解出來就是「每過 τ<sub>syn</sub> 剩 37%」的指數衰減。實驗記錄到的突觸電流，大致也是很快升起、再接近指數地衰減下來。所以<b>「指數衰減」這個形狀有生物依據</b>。</p>
