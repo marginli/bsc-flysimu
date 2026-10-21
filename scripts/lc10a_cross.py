@@ -1,5 +1,5 @@
 """PART 1 第 4 節的補充數字：LC10a 到同側／對側 AOTU019、AOTU025 的連結，在作者切出的子圖裡各有幾條、權重加總多少。
-圖 1 只畫加總絕對值 30 以上的連結，讀者會問「跨側的線是沒有，還是太小沒畫」，這支程式直接數。
+圖 2 只畫加總絕對值 30 以上的連結，讀者會問「跨側的線是沒有，還是太小沒畫」，這支程式直接數。
 需要作者 repo（~/claude_bscai/fly_play_game/fruitfly_lab/repo）的 circuit/edges.bin 與 flycircuit/lif.py。
 用法：python3 scripts/lc10a_cross.py   （輸出 out/lc10a_cross.json）"""
 import json

@@ -26,7 +26,7 @@ res["other"] = summary(rest)
 res["other"]["n_types"] = len({x["type"] for x in rest})
 res["other"]["cls"] = dict(collections.Counter(x["cls"] for x in rest).most_common())
 res["other"]["nt_minor"] = sum(v for k, v in res["other"]["nt"].items() if k not in ("acetylcholine", "glutamate", "gaba"))
-res["other_incl_unread"] = len(n) - sum(res["types"][t]["n"] for t in ("LC10a", "AOTU019", "AOTU025", "DNa02"))   # 圖 1 沒畫的
+res["other_incl_unread"] = len(n) - sum(res["types"][t]["n"] for t in ("LC10a", "AOTU019", "AOTU025", "DNa02"))   # 圖 2 沒畫的
 res["dn_other4"] = sum(res["types"][t]["n"] for t in ("DNa01", "DNa03", "DNa04", "DNa11"))
 assert sum(v["n"] for v in res["types"].values()) + len(rest) == len(n)
 json.dump(res, open(os.path.join(D, "out/subgraph_types.json"), "w"), indent=1, ensure_ascii=False)

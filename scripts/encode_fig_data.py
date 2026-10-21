@@ -1,4 +1,4 @@
-"""PART 1 第 4 節〈輸入編碼〉示意圖（圖 3）的資料：作者 fly_doom.py 裡輸入編碼用到的常數，與 234 顆 LC10a 的偏好位置。
+"""PART 1 第 4 節〈輸入編碼〉示意圖（圖 4）的資料：作者 fly_doom.py 裡輸入編碼用到的常數，與 234 顆 LC10a 的偏好位置。
 常數從作者原始碼直接抓（抓不到就報錯），所以作者改了數字這裡會跟著變；偏好位置 ＝ 1 − central（meta.json，作者 extract.py 算的占比）。
 另外算三個示範敵人的結果，頁面文字裡的數字對這裡。
 需要作者 repo（~/claude_bscai/fly_play_game/fruitfly_lab/repo）與 ViZDoom 1.3.0 環境的 defend_the_center.cfg。
@@ -65,7 +65,7 @@ res = {"const": C, "pref_ecc": pref,
        "refractory_ms": meta["params"]["t_rfc_ms"],
        "max_hz_by_refractory": round(1000 / meta["params"]["t_rfc_ms"]),   # 不反應期決定的放電率上限
        "height_full": round((1 - C["strength_base"]) * C["strength_div"]),   # 高這麼多像素以上強度就是 1
-       "display": {"slow": 20, "frame_ms": 50, "model_ms_per_frame": 2.5},   # 圖 3 隨機放電放慢播放的倍數
+       "display": {"slow": 20, "frame_ms": 50, "model_ms_per_frame": 2.5},   # 圖 4 隨機放電放慢播放的倍數
        "tune_table": {f"{d:g}": round(math.exp(-d ** 2 / (2 * C["SIGMA"] ** 2)), 3) for d in (0, 0.3, 0.5, 0.9)},   # 差 → 接近程度
        "examples": [encode(240, 20), encode(240, 45), encode(165, 30)]}
 json.dump(res, open(os.path.join(D, "out/encode_fig.json"), "w"), indent=1, ensure_ascii=False)

@@ -55,7 +55,7 @@
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s2"><span class="pt">2</span>神經元方程式：漏電整合發放</h2>
 
-  <p>fruitfly-lab 的每一顆神經元都用<b>漏電整合發放模型</b>（leaky integrate-and-fire，簡稱 LIF）模擬，參數照抄 Shiu 等人 2024 年在 <i>Nature</i> 發表的果蠅全腦模型。這個模型只追蹤一個量：神經元的<b>膜電位</b>（細胞內外的電壓差，單位 mV）。膜電位夠高就「放電」一次，放電是神經元之間唯一的訊號。下面先列方程式，再用水桶比喻走一遍，最後是參數表。</p>
+  <p>fruitfly-lab 的每一顆神經元都用<b>漏電整合發放模型</b>（leaky integrate-and-fire，簡稱 LIF）模擬，參數照抄 Shiu 等人 2024 年在 <i>Nature</i> 發表的果蠅全腦模型。這個模型只追蹤一個量：神經元的<b>膜電位</b>（細胞內外的電壓差，單位 mV）。膜電位夠高就「放電」一次，放電是神經元之間唯一的訊號。下面先列方程式，再用水桶比喻走一遍，接著是參數表，最後是可以自己操作的圖 1。</p>
 
   <div class="formula"><span class="sub">符號：V 是膜電位（下面的白話叫水位），g 是這一刻收到的輸入總量（白話叫水龍頭開度），兩者單位都是 mV；τ<sub>m</sub>、τ<sub>syn</sub> 是兩個「多快」；V<sub>rest</sub>、V<sub>th</sub> 是兩個固定的水位。數值在下面的表。</span><br><b>隨時都在算（每 0.1 ms 一步）</b><br>τ<sub>m</sub> · dV/dt = −(V − V<sub>rest</sub>) + g(t)<br>τ<sub>syn</sub> · dg/dt = −g<br><span class="sub">dV/dt 讀作「V 每毫秒變多少」，dg/dt 同理；兩式各自描述 V 與 g 在沒有事件時怎麼自然演變。g 和 V 用同一個單位 mV，因為 g 在第一式裡直接算成「這一刻把 V 往上推多少」。</span><br><b>事件（發生那一刻直接改值）</b><br>收到輸入：上游某顆神經元（上游＝送訊號給這顆的神經元；下游＝這顆送訊號給它的神經元）放電 1.8 ms 後，g 跳增「這兩顆之間連結的強度」（突觸數 × 正負號 × 0.275 mV，見下表）<br>放電規則：V 超過 V<sub>th</sub>，送出一個<b>放電</b>（spike），V 拉回 V<sub>rest</sub>，g 歸零；接下來 2.2 ms 是<b>不反應期</b>：上面兩式暫停（V、g 都不變），這段時間到達的輸入照樣加進 g 先存著，不反應期結束兩式才恢復</div>
 
@@ -63,7 +63,7 @@
 <b>桶底的洞（漏電）：</b>水位高於原本的高度（V<sub>rest</sub>）時，水會從洞慢慢漏掉，水位往 V<sub>rest</sub> 回落；τ<sub>m</sub> 就是漏得多快。<br>
 <b>水龍頭（輸入）：</b>上游神經元每放電一次，就把水龍頭開大一點。g 是水龍頭的開度：興奮性突觸（上游放電讓這顆更容易放電）往正的方向開，抑制性突觸（讓這顆更難放電）往負的方向開，等於從桶裡抽水；開多大，看上游那顆神經元跟這顆之間有幾個突觸。水龍頭不會一直開著，而是自己慢慢關回去，每過 5 ms 剩下約 37%，這個「關回去的速度」就是<b>突觸時間常數</b> τ<sub>syn</sub>。<br>
 <b>刻度（放電）：</b>水位一旦超過刻度 V<sub>th</sub>，這顆神經元就放電一次、把訊號傳給下游，然後水位拉回 Vrest、水龍頭關到零，重來。<b>放電率</b>就是每秒放電幾次，單位 Hz。<br>
-<b>為什麼叫「整合」：</b>從 V<sub>rest</sub>（−52 mV）到 V<sub>th</sub>（−45 mV）差 7 mV。上游一次放電只把水龍頭開一點點，而且 5 ms 內就關掉大半，單獨一次通常推不到刻度；要好幾顆上游神經元在幾毫秒之內接連放電，水位才疊得上去。尺度感：第 3 節圖 1 裡一顆 LC10a（第 3 節要講的迴路起點，一群視覺神經元）放電一次平均把 g 加約 3 mV，但 g 加 3 mV 不等於水位 V 立刻升 3 mV，水位是跟著開度慢慢升的（τm 20 ms），而開度 5 ms 內就關掉大半，所以一次放電讓水位升的幅度遠小於 3 mV；要補到 7 mV 的差距，需要同時放電的 LC10a 顆數比 7 ÷ 3 多得多。神經元做的事就是把短時間內的輸入「整合」起來，再決定放不放電。</div>
+<b>為什麼叫「整合」：</b>從 V<sub>rest</sub>（−52 mV）到 V<sub>th</sub>（−45 mV）差 7 mV。上游一次放電只把水龍頭開一點點，而且 5 ms 內就關掉大半，單獨一次通常推不到刻度；要好幾顆上游神經元在幾毫秒之內接連放電，水位才疊得上去。尺度感：第 3 節圖 2 裡一顆 LC10a（第 3 節要講的迴路起點，一群視覺神經元）放電一次平均把 g 加約 3 mV，但 g 加 3 mV 不等於水位 V 立刻升 3 mV，水位是跟著開度慢慢升的（τm 20 ms），而開度 5 ms 內就關掉大半，所以一次放電讓水位升的幅度遠小於 3 mV（只升約 0.48 mV，下面圖 1 第 ② 步）；要補到 7 mV 的差距，需要同時放電的 LC10a 顆數比 7 ÷ 3 多得多（同一刻要 15 顆，圖 1 第 ③ 步）。神經元做的事就是把短時間內的輸入「整合」起來，再決定放不放電。</div>
 
   <div class="tblwrap">
   <table>
@@ -71,7 +71,7 @@
     <tr><td>V<sub>rest</sub></td><td>−52 mV</td><td>靜止膜電位，也是放電後拉回的值</td></tr>
     <tr><td>V<sub>th</sub></td><td>−45 mV</td><td>放電閾值</td></tr>
     <tr><td>τ<sub>m</sub></td><td>20 ms</td><td>膜時間常數：漏得多快</td></tr>
-    <tr><td>τ<sub>syn</sub></td><td>5 ms</td><td>突觸時間常數：上游一次放電把 g 推高之後，g 衰減得多快。「每過 5 ms 剩約 37%」是指數衰減的定義：時間常數 τ 的意思就是每過一個 τ，剩下的量變成原來的 1/e ≈ 37%，再過一個 τ 又乘 37%。它決定一次輸入能推膜電位多久，也決定幾個輸入要多靠近才疊得起來</td></tr>
+    <tr><td>τ<sub>syn</sub></td><td>5 ms</td><td>突觸時間常數：上游一次放電把 g 推高之後，g 衰減得多快。「每過 5 ms 剩約 37%」是指數衰減的定義：時間常數 τ 的意思就是每過一個 τ，剩下的量變成原來的 1/e ≈ 37%，再過一個 τ 又乘 37%。它決定一次輸入能推膜電位多久，也決定幾個輸入要多靠近才疊得起來。為什麼是這樣衰減、5 ms 從哪來，見表下的附註</td></tr>
     <tr><td>不反應期</td><td>2.2 ms</td><td>放電後這段時間內不會再放電。順序是：放電那一刻 g 歸零 → 接下來 2.2 ms 兩條方程式暫停，V 停在 V<sub>rest</sub>、g 不衰減，但期間到達的輸入照樣加進 g → 結束後兩式恢復，存起來的 g 才開始推 V 並衰減</td></tr>
     <tr><td>每個突觸的權重</td><td>0.275 mV</td><td>一條連結的強度 ＝ 突觸數 × 正負號 × 0.275 mV。0.275 mV 是 Shiu 等人為全腦模型挑的單一突觸強度，不是量出來的；正負號看上游那顆神經元的傳導物質（放電時釋放給下游的化學訊號）：乙醯膽鹼為正、GABA 與麩胺酸為負。傳導物質是 FlyWire（做出這份連結體的計畫，第 3 節細講）用電子顯微鏡影像以機器學習預測的，附在資料裡，所以算資料，但是預測值，不是逐顆實驗確認的</td></tr>
     <tr><td>傳遞延遲</td><td>1.8 ms</td><td>上游放電到下游收到的時間</td></tr>
@@ -80,6 +80,242 @@
   </div>
   <p>這張表哪些是量出來的：只有「正負號」來自資料（FlyWire 的預測）。其餘每一個數值都是 Shiu 等人為全腦模型採用的同一組通用值，整顆腦 13 萬多顆神經元都用這一組，不是逐顆量出來的；真實神經元的這些性質各不相同。所以第 1 節把方程式整個歸在「人為設定」。</p>
   <p class="figsrc">參數出自 fruitfly-lab 的 README 第 32–33 行（程式庫本身叫 repo，後面會一直用這個詞）（引用 Shiu et al. 2024, <i>Nature</i>）；程式在 <code>flycircuit/lif.py</code>。</p>
+
+  <details class="note"><summary>附註：g 為什麼照 τ<sub>syn</sub> · dg/dt = −g 衰減？5 ms 從哪來？（已查原文）</summary>
+    <p><b>生物上的意思。</b>上游放電時，突觸釋放傳導物質，打開下游細胞膜上的受體通道，離子流進來，這股電流就是 g 代表的東西。傳導物質很快被清掉或脫離，打開的通道一個一個關上。假設每個打開的通道在每一瞬間都有同樣的機率關上、彼此不相干，那麼還開著的通道愈多，每毫秒關掉的就愈多：g 減少的速度和 g 本身成正比，寫成式子就是 dg/dt = −g ÷ τ<sub>syn</sub>，解出來就是「每過 τ<sub>syn</sub> 剩 37%」的指數衰減。實驗記錄到的突觸電流，大致也是很快升起、再接近指數地衰減下來。所以<b>「指數衰減」這個形狀有生物依據</b>。</p>
+    <p><b>簡化了什麼。</b>一、上升是瞬間的，真實的突觸電流要零點幾到幾毫秒才升到頂。二、興奮、抑制、整顆腦所有突觸都用同一個 τ<sub>syn</sub>，真實的各種受體快慢差很多。三、g 直接用 mV 計，抑制的效果不隨當下的膜電位改變；真實的突觸電流大小會隨膜電位變（Jürgensen 等人的模型就有算這一點，見下面）。四、沒有連續放電之後變弱或變強這類突觸可塑性。這樣寫的好處是算得快：式子是線性的，上游所有輸入直接加進同一個 g、一起衰減，每顆神經元只要記一個 g，13 萬多顆神經元才跑得動。</p>
+    <p><b>5 ms 的出處。</b>Shiu 等人論文的 Methods 寫「τ ＝ 5 ms（突觸衰減的時間尺度）」，引的是 Jürgensen 等人 2021 年的論文（<i>Neuromorphic Computing and Engineering</i> 1:024008），不是 V<sub>rest</sub>、V<sub>th</sub>、τ<sub>m</sub> 引用的 Kakaria 與 de Bivort 2017。Jürgensen 等人做的是<b>果蠅幼蟲的嗅覺迴路</b>模型，參數表把興奮性突觸的時間常數設為 5 ms、抑制性的設為 10 ms，表上沒有附實驗出處。Shiu 等人只取了 5 ms，抑制也用 5 ms。</p>
+    <p><b>對照：Kakaria 與 de Bivort 2017。</b>V<sub>rest</sub> −52 mV、V<sub>th</sub> −45 mV、τ<sub>m</sub> 20 ms 出自這篇。他們說這組參數對應「一般的放電神經元」，並和果蠅的一些量測相符：V<sub>rest</sub> 引 Rohrbough 與 Broadie 2002、Sheeba 等人 2008；V<sub>th</sub> 引 Sheeba 等人 2008、Gouwens 與 Wilson 2009；τ<sub>m</sub> ＝ 膜電阻 10 MΩ × 膜電容 0.002 μF ＝ 20 ms，電阻與電容引 Gouwens 與 Wilson 2009。這篇的突觸電流先花 2 ms 升起、再指數衰減，衰減的<b>半衰期</b>是 5 ms（引 Gaudry 等人 2013，這篇我們沒有再往下查）。半衰期是剩一半的時間，換成時間常數約 7.2 ms（5 ÷ ln 2），和 Shiu 等人的 5 ms 不是同一個數。</p>
+    <p><b>結論。</b>突觸輸入照指數衰減，有生物依據，也是計算神經科學的標準簡化。5 ms 是從另一個果蠅模型借來的通用值，不是在 LC10a、AOTU019 這些神經元上量到的；它和膜電位那幾個參數一樣，整顆腦共用同一個值，所以第 1 節把整條方程式歸為人為設定。</p>
+    <p class="figsrc">讀的原文：Shiu et al. 2024, <i>Nature</i> 634:210–219（PMC11446845，Methods）與作者程式 <code>Drosophila_brain_model/model.py</code> 的參數註解；Jürgensen A-M, Khalili A, Chicca E, Indiveri G, Nawrot MP 2021, <i>Neuromorph. Comput. Eng.</i> 1:024008（開放全文，表 1）；Kakaria KS, de Bivort BL 2017, <i>Front. Behav. Neurosci.</i> 11:8（PMC5306390，Methods）。查證紀錄在 <code>out/lif_sources.json</code>。</p>
+  </details>
+
+  <p>下面圖 1 把方程式和水桶放在一起動：左邊是水桶，右邊是同一顆神經元的 g 與 V 隨時間怎麼變。七步各演一件事，每一步播完都可以自己按「＋1 興奮」「＋1 抑制」送輸入試試看。</p>
+  <figure class="fig">
+<!-- lif:start -->
+<div class="enc lif" id="p1lif">
+<div class="lif-wrap"><svg class="enc-svg lif-svg" viewBox="0 0 900 530" role="img" aria-labelledby="lifTitle" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,-apple-system,'Segoe UI','Microsoft JhengHei',sans-serif">
+<title id="lifTitle">漏電整合發放示意：左邊水桶的水位是膜電位 V，水龍頭開度是 g，桶底的洞是漏電；右邊是上游輸入、g、V 與輸出放電隨時間的變化</title>
+<defs>
+  <clipPath id="lifBucket"><rect x="63" y="80" width="154" height="387"/></clipPath>
+  <clipPath id="lifTr"><rect x="368" y="0" width="516" height="530"/></clipPath>
+  <marker id="lifArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker>
+</defs>
+<text x="20" y="24" font-size="15" font-weight="700" fill="#1b2733">水桶比喻</text>
+<!-- 上游與水管：上游放電後訊號沿管子走 1.8 ms 才到水龍頭 -->
+<circle cx="30" cy="62" r="11" fill="#fff" stroke="#2563eb" stroke-width="2"/><text x="30" y="66" font-size="11" text-anchor="middle" fill="#2563eb">興</text>
+<circle cx="30" cy="96" r="11" fill="#fff" stroke="#9333ea" stroke-width="2"/><text x="30" y="100" font-size="11" text-anchor="middle" fill="#9333ea">抑</text>
+<path d="M41 62 H70 V78 H150 M41 96 H70 V78" fill="none" stroke="#8b98a5" stroke-width="6" stroke-linejoin="round" stroke-opacity=".45"/>
+<text x="74" y="97" font-size="10" fill="#5a6b7b">沿管子走 1.8 ms</text>
+<rect x="148" y="66" width="34" height="24" rx="5" fill="#cbd5e1" stroke="#5a6b7b"/>
+<rect x="158" y="90" width="14" height="12" fill="#cbd5e1" stroke="#5a6b7b"/>
+<g class="lif-handle"><rect x="162" y="52" width="6" height="14" fill="#5a6b7b"/><rect x="150" y="47" width="30" height="6" rx="3" fill="#5a6b7b"/></g>
+<g class="lif-travel"></g>
+<text class="lif-gtxt" x="190" y="74" font-size="12" fill="#1b2733"></text>
+<text x="190" y="90" font-size="11" fill="#5a6b7b">水龍頭開度 g</text>
+<!-- 水 -->
+<g clip-path="url(#lifBucket)"><rect class="lif-stream" x="160" y="102" width="0" height="0" fill="#7cb6f0"/>
+<rect class="lif-water" x="60" y="470" width="160" height="0" fill="#7cb6f0" fill-opacity=".85"/>
+<g class="lif-suck"></g></g>
+<path d="M60 134 V470 H134.0 M146.0 470 H220 V134" fill="none" stroke="#1b2733" stroke-width="3" class="lif-wall"/>
+<line x1="60" x2="224" y1="222.5" y2="222.5" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="228" y="220.5" font-size="12" fill="#dc2626">刻度 V<tspan font-size="9" dy="3">th</tspan><tspan dy="-3"> −45</tspan></text>
+<line x1="60" x2="224" y1="338.0" y2="338.0" stroke="#5a6b7b" stroke-width="1.5" stroke-dasharray="3 3"/>
+<text x="228" y="342.0" font-size="12" fill="#5a6b7b">V<tspan font-size="9" dy="3">rest</tspan><tspan dy="-3"> −52</tspan></text>
+<text x="228" y="144" font-size="11" fill="#8b98a5">−40</text>
+<text x="228" y="474" font-size="11" fill="#8b98a5">−60 mV</text>
+<text class="lif-vtxt" x="66" y="462" font-size="12" font-weight="600" fill="#1b2733"></text>
+<g class="lif-drips"></g>
+<text x="140.0" y="516" font-size="11" text-anchor="middle" fill="#5a6b7b">桶底的洞（漏電）：水位往 V<tspan font-size="8" dy="3">rest</tspan><tspan dy="-3"> 拉</tspan></text>
+<g class="lif-over" opacity="0"><text x="140.0" y="116" font-size="12" text-anchor="middle" fill="#ea580c">↑ 加 68.75 mV，滿出桶口</text></g>
+<g class="lif-fire" opacity="0"><text x="140.0" y="130" font-size="18" font-weight="800" text-anchor="middle" fill="#ea580c">放電！</text>
+<line x1="222" y1="190" x2="280" y2="190" stroke="#ea580c" stroke-width="3" marker-end="url(#lifArr)"/>
+<text x="228" y="184" font-size="11" fill="#ea580c">送給下游</text></g>
+<g class="lif-rfc" opacity="0"><rect x="63" y="140" width="154" height="330" fill="#94a3b8" fill-opacity=".35"/>
+<text x="140.0" y="170" font-size="13" font-weight="700" text-anchor="middle" fill="#1b2733">不反應期</text>
+<text x="140.0" y="188" font-size="11" text-anchor="middle" fill="#1b2733">2.2 ms 內兩式暫停</text>
+<rect class="lif-rfcbar" x="90" y="196" width="0" height="5" fill="#1b2733"/></g>
+<!-- 右邊：軌跡 -->
+<line x1="338" x2="338" y1="20" y2="510" stroke="#e4e8ee"/>
+<text x="368" y="38" font-size="12" fill="#5a6b7b">上游送出的放電（<tspan fill="#2563eb">↑ 興奮</tspan>、<tspan fill="#9333ea">↓ 抑制</tspan>，數字＝同一刻幾個）</text>
+<line x1="368" x2="884" y1="58.0" y2="58.0" stroke="#e4e8ee"/>
+<text x="368" y="102" font-size="12" fill="#5a6b7b">g：水龍頭開度（mV）</text>
+<g class="lif-gaxis"></g>
+<text x="368" y="226" font-size="12" fill="#5a6b7b">V：膜電位＝水位（mV）</text>
+<line x1="368" x2="884" y1="284.5" y2="284.5" stroke="#dc2626" stroke-dasharray="6 4"/>
+<line x1="368" x2="884" y1="355.2" y2="355.2" stroke="#5a6b7b" stroke-dasharray="3 3"/>
+<text x="364" y="288.5" font-size="11" text-anchor="end" fill="#dc2626">−45</text>
+<text x="364" y="359.2" font-size="11" text-anchor="end" fill="#5a6b7b">−52</text>
+<text x="364" y="238" font-size="11" text-anchor="end" fill="#8b98a5">−40</text>
+<text x="364" y="440" font-size="11" text-anchor="end" fill="#8b98a5">−60</text>
+<rect x="368" y="234" width="516" height="202" fill="none" stroke="#e4e8ee"/>
+<text x="368" y="454" font-size="12" fill="#5a6b7b">輸出放電（送給下游）</text>
+<line x1="368" x2="884" y1="478" y2="478" stroke="#e4e8ee"/>
+<g clip-path="url(#lifTr)"><g class="lif-shade"></g><g class="lif-up"></g><path class="lif-g" fill="none" stroke="#2563eb" stroke-width="1.8"/>
+<path class="lif-v" fill="none" stroke="#1b2733" stroke-width="1.8"/><g class="lif-spk"></g><g class="lif-out"></g><g class="lif-notes"></g>
+<line class="lif-now" y1="46" y2="478" stroke="#ea580c" stroke-opacity=".5"/></g>
+<g class="lif-taxis"></g>
+</svg></div>
+<div class="enc-read" aria-live="off"></div>
+<div class="enc-ctl">
+  <button type="button" class="lif-prev">← 上一步</button><button type="button" class="lif-next">下一步 →</button>
+  <button type="button" class="lif-play">⏸ 暫停</button><button type="button" class="lif-replay">↻ 重播這一步</button>
+  <label>速度 <select class="lif-speed"><option value="0">很慢（1 ms 演 0.2 秒）</option><option value="1">慢（1 ms 演 0.05 秒）</option><option value="2">快（1 ms 演 0.01 秒）</option></select></label>
+</div>
+<div class="enc-ctl">
+  自己送輸入：<button type="button" class="lif-add" data-n="1" data-s="1">＋1 興奮</button><button type="button" class="lif-add" data-n="1" data-s="-1">＋1 抑制</button>
+  <button type="button" class="lif-add" data-n="15" data-s="1">＋15 興奮（同一刻）</button>
+  <label class="lif-nup">上游顆數 <input type="range" min="0" max="200" step="5" value="50"> <b></b></label>
+  <label class="lif-rate">設定放電率 r <input type="range" min="0" max="150" step="5" value="100"> <b></b></label>
+</div>
+<ol class="enc-steps">
+    <li data-k="1"><b>① 漏電：</b>水位比 V<sub>rest</sub> 高 5 mV，沒有任何輸入。桶底的洞讓水位往 V<sub>rest</sub> 回落，離得愈遠落得愈快，愈接近落得愈慢。過 20 ms（τ<sub>m</sub>）差距從 5 mV 剩 1.84 mV，約 37%。</li>
+    <li data-k="2"><b>② 一次輸入：</b>一顆上游神經元放電一次（假設兩顆之間有 11 個突觸：11 × 0.275 ≈ 3.03 mV，和第 3 節圖 2 裡一顆 LC10a 的平均差不多）。1.8 ms 後訊號到達，g 跳高 3.03 mV，接著每 5 ms 剩 37%。水位跟著 g 慢慢升，到達後約 9.1 ms 到頂，只升 0.48 mV，離刻度還差 7 mV 的一大截。</li>
+    <li data-k="3"><b>③ 整合：</b>同樣是 15 個輸入，送法不同。前面每 5 ms 送一個：每一個留下的水還沒漏完下一個就來，水位疊到 −49.01 mV 左右就上不去（進來的和漏掉的打平），沒到刻度。120 ms 時 15 個同時送：水位在 127.5 ms 過刻度、放電。15 個是同一刻送最少要的個數，少一個水位只到 −45.25 mV。這就是「整合」：神經元把短時間內的輸入加起來，加得夠多才放電。</li>
+    <li data-k="4"><b>④ 放電與不反應期：</b>10 ms 時 30 個同時送，13.7 ms 放電：水位拉回 V<sub>rest</sub>、g 歸零，接下來 2.2 ms 是不反應期（灰底），兩條方程式暫停。12.9 ms 又送出 20 個，14.7 ms 到達時正在不反應期裡：先存在 g（60.5 mV，不衰減、也不推水位）。15.9 ms 不反應期結束，存著的 g 才開始推水位，19.5 ms 再放電一次。右邊軌跡裡放電畫成一根直線，只是記號：模型裡沒有這個尖峰，水位一過刻度就直接拉回 V<sub>rest</sub>。</li>
+    <li data-k="5"><b>⑤ 抑制：</b>10 ms 送 20 個興奮輸入，15.3 ms 放電。60 ms 同樣 20 個興奮，但同時來了 10 個抑制輸入（每個 −3.03 mV，上游是 GABA 或麩胺酸的神經元）：g 只淨增 30.25 mV，水位最高 −47.18 mV，沒放電。抑制等於把水龍頭往負的方向開、從桶裡抽水。</li>
+    <li data-k="6"><b>⑥ 持續輸入 → 放電率：</b>真實的迴路裡，輸入是好幾顆上游神經元在隨機時刻各自放電。拉「上游顆數」：假設每顆上游平均每秒放電 20 次、每次 3.03 mV（20 次是為了示範挑的）。上游愈多，水位愈常被推過刻度，這顆神經元每秒放電的次數（放電率）就愈高。照作者程式各跑 20 秒：25 顆 → 17.5 Hz、50 顆 → 54.9 Hz、75 顆 → 79.8 Hz、100 顆 → 100 Hz、150 顆 → 131.9 Hz、200 顆 → 157.7 Hz。下面的讀數是最近 1 秒的放電次數，會跟著隨機輸入上下跳。</li>
+    <li data-k="7"><b>⑦ LC10a 的外部刺激：</b>LC10a 的輸入不是來自上游神經元，而是程式直接刺激（第 4 節、圖 4 第 ⑥ 步）：每 0.1 ms 抽一次籤，抽中的機率 ＝ r × 0.1 ms，抽中就把水位直接加 68.75 mV（不經過 g，所以 g 一直是 0），一定過刻度、馬上放電；V 的圖上紫色小箭頭是抽中的時刻。所以輸出的放電率幾乎就等於設定的 r。照作者程式各跑 20 秒：r ＝ 10 → 10.8 Hz、r ＝ 50 → 51.2 Hz、r ＝ 100 → 100 Hz、r ＝ 150 → 149.2 Hz。注意：程式檢查「過刻度」時不看是不是在不反應期，所以抽中時就算正在不反應期裡，也會馬上再放電一次；不反應期擋得住的只有經過 g 的輸入（第 ④ 步）。</li>
+  </ol>
+</div>
+<script>
+(function(){
+const DATA={"v0":-52,"vrst":-52,"vth":-45,"av":0.005,"dg":0.9801986733067553,"rfc":22,"dly":18,"kick":68.75,"w":3.025,"steps":[{"k":1,"g":[-1,4],"speed":1,"notes":[{"ms":0,"row":"V","v":-47.0,"dx":8,"dy":-10,"t":"起點：比 V_rest 高 5 mV"},{"ms":20,"row":"V","v":-50.17,"dx":8,"dy":-12,"vline":1,"t":"20 ms 後：差距剩 1.84 mV（約 37%）"}],"win":60,"vinit":-47.0,"sends":[],"expect":[]},{"k":2,"g":[-1,4],"speed":0,"notes":[{"ms":5.0,"row":"up","dx":6,"dy":0,"t":"上游放電"},{"ms":6.8,"row":"g","v":3.025,"dx":8,"dy":4,"t":"1.8 ms 後到達：g 跳高 3.03 mV"},{"ms":11.8,"row":"g","v":1.113,"dx":8,"dy":-6,"t":"再過 5 ms：剩 1.11 mV（37%）"},{"ms":15.9,"row":"V","v":-51.52,"dx":8,"dy":-12,"t":"水位到頂：只升 0.48 mV"}],"win":45,"vinit":null,"sends":[[5.0,3.0250000000000004,1]],"expect":[]},{"k":3,"g":[-3,50],"speed":1,"notes":[{"ms":5.0,"row":"up","dx":6,"dy":0,"t":"每 5 ms 送 1 個"},{"ms":79.1,"row":"V","v":-49.01,"dx":-4,"dy":-12,"anchor":"end","t":"最高 −49.01 mV，沒到刻度"},{"ms":120.0,"row":"up","dx":6,"dy":0,"t":"同一刻 15 個"},{"ms":127.5,"row":"V","v":-45,"dx":-6,"dy":-16,"anchor":"end","t":"127.5 ms 過刻度 → 放電"}],"win":170,"vinit":null,"sends":[[5.0,3.0250000000000004,1],[10.0,3.0250000000000004,1],[15.0,3.0250000000000004,1],[20.0,3.0250000000000004,1],[25.0,3.0250000000000004,1],[30.0,3.0250000000000004,1],[35.0,3.0250000000000004,1],[40.0,3.0250000000000004,1],[45.0,3.0250000000000004,1],[50.0,3.0250000000000004,1],[55.0,3.0250000000000004,1],[60.0,3.0250000000000004,1],[65.0,3.0250000000000004,1],[70.0,3.0250000000000004,1],[75.0,3.0250000000000004,1],[120.0,3.0250000000000004,15]],"expect":[127.5]},{"k":4,"g":[-5,100],"speed":0,"notes":[{"ms":10.0,"row":"up","dx":-6,"dy":0,"anchor":"end","t":"同一刻 30 個"},{"ms":12.9,"row":"up","dx":6,"dy":0,"t":"再送 20 個"},{"ms":13.7,"row":"V","v":-45,"dx":-6,"dy":-40,"anchor":"end","t":"放電：拉回 V_rest、g 歸零"},{"ms":14.7,"row":"g","v":60.5,"dx":8,"dy":-4,"t":"不反應期裡到達：先存在 g"},{"ms":15.9,"row":"V","v":-52,"dx":6,"dy":18,"t":"不反應期結束（放電後 2.2 ms）"},{"ms":19.5,"row":"V","v":-45,"dx":6,"dy":-40,"t":"再放電一次"}],"win":30,"vinit":null,"sends":[[10.0,3.0250000000000004,30],[12.9,3.0250000000000004,20]],"expect":[13.7,19.5]},{"k":5,"g":[-35,65],"speed":1,"notes":[{"ms":10.0,"row":"up","dx":6,"dy":0,"t":"20 個興奮"},{"ms":15.3,"row":"V","v":-45,"dx":6,"dy":-16,"t":"放電"},{"ms":60.0,"row":"up","dx":6,"dy":0,"t":"20 個興奮 ＋ 10 個抑制"},{"ms":70.9,"row":"V","v":-47.18,"dx":8,"dy":-12,"t":"最高 −47.18 mV，沒放電"}],"win":110,"vinit":null,"sends":[[10.0,3.0250000000000004,20],[60.0,3.0250000000000004,20],[60.0,-3.0250000000000004,10]],"expect":[15.3]},{"k":6,"g":[-5,90],"speed":2,"notes":[],"win":200,"vinit":null,"sends":[],"expect":null},{"k":7,"g":[-5,90],"speed":2,"notes":[],"win":200,"vinit":null,"sends":[],"expect":null}]};
+const box=document.getElementById('p1lif'),Q=s=>box.querySelector(s),svg=Q('.lif-svg');
+const TX0=368,TX1=884,UP0=46,UP1=70,G0=110,G1=202,V0Y=234,V1Y=436,OUT0=460,OUT1=478;
+const BX0=60,BX1=220,BY0=140,BY1=470;
+const SPEEDS=[1/200,1/50,1/10];                  // 模擬 1 ms 用真實幾 ms
+const BLUE='#2563eb',PURPLE='#9333ea',ORANGE='#ea580c',INK='#1b2733',SOFT='#5a6b7b',FAINT='#8b98a5';
+const by=v=>BY1-(v+60)/20*(BY1-BY0),ty=v=>V1Y-(Math.max(-60,Math.min(-40,v))+60)/20*(V1Y-V0Y);
+let step=1,cfg,t,v,g,rfc,arrive,sends,spikes,kicks,H,playing=true,ended=false,speed=1,acc=0,last=null,nup=50,rate=100,rnd=Math.random;
+const fmt=(x,d)=>x.toFixed(d).replace('-','−');
+function send(at,w,n){arrive.set(at+DATA.dly,(arrive.get(at+DATA.dly)||0)+w*n);sends.push({t:at,w,n})}
+function reset(){
+  cfg=DATA.steps[step-1];t=0;g=0;rfc=0;v=cfg.vinit==null?DATA.v0:cfg.vinit;arrive=new Map();sends=[];spikes=[];kicks=[];H={v:[],g:[]};ended=false;acc=0;
+  for(const [ms,w,n] of cfg.sends)send(Math.round(ms/0.1),w,n);
+}
+// 一步 0.1 ms，順序照抄 lif.py 的 _kernel
+function tick1(){
+  if(step===6&&nup>0){const pr=nup*20*1e-4;if(rnd()<pr)send(t,DATA.w,1)}
+  if(arrive.has(t)){const add=arrive.get(t);arrive.delete(t);g+=add}   // 同一步到達的照送出順序加總（與 Python 相同）
+  if(rfc<=0){v+=DATA.av*(DATA.v0-v+g);g*=DATA.dg}
+  rfc-=1;
+  if(step===7&&rate>0&&rnd()<rate*1e-4){v+=DATA.kick;kicks.push(t)}
+  if(v>DATA.vth){v=DATA.vrst;g=0;rfc=DATA.rfc;spikes.push(t)}
+  H.v.push(v);H.g.push(g);t++;
+  if(H.v.length>40000){const cut=20000;H.v.splice(0,cut);H.g.splice(0,cut);H.off=(H.off||0)+cut}
+}
+const histAt=(arr,i)=>arr[i-(H.off||0)];
+function view(){const W=cfg.win*10;const end=Math.max(W,t);return [end-W,end]}
+function draw(now){
+  const [va,vb]=view(),W=vb-va,X=i=>TX0+(i-va)/W*(TX1-TX0);
+  const [gl,gh]=cfg.g,gy=x=>G1-(Math.max(gl,Math.min(gh,x))-gl)/(gh-gl)*(G1-G0);
+  // 軸
+  let ga=`<line x1="${TX0}" x2="${TX1}" y1="${gy(0)}" y2="${gy(0)}" stroke="#e4e8ee"/><text x="${TX0-4}" y="${gy(0)+4}" font-size="11" text-anchor="end" fill="${FAINT}">0</text>`;
+  ga+=`<text x="${TX0-4}" y="${G0+8}" font-size="11" text-anchor="end" fill="${FAINT}">${gh}</text>`;
+  if(gy(0)-G1<-22)ga+=`<text x="${TX0-4}" y="${G1}" font-size="11" text-anchor="end" fill="${FAINT}">${fmt(gl,0)}</text>`;
+  Q('.lif-gaxis').innerHTML=ga;
+  const span=cfg.win,stepT=span<=50?5:span<=120?10:span<=200?20:50;let ta='';
+  for(let ms=Math.ceil(va/10/stepT)*stepT;ms<=vb/10+1e-9;ms+=stepT){const x=X(ms*10);ta+=`<line x1="${x}" x2="${x}" y1="${OUT1}" y2="${OUT1+4}" stroke="${FAINT}"/><text x="${x}" y="${OUT1+16}" font-size="11" text-anchor="middle" fill="${FAINT}">${ms}</text>`}
+  ta+=`<text x="${TX1}" y="${OUT1+32}" font-size="11" text-anchor="end" fill="${SOFT}">時間（ms）</text>`;
+  Q('.lif-taxis').innerHTML=ta;
+  // 軌跡：每個像素取一點，g 的跳升用該段最大絕對值保留
+  const i0=Math.max(va,H.off||0),i1=t,k=Math.max(1,Math.floor(W/520));let pv='',pg='';
+  for(let i=i0;i<i1;i+=k){let gv=histAt(H.g,i);for(let j=i+1;j<Math.min(i+k,i1);j++){const q=histAt(H.g,j);if(Math.abs(q)>Math.abs(gv))gv=q}
+    pv+=(pv?'L':'M')+X(i).toFixed(1)+' '+ty(histAt(H.v,i)).toFixed(1);pg+=(pg?'L':'M')+X(i).toFixed(1)+' '+gy(gv).toFixed(1)}
+  Q('.lif-v').setAttribute('d',pv);Q('.lif-g').setAttribute('d',pg);
+  // 上游、不反應期灰底、放電
+  const mid=(UP0+UP1)/2;let up='';const byT=new Map();
+  for(const s of sends){if(s.t>t||s.t<va)continue;const key=s.t+(s.w>0?'+':'-');byT.set(key,(byT.get(key)||{t:s.t,w:s.w,n:0}));byT.get(key).n+=s.n}
+  for(const s of byT.values()){const x=X(s.t),c=s.w>0?BLUE:PURPLE,y2=s.w>0?UP0:UP1;
+    up+=`<line x1="${x}" x2="${x}" y1="${mid}" y2="${y2}" stroke="${c}" stroke-width="2"/>`;
+    if(s.n>1)up+=`<text x="${x+3}" y="${s.w>0?UP0+8:UP1}" font-size="10" fill="${c}">${s.n}</text>`}
+  Q('.lif-up').innerHTML=up;
+  let sh='',sp='',ou='';
+  for(const s of spikes){if(s+DATA.rfc<va)continue;const x=X(s);
+    sh+=`<rect x="${x}" y="${V0Y}" width="${Math.max(1,X(s+DATA.rfc)-x)}" height="${V1Y-V0Y}" fill="#94a3b8" fill-opacity=".25"/>`;
+    sp+=`<line x1="${x}" x2="${x}" y1="${ty(DATA.vth)}" y2="${V0Y}" stroke="${ORANGE}" stroke-width="2"/><circle cx="${x}" cy="${V0Y}" r="3" fill="${ORANGE}"/>`;
+    ou+=`<line x1="${x}" x2="${x}" y1="${OUT0+2}" y2="${OUT1}" stroke="${ORANGE}" stroke-width="2"/>`}
+  for(const s of kicks){if(s<va)continue;const x=X(s);sp+=`<path d="M${x-3} ${V0Y+12} L${x} ${V0Y+4} L${x+3} ${V0Y+12}" fill="none" stroke="${PURPLE}" stroke-width="1.5"/>`}
+  Q('.lif-shade').innerHTML=sh;Q('.lif-spk').innerHTML=sp;Q('.lif-out').innerHTML=ou;
+  // 註記
+  let no='';
+  for(const m of cfg.notes){const i=Math.round(m.ms*10);if(i>t||i<va)continue;const x=X(i);
+    let y=m.row==='up'?UP1+12:m.row==='g'?gy(m.v):ty(m.v);
+    if(m.vline)no+=`<line x1="${x}" x2="${x}" y1="${V0Y}" y2="${V1Y}" stroke="${ORANGE}" stroke-dasharray="3 3"/>`;
+    if(m.row!=='up')no+=`<circle cx="${x}" cy="${y}" r="3.5" fill="none" stroke="${ORANGE}" stroke-width="1.5"/>`;
+    const tx=m.row==='up'?x+(m.anchor==='end'?-4:4):x+m.dx;
+    no+=`<text x="${tx}" y="${y+m.dy}" font-size="12" font-weight="600" text-anchor="${m.anchor||'start'}" fill="${ORANGE}" paint-order="stroke" stroke="#fff" stroke-width="4">${m.t}</text>`}
+  Q('.lif-notes').innerHTML=no;
+  const nx=X(t);const nl=Q('.lif-now');nl.setAttribute('x1',nx);nl.setAttribute('x2',nx);
+  // 水桶
+  const vy=Math.max(BY0-50,by(Math.min(v,-37.5)));const wa=Q('.lif-water');wa.setAttribute('y',vy);wa.setAttribute('height',BY1-vy);
+  Q('.lif-vtxt').textContent='水位 V = '+fmt(v,2)+' mV';
+  Q('.lif-gtxt').textContent='g = '+fmt(g,2)+' mV';
+  const st=Q('.lif-stream'),wdt=Math.min(14,Math.abs(g)*1.2);
+  if(g>0.02){st.setAttribute('x',165-wdt/2);st.setAttribute('width',wdt);st.setAttribute('y',102);st.setAttribute('height',Math.max(0,vy-102));st.setAttribute('fill','#7cb6f0')}
+  else st.setAttribute('width',0);
+  let su='';if(g<-0.02){const n=Math.min(5,1+Math.floor(-g/6));for(let j=0;j<n;j++){const ph=((now/600+j/n)%1);su+=`<text x="${150+j*8%30}" y="${vy-6-ph*40}" font-size="13" fill="${PURPLE}" opacity="${1-ph}">↑</text>`}
+    su+=`<text x="${(BX0+BX1)/2}" y="${vy+18}" font-size="11" text-anchor="middle" fill="${PURPLE}">g 是負的：抽水</text>`}
+  Q('.lif-suck').innerHTML=su;
+  Q('.lif-handle').setAttribute('transform',`rotate(${Math.max(-40,Math.min(40,g*2))} 165 66)`);
+  // 訊號沿管子走
+  let tr='';for(const s of byT.values()){if(t-s.t>=DATA.dly)continue;const f=(t-s.t)/DATA.dly,y0=s.w>0?62:96;
+    const x=f<.3?41+f/.3*29:70+(f-.3)/.7*80,y=f<.3?y0:78;tr+=`<circle cx="${x}" cy="${y}" r="5" fill="${s.w>0?BLUE:PURPLE}"/>`;if(s.n>1)tr+=`<text x="${x}" y="${y-8}" font-size="10" text-anchor="middle" fill="${s.w>0?BLUE:PURPLE}">×${s.n}</text>`}
+  Q('.lif-travel').innerHTML=tr;
+  // 漏水：水位高於 V_rest 才往下滴，滴的快慢跟離 V_rest 多遠成正比
+  let dp='';const gap=v-DATA.v0,cx=(BX0+BX1)/2;
+  if(rfc<=0&&gap>0.05){const n=3,sp2=Math.min(1,gap/5);for(let j=0;j<n;j++){const ph=((now/1000*(0.6+2.4*sp2)+j/n)%1);dp+=`<circle cx="${cx}" cy="${BY1+4+ph*26}" r="${2+2*sp2}" fill="#7cb6f0" opacity="${(1-ph)*Math.min(1,0.3+sp2)}"/>`}}
+  else if(rfc<=0&&gap<-0.05)dp+=`<text x="${cx}" y="${BY1+22}" font-size="13" text-anchor="middle" fill="#7cb6f0">↑</text>`;
+  Q('.lif-drips').innerHTML=dp;
+  const lastS=spikes.length?spikes[spikes.length-1]:-1e9,since=t-lastS;
+  Q('.lif-fire').setAttribute('opacity',since<=DATA.rfc+30?1:0);
+  Q('.lif-rfc').setAttribute('opacity',rfc>0?1:0);
+  Q('.lif-rfcbar').setAttribute('width',rfc>0?(BX1-BX0-60)*rfc/DATA.rfc:0);
+  const lastK=kicks.length?kicks[kicks.length-1]:-1e9;Q('.lif-over').setAttribute('opacity',t-lastK<=DATA.rfc+30?1:0);
+  // 讀數
+  let r='t = '+fmt(t/10,1)+' ms　V = '+fmt(v,2)+' mV　g = '+fmt(g,2)+' mV　輸出放電 '+spikes.length+' 次';
+  if(step>=6){const recent=spikes.filter(s=>s>t-10000).length;r+=t>=10000?'　最近 1 秒：'+recent+' Hz':'　（跑滿 1 秒才算放電率：還差 '+fmt((10000-t)/10,0)+' ms）'}
+  if(ended)r+='　｜ 這一步播完了：按「重播這一步」，或自己送輸入';
+  Q('.enc-read').textContent=r;
+}
+function frame(ts){
+  if(last==null)last=ts;const dt=Math.min(100,ts-last);last=ts;
+  if(playing&&!ended){acc+=dt*SPEEDS[speed]*10;let k=Math.floor(acc);acc-=k;
+    const W=cfg.win*10;
+    while(k-->0){if(step<=5&&t>=W&&!manual){ended=true;break}tick1()}}
+  draw(ts);requestAnimationFrame(frame);
+}
+let manual=false;
+function render(){
+  for(const li of box.querySelectorAll('.enc-steps li')){const k=+li.dataset.k;li.className=k===step?'on':k<step?'done':''}
+  Q('.lif-prev').disabled=step===1;Q('.lif-next').disabled=step===7;
+  Q('.lif-nup').style.display=step===6?'':'none';Q('.lif-rate').style.display=step===7?'':'none';
+}
+function go(s){step=s;speed=DATA.steps[s-1].speed;Q('.lif-speed').value=speed;manual=false;reset();playing=true;Q('.lif-play').textContent='⏸ 暫停';render()}
+Q('.lif-prev').onclick=()=>{if(step>1)go(step-1)};
+Q('.lif-next').onclick=()=>{if(step<7)go(step+1)};
+Q('.lif-replay').onclick=()=>go(step);
+Q('.lif-play').onclick=()=>{playing=!playing;Q('.lif-play').textContent=playing?'⏸ 暫停':'▶ 播放'};
+Q('.lif-speed').onchange=e=>{speed=+e.target.value};
+for(const b of box.querySelectorAll('.lif-add'))b.onclick=()=>{send(t,DATA.w*(+b.dataset.s),+b.dataset.n);manual=true;ended=false;playing=true;Q('.lif-play').textContent='⏸ 暫停'};
+const nu=Q('.lif-nup input'),ra=Q('.lif-rate input');
+const showN=()=>{nup=+nu.value;Q('.lif-nup b').textContent=nup+' 顆（每秒共 '+(nup*20).toLocaleString()+' 個輸入）'};
+const showR=()=>{rate=+ra.value;Q('.lif-rate b').textContent=rate+' Hz'};
+nu.oninput=showN;ra.oninput=showR;showN();showR();
+for(const li of box.querySelectorAll('.enc-steps li'))li.onclick=()=>go(+li.dataset.k);
+// 給單獨頁與自我檢查用：box.lif.set({step, speed, seed})；box.lif.run(ms) 直接算完不播
+box.lif={get step(){return step},get spikes(){return spikes.map(s=>+(s/10).toFixed(1))},
+  set(o){if(o.seed!=null){let a=o.seed>>>0;rnd=()=>{a=a+0x6D2B79F5|0;let x=Math.imul(a^a>>>15,1|a);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296}}
+    if(o.step)go(Math.max(1,Math.min(7,o.step)));if(o.speed!=null){speed=o.speed;Q('.lif-speed').value=speed}if(o.nup!=null){nu.value=o.nup;showN()}if(o.rate!=null){ra.value=o.rate;showR()}},
+  run(ms){const end=t+Math.round(ms*10);while(t<end)tick1();if(step<=5&&t>=cfg.win*10)ended=true;draw(0)}};
+go(1);requestAnimationFrame(frame);
+})();
+</script>
+<!-- lif:end -->
+    <figcaption><b>圖 1　漏電整合發放，一步一步看。</b>按「下一步」從 ① 走到 ⑦，每一步會自動播放；時間放慢很多倍（「很慢」是模型的 1 ms 演 0.2 秒），可以換速度、暫停、重播。左邊水桶：水位是膜電位 V，紅色虛線是刻度 V<sub>th</sub>，灰色虛線是 V<sub>rest</sub>；水龍頭的開度是 g，水柱愈粗 g 愈大，g 是負的（抑制）時改成往上抽水；桶底的洞是漏電，水滴愈快表示水位離 V<sub>rest</sub> 愈遠。右邊由上往下：上游送出的放電、g、V、這顆神經元送出的放電；灰底是不反應期，橘色直線是放電的記號。這是<b>單獨一顆</b>神經元，上游輸入是示範用的（每個輸入 3.03 mV，即 11 個突觸 × 0.275 mV），不是模型裡哪一顆真正收到的輸入。
+    <span class="figsrc">更新規則照抄作者 <code>flycircuit/lif.py</code> 的 <code>_kernel</code>（每 0.1 ms 一步：收到期的輸入 → 不反應期外才積分與衰減 → 外部刺激 → 過刻度就放電）；參數讀作者 <code>circuit/meta.json</code>。步驟裡的數字由 <code>scripts/lif_fig_data.py</code> 用同一套規則在 Python 裡算出，在 <code>out/lif_fig.json</code>；圖由 <code>scripts/make_lif_anim.py</code> 產生（圖裡的文字要改在那裡）。</span></figcaption>
+  </figure>
 
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s3"><span class="pt">3</span>從全腦切出一段迴路</h2>
@@ -93,14 +329,14 @@
     <li><b>AOTU019</b>：抑制性（傳導物質是 GABA，放電會讓下游更難放電），投射到<b>對側</b>（把訊號送到另一半腦）。</li>
     <li><b>AOTU025</b>：興奮性（傳導物質是乙醯膽鹼，放電會讓下游更容易放電），投射到<b>同側</b>（留在同一半腦）。</li>
   </ul>
-  <p>上面兩條是連結體資料：傳導物質是 FlyWire 預測的；投射到哪一側在連結體裡查得到，下面圖 1 的接線就是（AOTU019 的抑制連結接到對側的 DNa02、AOTU025 的興奮連結接到同側的），README 也這樣寫。連結體本身不會直接告訴你一顆神經元負責視野的哪一塊。本頁後面會一直說 <b>AOTU019 負責中央視野、AOTU025 負責外圍視野</b>：這個分工的方向有一篇研究的連結體分析與電生理實測支持（Collie 等人 2026，<i>Neuron</i>，見下面附註），但那篇研究量到兩者的視野<b>相當重疊</b>，不是一刀切。README 第 21、22 行把它寫成 AOTU019 是 central field 0–40°、AOTU025 是 periphery 40–90°（離正前方的偏角，左右皆然，和第 4 節的方位角同一把尺），這兩個角度是作者的概括，論文裡沒有這個分界。作者再把這個分工拿來設定第 4 節的輸入編碼，做法也和論文不同（見附註），所以在這個模型裡它是人為設定。</p>
+  <p>上面兩條是連結體資料：傳導物質是 FlyWire 預測的；投射到哪一側在連結體裡查得到，下面圖 2 的接線就是（AOTU019 的抑制連結接到對側的 DNa02、AOTU025 的興奮連結接到同側的），README 也這樣寫。連結體本身不會直接告訴你一顆神經元負責視野的哪一塊。本頁後面會一直說 <b>AOTU019 負責中央視野、AOTU025 負責外圍視野</b>：這個分工的方向有一篇研究的連結體分析與電生理實測支持（Collie 等人 2026，<i>Neuron</i>，見下面附註），但那篇研究量到兩者的視野<b>相當重疊</b>，不是一刀切。README 第 21、22 行把它寫成 AOTU019 是 central field 0–40°、AOTU025 是 periphery 40–90°（離正前方的偏角，左右皆然，和第 4 節的方位角同一把尺），這兩個角度是作者的概括，論文裡沒有這個分界。作者再把這個分工拿來設定第 4 節的輸入編碼，做法也和論文不同（見附註），所以在這個模型裡它是人為設定。</p>
   <details class="note"><summary>附註：「AOTU019 管中央、AOTU025 管外圍」的生物依據（已查原文）</summary>
     <p><b>出處。</b>Collie MF, Jin C, Rockwell V, Kellogg E, Vanderbeck QX, Hartman AK, Holtz SL, Wilson RI. Specialized parallel pathways for adaptive control of visual object pursuit. <i>Neuron</i> 114(10):1833–1847.e9 (2026). doi:10.1016/j.neuron.2026.01.001（<a href="https://pubmed.ncbi.nlm.nih.gov/41713413/">PubMed 41713413</a>；預印本 <a href="https://www.biorxiv.org/content/10.1101/2025.04.23.650240">bioRxiv</a>）。本課讀的是 bioRxiv 的第一版（2025 年 4 月）與修訂版（2025 年 11 月）全文；Neuron 正式版的網頁本課抓不到，卷期頁碼由 Europe PMC 的書目資料核對。</p>
     <p><b>依據一：連結體。</b>LC10a 把視野依序排在視葉的小葉（lobula）上，投射到 AOTU 時保留這個順序。論文發現 AOTU019 主要收負責內側（前方）視野的 LC10a，AOTU025 主要收負責側方視野的；再用每種 AOTU 收到的 LC10a 輸入在小葉內外軸上的分布，推估它的視野範圍（推估時納入 15° 的雙眼重疊）。用了兩份連結體：雌蠅的 FlyWire 與雄蠅的 MaleCNS。</p>
-    <p><b>依據二：電生理。</b>對頭部固定、在球上走路的果蠅做全細胞記錄（把電極接上單顆神經元、直接量它的放電），在環繞的螢幕上讓小物體出現在隨機位置、以每秒 25° 橫移 22.5° 後消失，逐點量反應。雄蠅記了 AOTU019 25 顆、AOTU025 22 顆，雌蠅各 9 顆；記錄時用光遺傳學讓果蠅處於激發狀態（雄蠅刺激 P1 神經元、雌蠅刺激 aIPg），確保 AOTU 對視覺有反應。結果：AOTU019 對正前方附近的物體反應最強，AOTU025 對外圍的最強，雌雄一樣；兩者的視野<b>相當重疊</b>，物體從外圍移到中央時兩者會同時活化、平順交接（論文圖 3 的標題就是「平行的 AOTU 路徑編碼部分重疊的視野區域」）。</p>
+    <p><b>依據二：電生理。</b>對頭部固定、在球上走路的果蠅做全細胞記錄（把電極接上單顆神經元、直接量它的放電），在環繞的螢幕上讓小物體出現在隨機位置、以每秒 25° 橫移 22.5° 後消失，逐點量反應。雄蠅記了 AOTU019 25 顆、AOTU025 22 顆，雌蠅各 9 顆；記錄時用光遺傳學讓果蠅處於激發狀態（雄蠅刺激 P1 神經元、雌蠅刺激 aIPg），確保 AOTU 對視覺有反應。結果：AOTU019 對正前方附近的物體反應最強，AOTU025 對外圍的最強，雌雄一樣；兩者的視野<b>相當重疊</b>，物體從外圍移到中央時兩者會同時活化、平順交接（論文圖 4 的標題就是「平行的 AOTU 路徑編碼部分重疊的視野區域」）。</p>
     <p><b>和 fruitfly-lab 的差別。</b>① 0–40°、40–90° 這兩個角度不在論文裡，是 README 的概括。② 論文用每顆 LC10a 在小葉上的<b>位置</b>推估視野；fruitfly-lab 改用每顆 LC10a 接到 AOTU019 與 AOTU025 的<b>突觸占比</b>當偏好位置（第 4 節第 2 步），沒有用到位置，兩種做法不一樣。③ 論文推估視野時用 15° 的雙眼重疊；fruitfly-lab 的雙眼重疊區是正前方 ±6°（<code>BINO</code>），作者沒寫這個數字的出處。</p>
   </details>
-  <p>AOTU019 與 AOTU025 在這個模型裡各管什麼、為什麼下面圖 1 裡 AOTU019 到對側 DNa02 的那條虛線（抑制）在這個模型裡沒作用，要等第 4 節講完讀出規則才答得了，答案在第 4 節末尾的五點。</p>
+  <p>AOTU019 與 AOTU025 在這個模型裡各管什麼、為什麼下面圖 2 裡 AOTU019 到對側 DNa02 的那條虛線（抑制）在這個模型裡沒作用，要等第 4 節講完讀出規則才答得了，答案在第 4 節末尾的五點。</p>
 
   <figure class="fig">
     <svg viewBox="0 0 460 300" role="img" aria-label="迴路示意圖：左右 LC10a 各接到同側的 AOTU019 與 AOTU025（突觸權重約 +355 到 +438 mV）；AOTU025 興奮同側 DNa02（+46、+42）；AOTU019 抑制對側 DNa02（−59、−33）。">
@@ -134,7 +370,7 @@
         <text x="125" y="18">left (115 cells)</text><text x="335" y="18">right (119 cells)</text>
       </g>
     </svg>
-    <figcaption><b>圖 1　子圖裡的主幹。</b>藍色是左半腦、橘色是右半腦；實線箭頭是興奮，虛線加短槓是抑制。圖上 8 個方塊是 8 群神經元：LC10a 左 115 顆、右 119 顆，AOTU019、AOTU025、DNa02 左右各 1 顆（果蠅腦裡有些種類的神經元每側真的只有一顆、可以單獨認出來，有些種類是一群；這三種是每側一顆，所以後面說「損毀一對神經元」就是左右各一顆）。數字是兩群之間所有連結的權重加總（突觸數 × 正負號 × 0.275 mV），只畫加總絕對值 30 以上的連結。圖上的 8 個數字是四組連結、左右各一：LC10a→同側 AOTU019（左 +355、右 +438）、LC10a→同側 AOTU025（左 +376、右 +378）、AOTU025→同側 DNa02（左 +46、右 +42）、AOTU019→對側 DNa02（左 −59、右 −33）。例如 +355 是左側 115 顆 LC10a 連到左側 AOTU019 的合計，355 ÷ 115 ≈ 3，平均一顆 LC10a 放電一次把水龍頭開度 g 加約 3 mV。這 8 群共 240 顆，子圖其餘 3,723 顆神經元沒有畫出來：它們是同樣在 LC10a 與下行神經元之間走得到的其他神經元，和主幹互相連接，模擬時全部都在算，只是圖上略去；它們對結果有多大影響，本課沒有單獨檢查。
+    <figcaption><b>圖 2　子圖裡的主幹。</b>藍色是左半腦、橘色是右半腦；實線箭頭是興奮，虛線加短槓是抑制。圖上 8 個方塊是 8 群神經元：LC10a 左 115 顆、右 119 顆，AOTU019、AOTU025、DNa02 左右各 1 顆（果蠅腦裡有些種類的神經元每側真的只有一顆、可以單獨認出來，有些種類是一群；這三種是每側一顆，所以後面說「損毀一對神經元」就是左右各一顆）。數字是兩群之間所有連結的權重加總（突觸數 × 正負號 × 0.275 mV），只畫加總絕對值 30 以上的連結。圖上的 8 個數字是四組連結、左右各一：LC10a→同側 AOTU019（左 +355、右 +438）、LC10a→同側 AOTU025（左 +376、右 +378）、AOTU025→同側 DNa02（左 +46、右 +42）、AOTU019→對側 DNa02（左 −59、右 −33）。例如 +355 是左側 115 顆 LC10a 連到左側 AOTU019 的合計，355 ÷ 115 ≈ 3，平均一顆 LC10a 放電一次把水龍頭開度 g 加約 3 mV。這 8 群共 240 顆，子圖其餘 3,723 顆神經元沒有畫出來：它們是同樣在 LC10a 與下行神經元之間走得到的其他神經元，和主幹互相連接，模擬時全部都在算，只是圖上略去；它們對結果有多大影響，本課沒有單獨檢查。
     <span class="figsrc">權重由 <code>out/demo_data.json</code> 的 <code>circuit.edges</code> 而來（從作者的 <code>circuit/edges.bin</code> 加總）。</span></figcaption>
   </figure>
 
@@ -142,7 +378,7 @@
 
   <div class="plain"><b>白話：</b>像在一張全國地圖上，只留下「從甲城出發兩站以內到得了、而且離乙城兩站以內」的所有車站，再把這些車站之間的所有路線都畫上。留下來的是一張小地圖，但小地圖裡的每一條路都是真的。</div>
 
-  <p>切出來的 3,963 顆在腦裡分佈在哪，見圖 2。</p>
+  <p>切出來的 3,963 顆在腦裡分佈在哪，見圖 3。</p>
   <div class="figpair">
     <figure>
       <img src="assets/p1-soma-front.png" alt="前視圖：FlyWire 腦部 118,104 顆細胞體的淡灰點畫出腦的輪廓（兩側大圓是視葉）。切出來的 3,963 顆用深灰點標出，散在中央腦和視葉內側；LC10a 的 234 個藍點在視葉與中央腦交界的上側左右各一團；AOTU025（綠）、AOTU019（紫）、DNa02（紅）左右各一顆，在腦的上半部靠中線兩側。">
@@ -153,7 +389,7 @@
       <figcaption><b>B　上視</b>：從背側往下看，前側朝上，果蠅的左邊在圖的左邊。</figcaption>
     </figure>
   </div>
-  <p><b>圖 2　切出來的 3,963 顆神經元，細胞體在腦裡的位置。</b>要帶走的一件事：子圖不是一塊，而是散在中央腦（兩個視葉中間那一塊）和視葉（眼睛後面處理視覺的腦區，圖上兩側的大圓）內側的三千多顆，圖 1 只畫了其中 8 群。細胞體是神經元的本體，纖維從這裡長出去伸進腦內，和別的神經元接線都在纖維上。極淡灰是全腦的輪廓：FlyWire 標註表（FlyWire 附的一張表，每顆神經元一列，有細胞體座標、左右側、細胞種類等欄位）裡有細胞體座標的 118,104 顆，果蠅的細胞體都排在腦的表面，點一多，輪廓就自己浮出來。深灰是切出來的 3,963 顆。四種上色：LC10a 234 顆（左 115、右 119）擠在視葉與中央腦交界的上側，左右各一團；AOTU019、AOTU025、DNa02 左右各一顆，都在腦的前方。這張圖只畫細胞體，不畫神經元的形狀，所以看不出誰連到誰，連到哪裡要看圖 1。
+  <p><b>圖 3　切出來的 3,963 顆神經元，細胞體在腦裡的位置。</b>要帶走的一件事：子圖不是一塊，而是散在中央腦（兩個視葉中間那一塊）和視葉（眼睛後面處理視覺的腦區，圖上兩側的大圓）內側的三千多顆，圖 2 只畫了其中 8 群。細胞體是神經元的本體，纖維從這裡長出去伸進腦內，和別的神經元接線都在纖維上。極淡灰是全腦的輪廓：FlyWire 標註表（FlyWire 附的一張表，每顆神經元一列，有細胞體座標、左右側、細胞種類等欄位）裡有細胞體座標的 118,104 顆，果蠅的細胞體都排在腦的表面，點一多，輪廓就自己浮出來。深灰是切出來的 3,963 顆。四種上色：LC10a 234 顆（左 115、右 119）擠在視葉與中央腦交界的上側，左右各一團；AOTU019、AOTU025、DNa02 左右各一顆，都在腦的前方。這張圖只畫細胞體，不畫神經元的形狀，所以看不出誰連到誰，連到哪裡要看圖 2。
   <span class="figsrc">由 <code>scripts/make_soma_fig.py</code> 從 FlyWire 的標註表（作者 repo 裡的 <code>data/flywire_annotations_783.tsv</code>）與作者的 <code>circuit/meta.json</code> 畫出。底圖只有 118,104 點，是因為兩萬多顆神經元的細胞體在腦外、表裡沒有座標；標註表沒標哪邊是前、哪邊是上，方向是用兩群位置已知的神經元算出來的。細節在下面的附註，數字在 <code>out/soma_fig.json</code>。</span></p>
   <details class="note"><summary>附註：底圖的對帳與方向怎麼算</summary>
     <p>對帳：標註表 139,248 列，模型用的是 138,639 顆，淨差 609 ＝ 標註表多的 623 列（多半是感覺神經元，模型沒收）− 模型多的 14 顆（不在標註表裡）。139,248 列裡 21,144 列沒有細胞體座標，多半是感覺神經元（16,897 列），細胞體在腦外的觸角、口器、身體上，所以底圖只有 118,104 點。3,963 顆裡有 5 顆沒有細胞體座標，作者的 meta.json 改用標註表另一欄的代表點（神經元上的某一點），圖上照畫。</p>
@@ -171,7 +407,7 @@
     <tr><td><b>DNa02</b>（下行神經元）</td><td>2（左右各 1）</td><td>乙醯膽鹼</td><td>切子圖的終點之一。<b>被讀出</b>：轉向公式的另一項（左右差）</td></tr>
   </table>
   </div>
-  <p>這四種就是圖 1 的 8 群、240 顆。子圖其餘 3,723 顆沒有人為指定的角色：不加輸入、不讀輸出、不損毀，模擬時照算，它們做什麼完全由接線決定。</p>
+  <p>這四種就是圖 2 的 8 群、240 顆。子圖其餘 3,723 顆沒有人為指定的角色：不加輸入、不讀輸出、不損毀，模擬時照算，它們做什麼完全由接線決定。</p>
   <p class="figsrc">顆數與傳導物質由 <code>scripts/subgraph_types.py</code> 從作者的 <code>circuit/meta.json</code> 數出，數字在 <code>out/subgraph_types.json</code>；「作用」一欄出自 <code>doom/fly_doom.py</code>（刺激 LC10a、讀出公式、<code>make_policy()</code> 的損毀名單）。</p>
 
   <!-- ══════════════════════════════════════════════════════ -->
@@ -183,7 +419,7 @@
   <p>模型<b>沒有</b>看遊戲畫面的像素。ViZDoom 會直接回報畫面上每個物體的位置，程式從中換算出 LC10a 的刺激，分四步：</p>
   <ol>
     <li><b>哪一側：</b>把畫面裡<b>每一個</b>敵人各自換算成「在果蠅視野裡的方位角」（只算畫面裡看得到的敵人，畫面外的不管；遊戲的畫面標籤只列看得到的物件。已經倒下的敵人——方框寬度超過高度的 1.3 倍——和方框高不到 4 像素的也不算）（−90° 是最左、+90° 是最右）。Doom 的畫面橫向只有 90°，作者把敵人在畫面上的橫座標換算成角度之後再放大兩倍，讓畫面左緣就是 −90°、右緣就是 +90°，把 90° 的畫面攤成果蠅 180° 的視野（<code>fly_doom.py</code> 的 <code>FLY_SCALE = 2.0</code>，作者的設定）。敵人在右邊就刺激右眼的 LC10a，在左邊就刺激左眼的；正前方 ±6° 以內兩側同時受刺激（這一塊叫雙眼重疊區；±6° 是作者定的常數，<code>fly_doom.py</code> 的 <code>BINO = 6.0</code>，人為設定）。</li>
-    <li><b>哪幾顆：</b>作者給同一側的每顆 LC10a 一個「偏好位置」：這顆連到 AOTU019（負責中央視野）的突觸占比愈高，就當它偏好中央；連到 AOTU025（外圍視野）愈多，就當它偏好外圍。占比 ＝ 接到 AOTU019 的突觸數 ÷（接到 AOTU019 ＋ 接到 AOTU025 的突觸數），只算這兩種。換算規則全用 0 到 1 的數：偏好位置 ＝ 1 − 占比（0 是正前方、1 是最外圍；<code>fly_doom.py</code> 的 pref_ecc）；敵人的方位取絕對值（左右已在第 1 步分開）再除以 90°，也變成 0 到 1。接著看這兩個數差多少：差 ＝ |偏好位置 − 敵人方位|，代進一條鐘形曲線得到「接近程度」＝ e<sup>−差² ÷ (2 × 0.3²)</sup>（0.3 是作者定的調諧寬度，<code>fly_doom.py</code> 的 <code>SIGMA = 0.3</code>，人為設定）。差 0 時接近程度是 1（滿格），差 0.3 剩 61%，差 0.5 剩 25%，差 0.9 只剩約 1%。舉例：敵人在右方 45°，換成 0.5；右眼偏好位置 0.5 的 LC10a 差 0，拿滿格；偏好 0.2 或 0.8 的差 0.3，拿 61%；偏好 0（正前方）或 1（最外圍）的差 0.5，只拿 25%。下面圖 3 的第 ④ 步畫的就是這條曲線。換成角度說，就是占比 1 當作偏好 0°、占比 0 當作偏好 90°。有 49 顆 LC10a（左 25、右 24）跟同側的 AOTU019、AOTU025 一條連結都沒有，算不出占比，程式一律給它們偏好位置 0.5（正前方與最外圍的中間），這是程式的預設值，不是資料。偏好位置和敵人方位接近的那幾顆刺激最強，離得遠的幾乎不刺激。這是用接線「代替」真正的視野位置（真實果蠅每顆 LC10a 看哪一塊視野，要由複眼的光學量測決定，資料裡沒有），README 把它標為人為設定。</li>
+    <li><b>哪幾顆：</b>作者給同一側的每顆 LC10a 一個「偏好位置」：這顆連到 AOTU019（負責中央視野）的突觸占比愈高，就當它偏好中央；連到 AOTU025（外圍視野）愈多，就當它偏好外圍。占比 ＝ 接到 AOTU019 的突觸數 ÷（接到 AOTU019 ＋ 接到 AOTU025 的突觸數），只算這兩種。換算規則全用 0 到 1 的數：偏好位置 ＝ 1 − 占比（0 是正前方、1 是最外圍；<code>fly_doom.py</code> 的 pref_ecc）；敵人的方位取絕對值（左右已在第 1 步分開）再除以 90°，也變成 0 到 1。接著看這兩個數差多少：差 ＝ |偏好位置 − 敵人方位|，代進一條鐘形曲線得到「接近程度」＝ e<sup>−差² ÷ (2 × 0.3²)</sup>（0.3 是作者定的調諧寬度，<code>fly_doom.py</code> 的 <code>SIGMA = 0.3</code>，人為設定）。差 0 時接近程度是 1（滿格），差 0.3 剩 61%，差 0.5 剩 25%，差 0.9 只剩約 1%。舉例：敵人在右方 45°，換成 0.5；右眼偏好位置 0.5 的 LC10a 差 0，拿滿格；偏好 0.2 或 0.8 的差 0.3，拿 61%；偏好 0（正前方）或 1（最外圍）的差 0.5，只拿 25%。下面圖 4 的第 ④ 步畫的就是這條曲線。換成角度說，就是占比 1 當作偏好 0°、占比 0 當作偏好 90°。有 49 顆 LC10a（左 25、右 24）跟同側的 AOTU019、AOTU025 一條連結都沒有，算不出占比，程式一律給它們偏好位置 0.5（正前方與最外圍的中間），這是程式的預設值，不是資料。偏好位置和敵人方位接近的那幾顆刺激最強，離得遠的幾乎不刺激。這是用接線「代替」真正的視野位置（真實果蠅每顆 LC10a 看哪一塊視野，要由複眼的光學量測決定，資料裡沒有），README 把它標為人為設定。</li>
     <li><b>多強：</b>敵人在畫面上愈大（愈近），刺激愈強：強度 ＝ 0.35 ＋ 方框高度（像素）÷ 60，最多 1。所以再遠再小的敵人也有 0.35，方框高 39 像素以上就是滿格。強度乘上第 2 步的「接近程度」，再乘每秒 150 次，就是這顆 LC10a 這一格的平均放電率。</li>
     <li><b>隨機放電：</b>前三步替每顆 LC10a 算出這一格的<b>設定放電率</b> r（單位 Hz，也就是「每秒幾次」）。r 最大是 150：只有強度滿格、而且偏好位置剛好對準敵人的那顆才到 150，其餘的都比較低，不刺激的那一側是 0。「刺激」的做法是每 0.1 ms 替這顆 LC10a 抽一次籤，抽中的機率 ＝ r × 0.1 ms（r 是 150 時每步 1.5%），抽中就讓它放電一次。一秒有 10,000 步，所以一秒內抽中的次數<b>對時間平均</b>是 r 次，但實際每一秒抽中幾次會上下跳動，這就是「平均」的意思。精確地說，程式抽中時不是直接讓它放電，而是把它的膜電位一次加 68.75 mV（每個突觸 0.275 mV 的 250 倍，見 PART 6）；閾值只比靜止電位高 7 mV（第 2 節），所以抽中幾乎一定放電。68.75 mV 和每秒 150 次都不是量出來的生理數值：250 倍與 150 Hz 是 Shiu 等人公開程式（<code>Drosophila_brain_model</code> 的 <code>model.py</code>）的預設值，程式註解說 250 倍「足以引發放電」，論文本身沒有說明這兩個數怎麼來。論文只寫「用 Poisson 分布的輸入刺激特定神經元」，實際的刺激頻率依實驗調整（例如糖味受器 10–200 Hz、水味受器 20–260 Hz），並說模型的絕對放電率不一定準，該看的是不同條件之間的相對差異（Shiu et al. 2024, <i>Nature</i> 634:210–219，Methods）。所以在這個模型裡它們是人為設定：選 250 倍的目的只是讓「抽中一次」等於「放電一次」，刺激頻率就能直接當成放電率來讀。畫面上同時有好幾個敵人時，每個敵人各自走完前三步，落在同一顆 LC10a 上的放電率加起來，加到 150 次就不再加。所以同一個畫面，每次跑出來的 LC10a 放電時刻都不同，這就是 PART 3 第 1 節判定標準裡「模型有隨機雜訊」的來源。</li>
   </ol>
@@ -617,21 +853,21 @@ syncSliders();render();requestAnimationFrame(tick);
 })();
 </script>
 <!-- encode:end -->
-    <figcaption><b>圖 3　輸入編碼，一步一步看。</b>按「下一步」從 ① 走到 ⑥；拖「敵人位置」「敵人大小」，或按「讓敵人走動」，看每一步跟著怎麼變；勾「加第二個敵人」看兩個敵人的刺激怎麼疊加。上排左邊是遊戲畫面（怪物是示意畫的，程式只用黃色虛線方框的位置與高度），右邊是同一個敵人在果蠅視野裡的方向；下排是全部 234 顆 LC10a，每顆一點，<b>橫軸是作者用接線指定的偏好位置，不是這顆神經元真正看的方向</b>（上面第 2 步）。偏好位置剛好是 0、0.5、1 的各有二、三十顆，點擠在一起，所以往上下錯開排；0.5 那一堆大半是沒接到兩種 AOTU、拿預設值的那 49 顆。顏色愈深＝平均放電率愈高；⑥ 的黑點是那一刻放電的神經元，放慢 20 倍播放。
+    <figcaption><b>圖 4　輸入編碼，一步一步看。</b>按「下一步」從 ① 走到 ⑥；拖「敵人位置」「敵人大小」，或按「讓敵人走動」，看每一步跟著怎麼變；勾「加第二個敵人」看兩個敵人的刺激怎麼疊加。上排左邊是遊戲畫面（怪物是示意畫的，程式只用黃色虛線方框的位置與高度），右邊是同一個敵人在果蠅視野裡的方向；下排是全部 234 顆 LC10a，每顆一點，<b>橫軸是作者用接線指定的偏好位置，不是這顆神經元真正看的方向</b>（上面第 2 步）。偏好位置剛好是 0、0.5、1 的各有二、三十顆，點擠在一起，所以往上下錯開排；0.5 那一堆大半是沒接到兩種 AOTU、拿預設值的那 49 顆。顏色愈深＝平均放電率愈高；⑥ 的黑點是那一刻放電的神經元，放慢 20 倍播放。
     <span class="figsrc">算法照抄作者 <code>doom/fly_doom.py</code> 的 <code>enemies()</code> 與 <code>FlyBrain.stim_rates()</code>；常數與 234 顆的偏好位置由 <code>scripts/encode_fig_data.py</code> 從作者原始碼與 <code>circuit/meta.json</code> 抓出，在 <code>out/encode_fig.json</code>；圖由 <code>scripts/make_encode_anim.py</code> 產生（圖裡的文字要改在那裡）。</span></figcaption>
   </figure>
-  <p class="figsrc">簡報要演示的話：<a href="encode.html">圖 3 單獨頁</a>只有這張圖，版面配合 16:9 投影片，功能和上面一樣，可以用 PowerPoint 的網頁增益集嵌進投影片（要能上網），也可以下載後用瀏覽器直接開（單一檔案，不用網路）；鍵盤 ← → 換步驟、W 讓敵人走動、T 加第二個敵人、D 顯示這一步的說明。不想用瀏覽器的話，<a href="downloads/encode/flydoom-encode.zip">投影片用圖</a>有九個畫面（六步，加上兩眼都刺激、敵人遠與近、兩個敵人疊加），每個都有 PNG 與 SVG，一張投影片放一個畫面即可；壓縮檔裡也附了單獨頁。</p>
+  <p class="figsrc">簡報要演示的話：<a href="encode.html">圖 4 單獨頁</a>只有這張圖，版面配合 16:9 投影片，功能和上面一樣，可以用 PowerPoint 的網頁增益集嵌進投影片（要能上網），也可以下載後用瀏覽器直接開（單一檔案，不用網路）；鍵盤 ← → 換步驟、W 讓敵人走動、T 加第二個敵人、D 顯示這一步的說明。不想用瀏覽器的話，<a href="downloads/encode/flydoom-encode.zip">投影片用圖</a>有九個畫面（六步，加上兩眼都刺激、敵人遠與近、兩個敵人疊加），每個都有 PNG 與 SVG，一張投影片放一個畫面即可；壓縮檔裡也附了單獨頁。</p>
 
   <h3>讀出規則：神經元的放電怎麼變成按鍵</h3>
   <div class="formula">轉向訊號 ＝ (DNa02<sub>右</sub> − DNa02<sub>左</sub>) ＋ (AOTU019<sub>右</sub> − AOTU019<sub>左</sub>)</div>
-  <div class="plain"><b>白話：</b>每側各有一顆 DNa02、一顆 AOTU019（見圖 1）。把右半腦這兩顆的放電率加起來、減掉左半腦那兩顆的。結果是正的、而且超過一條門檻，就按「右轉」；負的、超過門檻，就按「左轉」。另外，<b>左右兩顆 AOTU019 的放電率都超過另一條門檻時，按「開火」</b>：每一側的 AOTU019 只收同側 LC10a 的訊號（連結體裡 LC10a 到對側 AOTU019 一條都沒有，<code>scripts/lc10a_cross.py</code> 數過），所以它只反映自己那一眼看到的東西；第 3 節說的「投射到對側」是指它把訊號送去對側的 DNa02，收和送是兩回事。因此所以只有敵人落在 ±6° 的雙眼重疊區、兩眼都受刺激時，兩側 AOTU019 才會一起亮（數字見下面「門檻怎麼定」）；「兩側都亮」就被當成「對準了」。轉向和開火各自判斷、互不排斥，同一格可以同時按轉向鍵和開火鍵。畫面上有敵人但轉向、開火都沒過門檻時，這一格什麼鍵都不按；畫面上沒有敵人、而且整個迴路也安靜時（安靜：LC10a、AOTU019、AOTU025、DNa02 左右共八群的放電率加總低於 5 Hz，作者定的門檻），固定按右轉，讓視野轉起來找敵人；沒有敵人但迴路還有活動（例如敵人剛消失）時，照公式判斷。</div>
+  <div class="plain"><b>白話：</b>每側各有一顆 DNa02、一顆 AOTU019（見圖 2）。把右半腦這兩顆的放電率加起來、減掉左半腦那兩顆的。結果是正的、而且超過一條門檻，就按「右轉」；負的、超過門檻，就按「左轉」。另外，<b>左右兩顆 AOTU019 的放電率都超過另一條門檻時，按「開火」</b>：每一側的 AOTU019 只收同側 LC10a 的訊號（連結體裡 LC10a 到對側 AOTU019 一條都沒有，<code>scripts/lc10a_cross.py</code> 數過），所以它只反映自己那一眼看到的東西；第 3 節說的「投射到對側」是指它把訊號送去對側的 DNa02，收和送是兩回事。因此所以只有敵人落在 ±6° 的雙眼重疊區、兩眼都受刺激時，兩側 AOTU019 才會一起亮（數字見下面「門檻怎麼定」）；「兩側都亮」就被當成「對準了」。轉向和開火各自判斷、互不排斥，同一格可以同時按轉向鍵和開火鍵。畫面上有敵人但轉向、開火都沒過門檻時，這一格什麼鍵都不按；畫面上沒有敵人、而且整個迴路也安靜時（安靜：LC10a、AOTU019、AOTU025、DNa02 左右共八群的放電率加總低於 5 Hz，作者定的門檻），固定按右轉，讓視野轉起來找敵人；沒有敵人但迴路還有活動（例如敵人剛消失）時，照公式判斷。</div>
   <p>為什麼公式裡有 AOTU019、沒有 AOTU025：作者在 README 寫，敵人在正前方附近時，子圖裡的 DNa02 完全不放電，只讀 DNa02 會讀不到中央視野的訊號，所以把負責中央視野的 AOTU019 左右差也加進去；AOTU025 負責外圍，而且只連到同側 DNa02，它的訊號已經反映在 DNa02 的左右差裡。這條公式是人為設定，PART 4 第 4 節會檢查它的後果。</p>
   <p><b>門檻怎麼定。</b>兩條門檻叫<b>閾值</b>。轉向訊號的大小由迴路決定，事先不知道「多大算敵人在右邊」，所以要先量一次，這一步叫<b>校準</b>。怎麼量：沒有遊戲畫面，程式直接給一個方位角，跳過第 1 步「畫面換算成方位角」那一半，從「分左右眼」往下照第 1 到 4 步做，把一個假想敵人依序放在 −90° 到 +90° 共 17 個方位（中央密、外圍疏：0、±5、±10、±20、±30、±45、±60、±75、±90°），每個方位先讓迴路跑 10 格暖機、再跑 20 格（每格 28.6 ms，共約半秒），記錄這 20 格平均的 LC10a、AOTU019、AOTU025、DNa02 放電率與轉向訊號。量出來的表叫校準表（PART 3 第 6 節）。</p>
   <p>量到什麼：敵人在 0° 時左 AOTU019 是 219.94 Hz、右 191.35 Hz，在 +10° 時左側只剩 17 Hz、右側 250.04 Hz，這就是上面白話說的「只有正前方兩側才一起亮」；轉向訊號 0° 時是 −28.59（＝ 191.35 − 219.94，因為兩側 DNa02 都是 0），+10° 時 233.27（＝ 250.04 − 16.77，17 是四捨五入），−10° 時 −238.8。這幾個數就是下面定閾值用的材料。</p>
   <p>校準裡沒查的四件事：</p>
   <ol>
     <li>+10° 時左眼沒被刺激，左側 AOTU019 仍有 17 Hz，來源沒查（主幹以外的 3,723 顆之間有交叉連結）。</li>
-    <li>0° 時兩側刺激一樣，左右 AOTU019 卻差了近 30 Hz，原因沒查。左右接線本來就不對稱（圖 1 裡 LC10a 到 AOTU019 的權重左 +355 對右 +438，LC10a 115 對 119 顆），但方向相反：接線右強左弱，放電卻左高右低，所以圖 1 這一條接線的不對稱不是解釋；主幹以外的接線有沒有不對稱，沒查。</li>
+    <li>0° 時兩側刺激一樣，左右 AOTU019 卻差了近 30 Hz，原因沒查。左右接線本來就不對稱（圖 2 裡 LC10a 到 AOTU019 的權重左 +355 對右 +438，LC10a 115 對 119 顆），但方向相反：接線右強左弱，放電卻左高右低，所以圖 2 這一條接線的不對稱不是解釋；主幹以外的接線有沒有不對稱，沒查。</li>
     <li>遊戲裡每一格的放電率是單格算的，比校準 20 格的平均抖，差距沒量。</li>
     <li>校準時刺激強度設為最大（相當於最大的敵人）；遊戲裡敵人遠、看起來小時刺激較弱，訊號可能過不了用最大刺激定出的門檻，也沒量。</li>
   </ol>
@@ -662,8 +898,8 @@ syncSliders();render();requestAnimationFrame(tick);
     <li><b>AOTU025 管外圍敵人的轉向：45° 起開始有貢獻、大約 60° 到 75° 之間成為主力。</b>主力的標準：公式裡 DNa02 那一項超過 AOTU019 那一項；60° 時還沒有（118.64 對 159.26），75° 時已經是（173.12 對 84.85）。校準表（敵人在右側，數字都是右側那顆）：DNa02 在 45° 時 31.04 Hz、60° 118.64、75° 173.12；AOTU019 從 60° 起明顯下降，45° 207.32、60° 159.26、75° 84.85、90° 4.22。校準在 30° 到 45° 之間沒有別的量點，所以不寫 README 的 40°。</li>
     <li><b>AOTU019 管兩件事。</b>敵人落在 ±6° 的雙眼重疊區時兩側 AOTU019 一起亮，公式讀到就開火；敵人在 ±30° 內偏左或偏右時，兩側 AOTU019 的左右差就是轉向訊號（DNa02 那時還是 0，見第 4 點）。</li>
     <li><b>正前方 0° 不轉。</b>正前方的敵人兩眼都看到，兩側 AOTU019 都放電，轉向訊號是 −28.59，絕對值 28.59，低於門檻 130.93（門檻比的是絕對值）；DNa02 則完全不放電。所以不轉。</li>
-    <li><b>DNa02 在正前方為什麼是 0。</b>第 3 節圖 1 的主幹裡能推 DNa02 的只有 AOTU025，而正前方的敵人刺激的是占比接近 1、幾乎只連 AOTU019 的那幾顆 LC10a（上面輸入編碼的第 2 步），AOTU025 幾乎收不到輸入（這是量到的：校準表上 0°、±5°、±10° 時兩側 AOTU025 都是 0）；主幹以外那 3,723 顆有沒有貢獻，本課沒有單獨查，只知道校準表量到的結果是 0。範圍：校準表上到 ±30° 為止 DNa02 幾乎都是 0（最高 3.77 Hz），這一段轉向靠的是公式裡 AOTU019 的左右差；45° 起 DNa02 才明顯放電（45° 時 31.04 Hz、60° 時 118.64 Hz），由 AOTU025 推。中央那條路（AOTU019）和外圍那條路（AOTU025）的交接點，指 DNa02 開始放電的位置，在 30° 到 45° 之間（第 1 點說的「60° 到 75° 成為主力」是另一個里程碑）；校準只量了這幾個方位，確切幾度本課沒量（第 3 節 README 寫的 40° 是作者的概括，論文本身沒有給這個分界，而且量到兩者視野相當重疊；輸入編碼也沒有用到角度分界，用的是「接 AOTU019 多的 LC10a 偏好中央」這個對應）；交接時沒有空窗，30° 時轉向訊號 240.78、45° 時 238.36，都超過門檻 130.93。</li>
-    <li><b>AOTU019 的抑制線量不到效果。</b>它接到敵人對側的 DNa02（圖 1 的 −59、−33），但那顆 DNa02 本來就沒在放電：敵人只在一眼時，對側的 AOTU025 沒有輸入、對側的 DNa02 本來就是 0；敵人在正前方時兩顆 DNa02 都是 0。壓一個不放電的神經元壓不出差別。在真果蠅裡，這條抑制線可能就是用來在敵人居中時壓住對側的轉向，這只是從正負號推的想法，作者沒有這樣寫，本課也沒有驗。</li>
+    <li><b>DNa02 在正前方為什麼是 0。</b>第 3 節圖 2 的主幹裡能推 DNa02 的只有 AOTU025，而正前方的敵人刺激的是占比接近 1、幾乎只連 AOTU019 的那幾顆 LC10a（上面輸入編碼的第 2 步），AOTU025 幾乎收不到輸入（這是量到的：校準表上 0°、±5°、±10° 時兩側 AOTU025 都是 0）；主幹以外那 3,723 顆有沒有貢獻，本課沒有單獨查，只知道校準表量到的結果是 0。範圍：校準表上到 ±30° 為止 DNa02 幾乎都是 0（最高 3.77 Hz），這一段轉向靠的是公式裡 AOTU019 的左右差；45° 起 DNa02 才明顯放電（45° 時 31.04 Hz、60° 時 118.64 Hz），由 AOTU025 推。中央那條路（AOTU019）和外圍那條路（AOTU025）的交接點，指 DNa02 開始放電的位置，在 30° 到 45° 之間（第 1 點說的「60° 到 75° 成為主力」是另一個里程碑）；校準只量了這幾個方位，確切幾度本課沒量（第 3 節 README 寫的 40° 是作者的概括，論文本身沒有給這個分界，而且量到兩者視野相當重疊；輸入編碼也沒有用到角度分界，用的是「接 AOTU019 多的 LC10a 偏好中央」這個對應）；交接時沒有空窗，30° 時轉向訊號 240.78、45° 時 238.36，都超過門檻 130.93。</li>
+    <li><b>AOTU019 的抑制線量不到效果。</b>它接到敵人對側的 DNa02（圖 2 的 −59、−33），但那顆 DNa02 本來就沒在放電：敵人只在一眼時，對側的 AOTU025 沒有輸入、對側的 DNa02 本來就是 0；敵人在正前方時兩顆 DNa02 都是 0。壓一個不放電的神經元壓不出差別。在真果蠅裡，這條抑制線可能就是用來在敵人居中時壓住對側的轉向，這只是從正負號推的想法，作者沒有這樣寫，本課也沒有驗。</li>
   </ul>
   <p class="figsrc">出處：校準表在 PART 3 第 6 節，校準曲線圖與「量不到」的後果在 PART 4 第 4 節；PART 5 的影片裡正前方 ±30° 內 DNa02 都是 0。</p>
 

@@ -16,7 +16,7 @@ BSC 專題課程（**重現型**，規範見 `../types/repro.md`）。對象是�
 | `part3-fruitfly.html` | PART 3　重現 fruitfly-lab（FF1–FF6）；三種判定標準的定義處 |
 | `part4-checks.html` | PART 4　作者沒做的檢查（E1–E4） |
 | `part5-demo.html` | PART 5　逐格看迴路怎麼打（互動播放） |
-| `encode.html` | PART 1 圖 3（輸入編碼）的單獨頁，給簡報嵌入或離線開；由 `scripts/make_encode_anim.py` 產生 |
+| `encode.html` | PART 1 圖 4（輸入編碼）的單獨頁，給簡報嵌入或離線開；由 `scripts/make_encode_anim.py` 產生 |
 | `part6-code.html` | PART 6　讀程式：一鍵重跑叫到的每一支程式，三層（shell → Python → lif.py）；程式區塊由 `scripts/make_code.py` 產生 |
 
 ## 目錄
@@ -30,7 +30,7 @@ BSC 專題課程（**重現型**，規範見 `../types/repro.md`）。對象是�
 | `out/` | **頁面上每個數字的出處**：實跑的 JSON 與 log，由 `scripts/collect_out.py` 從本機實跑資料夾收來；`out/code_meta.json` 是 PART 6 用的行數與常數，由 `make_code.py` 從原檔抓 |
 | `pack/` | 學員下載包的原始檔（`setup_envs.sh`、`fruitfly_lab/run_all.sh`、加做檢查的程式、`check.py`、`expected.json`） |
 | `downloads/flydoom-code.zip` | `pack/` 打包，附 `SHA256SUMS.txt`。改了 `pack/` 任何檔案都要重打包 |
-| `downloads/encode/` | PART 1 圖 3 的投影片用圖（PNG＋SVG）與 `flydoom-encode.zip`，由 `scripts/make_encode_images.py` 產生 |
+| `downloads/encode/` | PART 1 圖 4 的投影片用圖（PNG＋SVG）與 `flydoom-encode.zip`，由 `scripts/make_encode_images.py` 產生 |
 | `scripts/` | 收資料、產圖、產驗收表、錄影，四道稽核（`page_audit.py`、`content_audit.py`、`svg_audit.py`、`number_audit.py`，沿用 VFB），以及首頁說明影片的產生器（`video_slides.py` 投影片要點＋旁白稿、`make_video.py`、`video_check.py` 查旁白覆蓋、`video_verify.py` 查影音同步與辨識回填） |
 | `_notes/` | 修正紀錄。**進 repo，但由 workflow 的 `rm -rf _notes` 擋在網站之外** |
 
@@ -46,8 +46,10 @@ python3 scripts/video_check.py                    # 投影片上寫的每一點�
 ~/.venvs/asr/bin/python scripts/video_verify.py   # 影音同步 + 辨識回填（報告在 _video/verify.txt）
 python3 scripts/make_code.py                      # PART 6 的程式區塊：從 pack/ 與本機 clone 的作者 repo 照抄（改了 pack/ 要重跑）；--check 只比對
 python3 scripts/encode_fig_data.py                # 作者 fly_doom.py 常數＋LC10a 偏好位置 → out/encode_fig.json
-python3 scripts/make_encode_anim.py               # PART 1 圖 3 與 encode.html（**圖 3 的文字要改在這支程式裡**）
-python3 scripts/make_encode_images.py             # 圖 3 的投影片用圖與 downloads/encode/flydoom-encode.zip
+python3 scripts/lif_fig_data.py                   # PART 1 圖 1（漏電整合發放）的資料 → out/lif_fig.json
+python3 scripts/make_lif_anim.py                  # PART 1 圖 1（**圖的文字要改在這支**）
+python3 scripts/make_encode_anim.py               # PART 1 圖 4 與 encode.html（**圖 4 的文字要改在這支程式裡**）
+python3 scripts/make_encode_images.py             # 圖 4 的投影片用圖與 downloads/encode/flydoom-encode.zip
 python3 scripts/number_audit.py                   # 頁面數字對回 out/
 python3 scripts/page_audit.py                     # 標籤平衡、連結與錨點、中英夾雜
 ```

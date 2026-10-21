@@ -262,3 +262,7 @@ details.note p{margin:8px 0 2px}
 .enc-steps li{padding:5px 10px; border-left:3px solid transparent; color:var(--faint); cursor:pointer}
 .enc-steps li.done{color:var(--soft)}
 .enc-steps li.on{color:var(--ink); border-left-color:var(--accent); background:var(--accent-soft)}
+/* PART 1 圖 1（漏電整合發放）：手機上圖太小，圖本身可左右滑，頁面不橫向捲動 */
+.lif-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+@media (max-width:700px){.lif svg.lif-svg{min-width:680px}}
+.lif-ctl select{font:inherit}

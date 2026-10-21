@@ -1,4 +1,4 @@
-"""PART 1 第 4 節〈輸入編碼〉的圖 3：遊戲畫面 → 方位角 → 哪一眼 → 哪幾顆 LC10a → 多強 → 隨機放電，六步可逐步看、可拖。
+"""PART 1 第 4 節〈輸入編碼〉的圖 4：遊戲畫面 → 方位角 → 哪一眼 → 哪幾顆 LC10a → 多強 → 隨機放電，六步可逐步看、可拖。
 數字全部讀 out/encode_fig.json（scripts/encode_fig_data.py 從作者 fly_doom.py 抓的常數與 234 顆 LC10a 的偏好位置）；
 瀏覽器裡的算法照抄作者的 enemies() 與 stim_rates()。
 產出：part1-what.html 裡 <!-- encode:start --> … <!-- encode:end --> 之間的片段。圖的文字要改在這裡，不要直接改頁面。
@@ -290,7 +290,7 @@ STANDALONE = """<!doctype html>
 <meta name="robots" content="noindex">
 <title>輸入編碼｜果蠅玩 Doom</title>
 <style>
-/* PART 1 圖 3 的單獨頁：給簡報嵌入（PowerPoint 網頁增益集）或離線用瀏覽器全螢幕開。由 scripts/make_encode_anim.py 產生，不要手改。
+/* PART 1 圖 4 的單獨頁：給簡報嵌入（PowerPoint 網頁增益集）或離線用瀏覽器全螢幕開。由 scripts/make_encode_anim.py 產生，不要手改。
    單一檔案、不依賴其他檔，file:// 也能用。版面照視窗大小縮放，16:9 剛好填滿。
    網址參數：s=1–6 第幾步；cx=0–320 敵人位置；h=4–70 敵人大小；two=1 加第二個敵人；walk=1 敵人走動；d=1 顯示說明；clean=1 只留圖 */
 :root{--ink:#1b2733;--soft:#5a6b7b;--faint:#8b98a5;--border:#e4e8ee;--panel:#f7f8fa;--accent:#2563eb;--accent-soft:#eef3fe;--fs:clamp(11px,1.05vw,24px)}
@@ -368,4 +368,4 @@ page = open(PAGE, encoding="utf-8").read()
 new = re.sub(r"(<!-- encode:start -->\n).*?(<!-- encode:end -->)", lambda m: m.group(1) + frag + "\n" + m.group(2), page, flags=re.S)
 assert new != page or frag in page, "找不到 <!-- encode:start --> 標記"
 open(PAGE, "w", encoding="utf-8").write(new)
-print("圖 3 已寫入 part1-what.html")
+print("圖 4 已寫入 part1-what.html")

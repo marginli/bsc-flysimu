@@ -1,4 +1,4 @@
-"""PART 1 圖 3（輸入編碼）的投影片用圖與離線包。
+"""PART 1 圖 4（輸入編碼）的投影片用圖與離線包。
 用無頭 Chrome 開單獨頁 encode.html?s=…&cx=…&h=…&clean=1，逐一存下每個畫面：
   downloads/encode/p1enc-*.png   高解析點陣圖（寬 3,200 像素），直接插進 PowerPoint
   downloads/encode/p1enc-*.svg   向量圖（PowerPoint 365 可插入、放大不糊）
@@ -49,11 +49,11 @@ with sync_playwright() as p:
     b.close()
 assert not errs, errs
 
-readme = ("果蠅玩 Doom：輸入編碼（PART 1 圖 3）投影片用圖\n\n"
+readme = ("果蠅玩 Doom：輸入編碼（PART 1 圖 4）投影片用圖\n\n"
           f"{len(STATES)} 個畫面，每個都有 PNG（點陣，寬 3,200 像素）與 SVG（向量）兩種，挑一種插進 PowerPoint 即可：\n"
           + "".join(f"  p1enc-{tag}　{zh}\n" for _, tag, zh in STATES)
           + "\n例子是敵人在畫面中心 232 像素（方位角 +40.5°）、方框高 26 像素；第二個敵人固定在 70 像素、高 14 像素。"
-          "每一步的說明在 PART 1 第 4 節圖 3。\n\n"
+          "每一步的說明在 PART 1 第 4 節圖 4。\n\n"
           "要現場操作：用瀏覽器打開 encode.html（單一檔案、不需網路）。\n"
           "  ← → 或 PageUp／PageDown：上一步、下一步；1–6：跳到第幾步；Home／End：第一步／最後一步；\n"
           "  W：讓敵人走動／停住；T：加／拿掉第二個敵人；D：顯示／隱藏這一步的說明；F：全螢幕。\n"
