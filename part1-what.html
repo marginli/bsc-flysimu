@@ -504,7 +504,7 @@ const D={"C":{"HALF_FOV_DOOM":45.0,"FLY_SCALE":2.0,"BINO":6.0,"MAX_RATE":150.0,"
 const box=document.getElementById('p1enc');if(!box)return;
 const dots=[...$('#encDots').children],side=dots.map((_,i)=>i<D.pref.L.length?'L':'R'),pref=[...D.pref.L,...D.pref.R];
 const flash=new Float32Array(dots.length);
-let step=1,cx=232,h=26,two=false,walk=false,t0=null,acc=0,last=0,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let rnd=Math.random,step=1,cx=232,h=26,two=false,walk=false,t0=null,acc=0,last=0,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 // 照抄作者 enemies()：方位角與強度
 const az=c=>Math.max(-90,Math.min(90,(c-C.screen_center)/C.screen_center*C.HALF_FOV_DOOM*C.FLY_SCALE));
 const strength=hh=>Math.min(1,C.strength_base+hh/C.strength_div);
@@ -590,7 +590,7 @@ function tick(now){
   if(walk&&!reduce){const t=(now-t0)/1000;cx=Math.round(160+148*Math.sin(t*0.45));h=Math.round(22+18*Math.sin(t*0.27+1));syncSliders();render()}
   if(step>=6){acc+=dt;
     while(acc>=D.frameMs){acc-=D.frameMs;
-      for(let i=0;i<dots.length;i++){flash[i]=Math.max(0,flash[i]-0.5);const pr=1-Math.exp(-R[i]*D.slowMs/1000);if(Math.random()<pr)flash[i]=1}}
+      for(let i=0;i<dots.length;i++){flash[i]=Math.max(0,flash[i]-0.5);const pr=1-Math.exp(-R[i]*D.slowMs/1000);if(rnd()<pr)flash[i]=1}}
     paintDots()}
   requestAnimationFrame(tick);
 }
@@ -602,6 +602,11 @@ box.querySelector('.enc-h').oninput=e=>{h=+e.target.value;walk=false;wb.textCont
 const wb=box.querySelector('.enc-walk');wb.onclick=()=>{walk=!walk;wb.textContent=walk?'⏸ 停住':'▶ 讓敵人走動'};
 box.querySelector('.enc-two').onchange=e=>{two=e.target.checked;render()};
 for(const li of box.querySelectorAll('.enc-steps li'))li.onclick=()=>{step=+li.dataset.k;render()};
+// 給單獨頁（encode.html）與產生投影片用圖的程式設定狀態
+box.enc={get step(){return step},set(o){if(o.step)step=Math.max(1,Math.min(6,o.step));if(o.cx!=null)cx=o.cx;if(o.h!=null)h=o.h;
+  if(o.two!=null){two=!!o.two;box.querySelector('.enc-two').checked=two}if(o.walk!=null){walk=!!o.walk;wb.textContent=walk?'⏸ 停住':'▶ 讓敵人走動'}
+  if(o.seed!=null){let a=o.seed>>>0;rnd=()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+  syncSliders();render()}};
 syncSliders();render();requestAnimationFrame(tick);
 })();
 </script>
@@ -609,6 +614,7 @@ syncSliders();render();requestAnimationFrame(tick);
     <figcaption><b>圖 3　輸入編碼，一步一步看。</b>按「下一步」從 ① 走到 ⑥；拖「敵人位置」「敵人大小」，或按「讓敵人走動」，看每一步跟著怎麼變；勾「加第二個敵人」看兩個敵人的刺激怎麼疊加。上排左邊是遊戲畫面（怪物是示意畫的，程式只用黃色虛線方框的位置與高度），右邊是同一個敵人在果蠅視野裡的方向；下排是全部 234 顆 LC10a，每顆一點，<b>橫軸是作者用接線指定的偏好位置，不是這顆神經元真正看的方向</b>（上面第 2 步）。偏好位置剛好是 0、0.5、1 的各有二、三十顆，點擠在一起，所以往上下錯開排；0.5 那一堆大半是沒接到兩種 AOTU、拿預設值的那 49 顆。顏色愈深＝平均放電率愈高；⑥ 的黑點是那一刻放電的神經元，放慢 20 倍播放。
     <span class="figsrc">算法照抄作者 <code>doom/fly_doom.py</code> 的 <code>enemies()</code> 與 <code>FlyBrain.stim_rates()</code>；常數與 234 顆的偏好位置由 <code>scripts/encode_fig_data.py</code> 從作者原始碼與 <code>circuit/meta.json</code> 抓出，在 <code>out/encode_fig.json</code>；圖由 <code>scripts/make_encode_anim.py</code> 產生（圖裡的文字要改在那裡）。</span></figcaption>
   </figure>
+  <p class="figsrc">簡報要演示的話：<a href="encode.html">圖 3 單獨頁</a>只有這張圖，版面配合 16:9 投影片，功能和上面一樣，可以用 PowerPoint 的網頁增益集嵌進投影片（要能上網），也可以下載後用瀏覽器直接開（單一檔案，不用網路）；鍵盤 ← → 換步驟、W 讓敵人走動、T 加第二個敵人、D 顯示這一步的說明。不想用瀏覽器的話，<a href="downloads/encode/flydoom-encode.zip">投影片用圖</a>有九個畫面（六步，加上兩眼都刺激、敵人遠與近、兩個敵人疊加），每個都有 PNG 與 SVG，一張投影片放一個畫面即可；壓縮檔裡也附了單獨頁。</p>
 
   <h3>讀出規則：神經元的放電怎麼變成按鍵</h3>
   <div class="formula">轉向訊號 ＝ (DNa02<sub>右</sub> − DNa02<sub>左</sub>) ＋ (AOTU019<sub>右</sub> − AOTU019<sub>左</sub>)</div>

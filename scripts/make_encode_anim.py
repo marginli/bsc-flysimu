@@ -158,7 +158,7 @@ const D=__DATA__,C=D.C,G=D.geo,$=s=>document.querySelector('#p1enc '+s),NS="http
 const box=document.getElementById('p1enc');if(!box)return;
 const dots=[...$('#encDots').children],side=dots.map((_,i)=>i<D.pref.L.length?'L':'R'),pref=[...D.pref.L,...D.pref.R];
 const flash=new Float32Array(dots.length);
-let step=1,cx=232,h=26,two=false,walk=false,t0=null,acc=0,last=0,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let rnd=Math.random,step=1,cx=232,h=26,two=false,walk=false,t0=null,acc=0,last=0,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 // 照抄作者 enemies()：方位角與強度
 const az=c=>Math.max(-90,Math.min(90,(c-C.screen_center)/C.screen_center*C.HALF_FOV_DOOM*C.FLY_SCALE));
 const strength=hh=>Math.min(1,C.strength_base+hh/C.strength_div);
@@ -244,7 +244,7 @@ function tick(now){
   if(walk&&!reduce){const t=(now-t0)/1000;cx=Math.round(160+148*Math.sin(t*0.45));h=Math.round(22+18*Math.sin(t*0.27+1));syncSliders();render()}
   if(step>=6){acc+=dt;
     while(acc>=D.frameMs){acc-=D.frameMs;
-      for(let i=0;i<dots.length;i++){flash[i]=Math.max(0,flash[i]-0.5);const pr=1-Math.exp(-R[i]*D.slowMs/1000);if(Math.random()<pr)flash[i]=1}}
+      for(let i=0;i<dots.length;i++){flash[i]=Math.max(0,flash[i]-0.5);const pr=1-Math.exp(-R[i]*D.slowMs/1000);if(rnd()<pr)flash[i]=1}}
     paintDots()}
   requestAnimationFrame(tick);
 }
@@ -256,6 +256,11 @@ box.querySelector('.enc-h').oninput=e=>{h=+e.target.value;walk=false;wb.textCont
 const wb=box.querySelector('.enc-walk');wb.onclick=()=>{walk=!walk;wb.textContent=walk?'⏸ 停住':'▶ 讓敵人走動'};
 box.querySelector('.enc-two').onchange=e=>{two=e.target.checked;render()};
 for(const li of box.querySelectorAll('.enc-steps li'))li.onclick=()=>{step=+li.dataset.k;render()};
+// 給單獨頁（encode.html）與產生投影片用圖的程式設定狀態
+box.enc={get step(){return step},set(o){if(o.step)step=Math.max(1,Math.min(6,o.step));if(o.cx!=null)cx=o.cx;if(o.h!=null)h=o.h;
+  if(o.two!=null){two=!!o.two;box.querySelector('.enc-two').checked=two}if(o.walk!=null){walk=!!o.walk;wb.textContent=walk?'⏸ 停住':'▶ 讓敵人走動'}
+  if(o.seed!=null){let a=o.seed>>>0;rnd=()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+  syncSliders();render()}};
 syncSliders();render();requestAnimationFrame(tick);
 })();
 </script>"""
@@ -276,6 +281,88 @@ ctl = f'''<div class="enc" id="p1enc">
   </ol>
 </div>'''
 frag = ctl + "\n" + SCRIPT.replace("__DATA__", json.dumps(data, ensure_ascii=False, separators=(",", ":")))
+
+STANDALONE = """<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>輸入編碼｜果蠅玩 Doom</title>
+<style>
+/* PART 1 圖 3 的單獨頁：給簡報嵌入（PowerPoint 網頁增益集）或離線用瀏覽器全螢幕開。由 scripts/make_encode_anim.py 產生，不要手改。
+   單一檔案、不依賴其他檔，file:// 也能用。版面照視窗大小縮放，16:9 剛好填滿。
+   網址參數：s=1–6 第幾步；cx=0–320 敵人位置；h=4–70 敵人大小；two=1 加第二個敵人；walk=1 敵人走動；d=1 顯示說明；clean=1 只留圖 */
+:root{--ink:#1b2733;--soft:#5a6b7b;--faint:#8b98a5;--border:#e4e8ee;--panel:#f7f8fa;--accent:#2563eb;--accent-soft:#eef3fe;--fs:clamp(11px,1.05vw,24px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#fff;color:var(--ink);font-size:var(--fs);line-height:1.6;overflow:hidden;
+  font-family:-apple-system,"Segoe UI","Noto Sans TC","Microsoft JhengHei","PingFang TC",Roboto,Helvetica,Arial,sans-serif;
+  display:flex;flex-direction:column;gap:.4em;padding:.6em 1em}
+#p1enc{display:contents}
+.enc-ctl{order:0;display:flex;flex-wrap:wrap;align-items:center;gap:.4em .9em;color:var(--soft)}
+.name{font-weight:700;color:var(--ink);margin-right:.3em}
+.enc-ctl button{font:inherit;font-size:.95em;padding:.2em .8em;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
+.enc-ctl button:disabled{opacity:.4;cursor:default}
+.enc-ctl button:hover:not(:disabled){border-color:var(--accent)}
+.enc-ctl button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.enc-ctl button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.enc-ctl label{display:inline-flex;align-items:center;gap:.4em}
+.enc-ctl input[type=range]{width:8em}
+.right{margin-left:auto;display:flex;gap:.4em}
+.enc-svg{order:1;flex:1 1 0;min-height:0;width:100%;display:block;font-size:16px}
+.enc-svg g{transition:opacity .3s}
+.enc-read{order:2;margin:0;font-family:Menlo,Consolas,monospace;font-size:.9em;color:var(--ink);background:var(--panel);border-radius:8px;padding:.2em .7em}
+.enc-steps{order:3;display:none;margin:0;padding:0;list-style:none;font-size:.95em;max-height:24vh;overflow:auto}
+body.showdesc .enc-steps,body.showdesc .figsrc{display:block}
+.figsrc{order:4;display:none;margin:0;font-size:.8em;color:var(--faint)}
+.enc-steps li{display:none;padding:.2em .7em;border-left:3px solid var(--accent);background:var(--accent-soft)}
+.enc-steps li.on{display:block}
+body.clean{padding:0}
+body.clean .enc-ctl,body.clean .enc-read,body.clean .enc-steps,body.clean .figsrc{display:none!important}
+</style>
+</head>
+<body>
+%FRAG%
+<p class="figsrc">算法照抄 fruitfly-lab 的 doom/fly_doom.py（enemies()、FlyBrain.stim_rates()）；常數與 234 顆 LC10a 的偏好位置在 out/encode_fig.json。說明全文：https://marginli.github.io/bsc-flysimu/part1-what.html#s4</p>
+<script>
+(function(){
+  var box=document.getElementById("p1enc"),q=new URLSearchParams(location.search),ctl=box.querySelector(".enc-ctl");
+  ctl.insertAdjacentHTML("afterbegin",'<span class="name">輸入編碼：遊戲畫面怎麼變成 LC10a 的輸入</span>');
+  ctl.insertAdjacentHTML("beforeend",'<span class="right"><button type="button" id="encDesc" aria-pressed="false">說明</button><button type="button" id="encFull">全螢幕</button></span>');
+  if(q.get("clean")==="1")document.body.classList.add("clean");
+  if(q.get("d")==="1")document.body.classList.add("showdesc");
+  var o={};
+  if(q.get("s"))o.step=+q.get("s");if(q.get("cx"))o.cx=+q.get("cx");if(q.get("h"))o.h=+q.get("h");
+  if(q.get("two"))o.two=q.get("two")==="1";if(q.get("walk"))o.walk=q.get("walk")==="1";if(q.get("seed"))o.seed=+q.get("seed");
+  box.enc.set(o);
+  var dBtn=document.getElementById("encDesc"),fs=document.getElementById("encFull"),de=document.documentElement;
+  dBtn.onclick=function(){dBtn.setAttribute("aria-pressed",document.body.classList.toggle("showdesc"))};
+  dBtn.setAttribute("aria-pressed",document.body.classList.contains("showdesc"));
+  if(!(document.fullscreenEnabled||document.webkitFullscreenEnabled))fs.style.display="none";
+  fs.onclick=function(){if(document.fullscreenElement||document.webkitFullscreenElement)(document.exitFullscreen||document.webkitExitFullscreen).call(document);else(de.requestFullscreen||de.webkitRequestFullscreen).call(de)};
+  var next=box.querySelector(".enc-next"),prev=box.querySelector(".enc-prev");
+  document.addEventListener("keydown",function(e){
+    if(e.altKey||e.ctrlKey||e.metaKey)return;
+    if(e.target.tagName==="INPUT"&&e.target.type==="range"&&(e.key==="ArrowLeft"||e.key==="ArrowRight"))return;
+    var k=e.key;
+    if(k==="ArrowRight"||k==="PageDown"||k===" "){e.preventDefault();if(!next.disabled)next.click()}
+    else if(k==="ArrowLeft"||k==="PageUp"){e.preventDefault();if(!prev.disabled)prev.click()}
+    else if(k==="Home"){e.preventDefault();box.enc.set({step:1})}
+    else if(k==="End"){e.preventDefault();box.enc.set({step:6})}
+    else if("123456".indexOf(k)>=0&&k.length===1)box.enc.set({step:+k});
+    else if(k==="w"||k==="W")box.querySelector(".enc-walk").click();
+    else if(k==="t"||k==="T"){var c=box.querySelector(".enc-two");c.checked=!c.checked;c.dispatchEvent(new Event("change"))}
+    else if(k==="d"||k==="D")dBtn.click();
+    else if(k==="f"||k==="F")fs.click();
+  });
+})();
+</script>
+</body>
+</html>
+"""
+open(os.path.join(D, "encode.html"), "w", encoding="utf-8").write(STANDALONE.replace("%FRAG%", frag))
+print("單獨頁 encode.html 已寫入")
 
 page = open(PAGE, encoding="utf-8").read()
 new = re.sub(r"(<!-- encode:start -->\n).*?(<!-- encode:end -->)", lambda m: m.group(1) + frag + "\n" + m.group(2), page, flags=re.S)
