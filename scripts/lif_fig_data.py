@@ -137,6 +137,13 @@ kick = {}
 for r in [10, 50, 100, 150]:
     _, _, s = run(int(SEC * 1000 / DT_MS), rate_hz=r, seed=2)
     kick[r] = round(len(s) / SEC, 1)
+# 外部刺激的放電有多少落在前一次放電後 2.2 ms 內（不反應期裡抽中照樣放電）
+in_rfc = {}
+for r in [100, 150]:
+    _, _, s_ = run(int(SEC * 1000 / DT_MS), rate_hz=r, seed=2)
+    d_ = np.diff(s_)
+    in_rfc[r] = round(float(np.mean(d_ <= RFC)) * 100, 1)
+out["kick_in_rfc_pct"] = in_rfc
 out["kick"] = {"kick_mv": P["poisson_kick_mv"], "seconds": SEC, "rate_to_out_hz": kick, "p_per_step_at_150": 150 * DT_MS / 1000,
                "max_rate_hz": round(1000 / P["t_rfc_ms"], 1)}
 

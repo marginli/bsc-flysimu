@@ -30,7 +30,7 @@
 <text x="228" y="144" font-size="11" fill="#8b98a5">−40</text>
 <text x="228" y="474" font-size="11" fill="#8b98a5">−60 mV</text>
 <text class="lif-vtxt" x="66" y="462" font-size="12" font-weight="600" fill="#1b2733">水位 V = −51.85 mV</text>
-<g class="lif-drips"><circle cx="140" cy="490.1558114223903" r="2.0600416057390816" fill="#7cb6f0" opacity="0.12495334684545865"></circle><circle cx="140" cy="498.8224780890569" r="2.0600416057390816" fill="#7cb6f0" opacity="0.01494641255561173"></circle><circle cx="140" cy="481.4891447557236" r="2.0600416057390816" fill="#7cb6f0" opacity="0.23496028113530557"></circle></g>
+<g class="lif-drips"><circle cx="140" cy="490.41616356406627" r="2.0600416057390816" fill="#7cb6f0" opacity="0.12164866904450818"></circle><circle cx="140" cy="499.08283023073295" r="2.0600416057390816" fill="#7cb6f0" opacity="0.011641734754661225"></circle><circle cx="140" cy="481.7494968973996" r="2.0600416057390816" fill="#7cb6f0" opacity="0.23165560333435514"></circle></g>
 <text x="140.0" y="516" font-size="11" text-anchor="middle" fill="#5a6b7b">桶底的洞（漏電）：水位往 V<tspan font-size="8" dy="3">rest</tspan><tspan dy="-3"> 拉</tspan></text>
 
 

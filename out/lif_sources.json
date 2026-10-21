@@ -1,15 +1,58 @@
 {
  "_note": "PART 1 第 2 節附註「g 為什麼按 dg/dt = −g/τ 衰減、5 ms 從哪來」的查證紀錄（2026-10-21 讀原文：Shiu 2024 PMC11446845 Methods；作者 repo 的 Drosophila_brain_model/model.py 91bdd1e 註解；Kakaria & de Bivort 2017 PMC5306390 Methods；Jürgensen et al. 2021 IOP 開放全文 PDF 表 1）",
- "shiu2024": {"tau_ms": 5, "methods_text": "τ = 5 ms (synapse decay timescale 61)", "ref61": "Jürgensen et al. 2021", "ref18_for": ["v_0", "v_rst", "v_th", "t_mbr"],
-              "model_py_comment_eqs": "alpha synapse https://doi.org/10.1017/CBO9780511815706", "same_tau_exc_inh": true, "current_based_g_in_mV": true},
- "jurgensen2021": {"citation": "Jürgensen A-M, Khalili A, Chicca E, Indiveri G, Nawrot MP. A neuromorphic model of olfactory processing and sparse coding in the Drosophila larva brain. Neuromorph. Comput. Eng. 1, 024008 (2021). doi:10.1088/2634-4386/ac3ba6",
-                   "system": "果蠅幼蟲嗅覺迴路（ORN、PN、LN、KC、APL）", "synapse_model": "conductance-based（EE 0 mV、EI −75 mV）",
-                   "tau_e_ms": 5, "tau_i_ms": 10, "table1_cites_source_for_tau": false, "refractory_ms": 2},
- "kakaria2017": {"citation": "Kakaria KS, de Bivort BL. Ring attractor dynamics emerge from a spiking model of the entire protocerebral bridge. Front. Behav. Neurosci. 11, 8 (2017). doi:10.3389/fnbeh.2017.00008",
-                 "v0_mv": -52, "v0_refs": ["Rohrbough & Broadie 2002", "Sheeba et al. 2008"], "vth_mv": -45, "vth_refs": ["Sheeba et al. 2008", "Gouwens & Wilson 2009"],
-                 "cm_uF": 0.002, "rm_Mohm": 10, "cm_rm_refs": ["Gouwens & Wilson 2009"], "tau_m_ms": 20,
-                 "generic": "parameter values that correspond to a generic spiking neuron ... consistent with various Drosophila measurements",
-                 "psc_rise_ms": 2, "psc_decay_half_life_ms": 5, "psc_refs": ["Gaudry et al. 2013"], "psc_tau_equiv_ms": 7.2,
-                 "psc_amplitude_nA": 5, "exc_inh_same_magnitude": true},
- "gaudry2013_read": false
+ "shiu2024": {
+  "tau_ms": 5,
+  "methods_text": "τ = 5 ms (synapse decay timescale 61)",
+  "ref61": "Jürgensen et al. 2021",
+  "ref18_for": [
+   "v_0",
+   "v_rst",
+   "v_th",
+   "t_mbr"
+  ],
+  "model_py_comment_eqs": "alpha synapse https://doi.org/10.1017/CBO9780511815706",
+  "same_tau_exc_inh": true,
+  "current_based_g_in_mV": true,
+  "poisson_targets_rfc_ms": 0,
+  "poisson_targets_comment": "neu[i].rfc = 0 * ms # no refractory period for Poisson targets（model.py 第 92、103 行）"
+ },
+ "jurgensen2021": {
+  "citation": "Jürgensen A-M, Khalili A, Chicca E, Indiveri G, Nawrot MP. A neuromorphic model of olfactory processing and sparse coding in the Drosophila larva brain. Neuromorph. Comput. Eng. 1, 024008 (2021). doi:10.1088/2634-4386/ac3ba6",
+  "system": "果蠅幼蟲嗅覺迴路（ORN、PN、LN、KC、APL）",
+  "synapse_model": "conductance-based（EE 0 mV、EI −75 mV）",
+  "tau_e_ms": 5,
+  "tau_i_ms": 10,
+  "table1_cites_source_for_tau": false,
+  "refractory_ms": 2
+ },
+ "kakaria2017": {
+  "citation": "Kakaria KS, de Bivort BL. Ring attractor dynamics emerge from a spiking model of the entire protocerebral bridge. Front. Behav. Neurosci. 11, 8 (2017). doi:10.3389/fnbeh.2017.00008",
+  "v0_mv": -52,
+  "v0_refs": [
+   "Rohrbough & Broadie 2002",
+   "Sheeba et al. 2008"
+  ],
+  "vth_mv": -45,
+  "vth_refs": [
+   "Sheeba et al. 2008",
+   "Gouwens & Wilson 2009"
+  ],
+  "cm_uF": 0.002,
+  "rm_Mohm": 10,
+  "cm_rm_refs": [
+   "Gouwens & Wilson 2009"
+  ],
+  "tau_m_ms": 20,
+  "generic": "parameter values that correspond to a generic spiking neuron ... consistent with various Drosophila measurements",
+  "psc_rise_ms": 2,
+  "psc_decay_half_life_ms": 5,
+  "psc_refs": [
+   "Gaudry et al. 2013"
+  ],
+  "psc_tau_equiv_ms": 7.2,
+  "psc_amplitude_nA": 5,
+  "exc_inh_same_magnitude": true
+ },
+ "gaudry2013_read": false,
+ "lif_py_kick_in_refractory": "v += kick 不看 rfc；接著 if v > vth 也不看 rfc，所以不反應期裡抽中照樣放電；積分照樣暫停 2.2 ms"
 }

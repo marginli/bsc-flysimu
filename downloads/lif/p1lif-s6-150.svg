@@ -30,7 +30,7 @@
 <text x="228" y="144" font-size="11" fill="#8b98a5">−40</text>
 <text x="228" y="474" font-size="11" fill="#8b98a5">−60 mV</text>
 <text class="lif-vtxt" x="66" y="462" font-size="12" font-weight="600" fill="#1b2733">水位 V = −48.74 mV</text>
-<g class="lif-drips"><circle cx="140" cy="475.3187740019414" r="3.3043871440869905" fill="#7cb6f0" opacity="0.9038963363655456"></circle><circle cx="140" cy="483.9854406686081" r="3.3043871440869905" fill="#7cb6f0" opacity="0.5864984790177137"></circle><circle cx="140" cy="492.65210733527476" r="3.3043871440869905" fill="#7cb6f0" opacity="0.2691006216698822"></circle></g>
+<g class="lif-drips"><circle cx="140" cy="476.2701912552756" r="3.3043871440869905" fill="#7cb6f0" opacity="0.8690527443287731"></circle><circle cx="140" cy="484.93685792194225" r="3.3043871440869905" fill="#7cb6f0" opacity="0.5516548869809412"></circle><circle cx="140" cy="493.60352458860893" r="3.3043871440869905" fill="#7cb6f0" opacity="0.23425702963310976"></circle></g>
 <text x="140.0" y="516" font-size="11" text-anchor="middle" fill="#5a6b7b">桶底的洞（漏電）：水位往 V<tspan font-size="8" dy="3">rest</tspan><tspan dy="-3"> 拉</tspan></text>
 
 <g class="lif-fire" opacity="1"><text x="140.0" y="130" font-size="18" font-weight="800" text-anchor="middle" fill="#ea580c">放電！</text>

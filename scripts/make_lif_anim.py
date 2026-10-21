@@ -90,14 +90,18 @@ STEPS = [
         f"抽中就把水位直接加 {n(kk['kick_mv'])} mV（不經過 g，所以 g 一直是 0），一定過刻度、馬上放電；V 的圖上紫色小箭頭是抽中的時刻。所以輸出的放電率幾乎就等於設定的 r。"
         f"照作者程式各跑 {kk['seconds']} 秒："
         + "、".join(f"r ＝ {r} → {n(v, 1)} Hz" for r, v in kk["rate_to_out_hz"].items())
-        + "。注意：程式檢查「過刻度」時不看是不是在不反應期，所以抽中時就算正在不反應期裡，也會馬上再放電一次；"
-          "不反應期擋得住的只有經過 g 的輸入（第 ④ 步）。"), notes=[]),
+        + f"。<b>這一步的放電可以落在前一次放電後 {P['t_rfc_ms']} ms 內</b>（右邊灰底裡又出現一根橘線，旁邊標「不反應期裡」）："
+          f"不反應期只擋得住經過 g 的輸入（第 ④ 步），擋不住外部刺激。這是原本的設計：Shiu 等人的程式把受外部刺激的神經元"
+          f"不反應期設為 0（<code>model.py</code> 的註解：no refractory period for Poisson targets）；fruitfly-lab 的 <code>lif.py</code> "
+          f"寫法不同（放電後照樣暫停 {P['t_rfc_ms']} ms 不積分，但抽中時檢查「過刻度」不看不反應期），結果一樣是抽中就放電。"
+          f"r ＝ 100 時約 {n(L['kick_in_rfc_pct']['100'], 1)}%、r ＝ 150 時約 {n(L['kick_in_rfc_pct']['150'], 1)}% 的放電落在前一次之後 {P['t_rfc_ms']} ms 內。"
+          f"參數表「不反應期」那一列說的「這段時間內不會再放電」，只適用於收上游輸入的神經元。"), notes=[]),
 ]
 
 data = dict(v0=P["v0"], vrst=P["v_rst"], vth=P["v_th"], av=P["a_v"], dg=P["decay_g"], rfc=P["rfc_steps"], dly=P["dly_steps"],
             kick=P["poisson_kick_mv"], w=W,
             steps=[dict(k=s["k"], g=s["g"], speed=s["speed"], notes=s["notes"],
-                        win=S[str(s["k"])]["window_ms"] if str(s["k"]) in S else 200,
+                        win=S[str(s["k"])]["window_ms"] if str(s["k"]) in S else (80 if s["k"] == 7 else 200),
                         vinit=S.get(str(s["k"]), {}).get("v_init"),
                         sends=S.get(str(s["k"]), {}).get("sends", []),
                         expect=S.get(str(s["k"]), {}).get("spike_ms")) for s in STEPS])
@@ -257,6 +261,11 @@ function draw(now){
     sp+=`<line x1="${x}" x2="${x}" y1="${ty(DATA.vth)}" y2="${V0Y}" stroke="${ORANGE}" stroke-width="2"/><circle cx="${x}" cy="${V0Y}" r="3" fill="${ORANGE}"/>`;
     ou+=`<line x1="${x}" x2="${x}" y1="${OUT0+2}" y2="${OUT1}" stroke="${ORANGE}" stroke-width="2"/>`}
   for(const s of kicks){if(s<va)continue;const x=X(s);sp+=`<path d="M${x-3} ${V0Y+12} L${x} ${V0Y+4} L${x+3} ${V0Y+12}" fill="none" stroke="${PURPLE}" stroke-width="1.5"/>`}
+  // 外部刺激在不反應期裡抽中、照樣放電：標出來（只標畫面上最新的一次，免得擠）
+  let lastIn=-1;for(let j=1;j<spikes.length;j++){if(spikes[j]-spikes[j-1]<=DATA.rfc&&spikes[j]>=va)lastIn=j}
+  for(let j=1;j<spikes.length;j++){if(spikes[j]-spikes[j-1]>DATA.rfc||spikes[j]<va)continue;const x=X(spikes[j]);
+    sp+=`<circle cx="${x}" cy="${V0Y}" r="6" fill="none" stroke="${PURPLE}" stroke-width="2"/>`;
+    if(j===lastIn)sp+=`<text x="${x+(x>TX1-150?-10:10)}" y="${V0Y+28}" font-size="12" font-weight="600" text-anchor="${x>TX1-150?'end':'start'}" fill="${PURPLE}" paint-order="stroke" stroke="#fff" stroke-width="4">不反應期裡抽中，照樣放電</text>`}
   Q('.lif-shade').innerHTML=sh;Q('.lif-spk').innerHTML=sp;Q('.lif-out').innerHTML=ou;
   // 註記
   let no='';
