@@ -1,0 +1,125 @@
+{
+ "n_neurons": 3963,
+ "types": {
+  "LC10a": {
+   "n": 234,
+   "side": {
+    "left": 115,
+    "right": 119
+   },
+   "nt": {
+    "acetylcholine": 232,
+    "glutamate": 2
+   }
+  },
+  "AOTU019": {
+   "n": 2,
+   "side": {
+    "left": 1,
+    "right": 1
+   },
+   "nt": {
+    "gaba": 2
+   }
+  },
+  "AOTU025": {
+   "n": 2,
+   "side": {
+    "left": 1,
+    "right": 1
+   },
+   "nt": {
+    "acetylcholine": 2
+   }
+  },
+  "DNa02": {
+   "n": 2,
+   "side": {
+    "left": 1,
+    "right": 1
+   },
+   "nt": {
+    "acetylcholine": 2
+   }
+  },
+  "DNa01": {
+   "n": 2,
+   "side": {
+    "left": 1,
+    "right": 1
+   },
+   "nt": {
+    "acetylcholine": 2
+   }
+  },
+  "DNa03": {
+   "n": 2,
+   "side": {
+    "left": 1,
+    "right": 1
+   },
+   "nt": {
+    "acetylcholine": 2
+   }
+  },
+  "DNa04": {
+   "n": 2,
+   "side": {
+    "left": 1,
+    "right": 1
+   },
+   "nt": {
+    "acetylcholine": 2
+   }
+  },
+  "DNa11": {
+   "n": 2,
+   "side": {
+    "left": 1,
+    "right": 1
+   },
+   "nt": {
+    "acetylcholine": 2
+   }
+  },
+  "LC10d": {
+   "n": 187,
+   "side": {
+    "left": 92,
+    "right": 95
+   },
+   "nt": {
+    "acetylcholine": 187
+   }
+  }
+ },
+ "other": {
+  "n": 3528,
+  "side": {
+   "left": 1766,
+   "right": 1758,
+   "center": 4
+  },
+  "nt": {
+   "acetylcholine": 2269,
+   "glutamate": 629,
+   "gaba": 597,
+   "dopamine": 24,
+   "octopamine": 7,
+   "serotonin": 2
+  },
+  "n_types": 1114,
+  "cls": {
+   "central": 1722,
+   "visual_projection": 1169,
+   "optic": 382,
+   "descending": 188,
+   "visual_centrifugal": 61,
+   "ascending": 5,
+   "motor": 1
+  },
+  "nt_minor": 33
+ },
+ "other_incl_unread": 3723,
+ "dn_other4": 8
+}
