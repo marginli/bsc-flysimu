@@ -1,13 +1,42 @@
 {
  "_note": "PART 1 第 3 節附註「AOTU019 管中央、AOTU025 管外圍的生物依據」的查證紀錄（2026-10-21 人工讀原文；Neuron 正式版網頁 403，讀 bioRxiv v1 與 v2 全文，卷期頁碼由 Europe PMC 核對）",
  "citation": "Collie MF, Jin C, Rockwell V, Kellogg E, Vanderbeck QX, Hartman AK, Holtz SL, Wilson RI. Specialized parallel pathways for adaptive control of visual object pursuit. Neuron 114(10):1833-1847.e9 (2026).",
- "journal_volume": 114, "journal_issue": 10, "pages": "1833-1847.e9", "page_first": 1833, "page_last": 1847,
- "doi": "doi:10.1016/j.neuron.2026.01.001", "pmid": 41713413,
- "preprint": "bioRxiv 10.1101/2025.04.23.650240", "preprint_v1": "2025-04-29", "preprint_v2": "2025-11-01",
+ "journal_volume": 114,
+ "journal_issue": 10,
+ "pages": "1833-1847.e9",
+ "page_first": 1833,
+ "page_last": 1847,
+ "doi": "doi:10.1016/j.neuron.2026.01.001",
+ "pmid": 41713413,
+ "preprint": "bioRxiv 10.1101/2025.04.23.650240",
+ "preprint_v1": "2025-04-29",
+ "preprint_v2": "2025-11-01",
  "binocular_overlap_deg_in_rf_estimate": 15,
- "motion_pulse_sweep_deg": 22.5, "motion_pulse_speed_deg_s": 25,
- "recorded_cells": {"male_AOTU019": 25, "male_AOTU025": 22, "female_AOTU019": 9, "female_AOTU025": 9},
+ "motion_pulse_sweep_deg": 22.5,
+ "motion_pulse_speed_deg_s": 25,
+ "recorded_cells": {
+  "male_AOTU019": 25,
+  "male_AOTU025": 22,
+  "female_AOTU019": 9,
+  "female_AOTU025": 9
+ },
  "angle_split_0_40_40_90_in_paper": false,
  "receptive_fields_overlap": "We also found considerable overlap in the receptive fields of these cell types (v2, Fig. 3)",
- "readme_lines": [21, 22]
+ "readme_lines": [
+  21,
+  22
+ ],
+ "ipsi_contra_evidence": {
+  "_note": "2026-10-21 補：讀 bioRxiv v2 全文（10.1101/2025.04.23.650240v2.full），PART 1 第 3 節「AOTU019 抑制對側、AOTU025 興奮同側」的實驗根據",
+  "transmitter": "AOTU025 is cholinergic, whereas AOTU019 is GABAergic. This conclusion is based on machine classification of electron microscopy (EM) images, as well as genetic evidence (Fig. S3B).",
+  "gad1_validation": "Validation of AOTU019's GABAergic identity, as predicted by automated classifications from Flywire-FAFB and MaleCNS. Confocal image of AOTU019 labeled with the Gad1.AD hemidriver (Gad1.AD;VT033301.DBD) driving GFP.",
+  "projection": "AOTU025 projects to the ipsilateral copies of steering descending neurons (DNs), whereas AOTU019 targets the contralateral copies of these DNs (Fig. 4A, Fig. S5A).",
+  "current_injection_fig4B": "Effects of current injection into AOTU019 (+: n = 15; −: n = 8) or AOTU025 (+: n = 15; −: n = 5) during arousal stimulation and walking. Depolarizing either cell type drove ipsilateral turning (p < 0.0001) ... Hyperpolarizing AOTU019 drove contralateral turning (p < 0.05) ... Hyperpolarizing AOTU025 had no significant effects (p = 0.362, p = 0.246).",
+  "n_depol_aotu019": 15,
+  "n_hyperpol_aotu019": 8,
+  "n_depol_aotu025": 15,
+  "n_hyperpol_aotu025": 5,
+  "see_saw": "If DNs linearly sum their inputs and steering depends on the right–left difference in DN activity, ipsilateral excitation and contralateral inhibition will have equivalent effects. (see-saw model of steering control, Fig. 4C)",
+  "not_measured": "本課讀到的原文裡沒有同時記錄 AOTU019 與 DNa02 的實驗；「AOTU019 放電壓低對側 DNa02」是從接線、傳導物質與打電流後的轉向推得"
+ }
 }
