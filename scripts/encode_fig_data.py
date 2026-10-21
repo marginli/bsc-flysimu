@@ -62,6 +62,8 @@ def encode(cx, height):
 res = {"const": C, "pref_ecc": pref,
        "pref_summary": {s: {"n": len(v), "min": min(v), "max": max(v), "no_aotu": no_aotu[s], "at_0": v.count(0.0), "at_1": v.count(1.0)} for s, v in pref.items()},
        "no_aotu_total": sum(no_aotu.values()),
+       "refractory_ms": meta["params"]["t_rfc_ms"],
+       "max_hz_by_refractory": round(1000 / meta["params"]["t_rfc_ms"]),   # 不反應期決定的放電率上限
        "height_full": round((1 - C["strength_base"]) * C["strength_div"]),   # 高這麼多像素以上強度就是 1
        "display": {"slow": 20, "frame_ms": 50, "model_ms_per_frame": 2.5},   # 圖 3 隨機放電放慢播放的倍數
        "tune_table": {f"{d:g}": round(math.exp(-d ** 2 / (2 * C["SIGMA"] ** 2)), 3) for d in (0, 0.3, 0.5, 0.9)},   # 差 → 接近程度

@@ -273,6 +273,8 @@
   }
  },
  "no_aotu_total": 49,
+ "refractory_ms": 2.2,
+ "max_hz_by_refractory": 455,
  "height_full": 39,
  "display": {
   "slow": 20,
