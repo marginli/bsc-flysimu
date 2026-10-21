@@ -1,0 +1,15 @@
+{
+ "_note": "scripts/vizdoom_probe.py 產生；ViZDoom 1.3.2",
+ "cfg": {
+  "episode_start_time": 10,
+  "episode_timeout": 2100,
+  "timeout_s": 60.0
+ },
+ "episode_time_at_first_state": 10,
+ "noop_episode": {
+  "seed": 0,
+  "decisions": 218,
+  "final_episode_time": 228,
+  "player_dead": true
+ }
+}

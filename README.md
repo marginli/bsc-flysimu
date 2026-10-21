@@ -60,6 +60,7 @@ python3 scripts/make_readout_anim.py               # PART 1 圖 5 與 readout.ht
 python3 scripts/make_readout_images.py             # 圖 5 的投影片用圖與 downloads/readout/flydoom-readout.zip
 python3 scripts/make_encode_anim.py               # PART 1 圖 4 與 encode.html（**圖 4 的文字要改在這支程式裡**）
 python3 scripts/make_encode_images.py             # 圖 4 的投影片用圖與 downloads/encode/flydoom-encode.zip
+~/anaconda3/envs/ffl_doom/bin/python scripts/vizdoom_probe.py   # ViZDoom 關卡的計時方式 → out/vizdoom_probe.json（在 repo 外跑，ViZDoom 會在當前目錄留 _vizdoom.ini）
 python3 scripts/make_player.py                    # assets/demo/data.json → assets/demo/data.js；打包 downloads/player/flydoom-player.zip（播放台離線包）
 python3 scripts/number_audit.py                   # 頁面數字對回 out/
 python3 scripts/page_audit.py                     # 標籤平衡、連結與錨點、中英夾雜
