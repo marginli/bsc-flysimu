@@ -32,6 +32,8 @@ BSC 專題課程（**重現型**，規範見 `../types/repro.md`）。對象是�
 | `downloads/flydoom-code.zip` | `pack/` 打包，附 `SHA256SUMS.txt`。改了 `pack/` 任何檔案都要重打包 |
 | `lif.html` | PART 1 圖 1（漏電整合發放）的單獨頁，給簡報嵌入或離線開；由 `scripts/make_lif_anim.py` 產生，不要手改 |
 | `downloads/lif/` | PART 1 圖 1 的投影片用圖（PNG＋SVG）與 `flydoom-lif.zip`，由 `scripts/make_lif_images.py` 產生 |
+| `player.html` | PART 5 播放台的單獨頁（給簡報嵌入或離線開）：版面配合 16:9、網址參數 `?b=` `&t=`、鍵盤操作；播放邏輯照抄 `part5-demo.html`，改那邊要一起改這裡 |
+| `downloads/player/` | `flydoom-player.zip`：播放台離線包（player.html＋`assets/demo/` 的 data.js 與三段影片），由 `scripts/make_player.py` 產生 |
 | `downloads/encode/` | PART 1 圖 4 的投影片用圖（PNG＋SVG）與 `flydoom-encode.zip`，由 `scripts/make_encode_images.py` 產生 |
 | `scripts/` | 收資料、產圖、產驗收表、錄影，四道稽核（`page_audit.py`、`content_audit.py`、`svg_audit.py`、`number_audit.py`，沿用 VFB），以及首頁說明影片的產生器（`video_slides.py` 投影片要點＋旁白稿、`make_video.py`、`video_check.py` 查旁白覆蓋、`video_verify.py` 查影音同步與辨識回填） |
 | `_notes/` | 修正紀錄。**進 repo，但由 workflow 的 `rm -rf _notes` 擋在網站之外** |
@@ -53,6 +55,7 @@ python3 scripts/make_lif_anim.py                  # PART 1 圖 1 與 lif.html（
 python3 scripts/make_lif_images.py                # 圖 1 的投影片用圖與 downloads/lif/flydoom-lif.zip
 python3 scripts/make_encode_anim.py               # PART 1 圖 4 與 encode.html（**圖 4 的文字要改在這支程式裡**）
 python3 scripts/make_encode_images.py             # 圖 4 的投影片用圖與 downloads/encode/flydoom-encode.zip
+python3 scripts/make_player.py                    # assets/demo/data.json → assets/demo/data.js；打包 downloads/player/flydoom-player.zip（播放台離線包）
 python3 scripts/number_audit.py                   # 頁面數字對回 out/
 python3 scripts/page_audit.py                     # 標籤平衡、連結與錨點、中英夾雜
 ```

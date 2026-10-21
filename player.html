@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Doom 播放台｜果蠅玩 Doom</title>
+<style>
+/* PART 5 播放台的單獨版：給簡報嵌入（PowerPoint 增益集）或離線用瀏覽器全螢幕開。
+   不依賴 flysimu.css，所有樣式都在這裡（顏色照抄 flysimu.css 的變數），資料從 assets/demo/data.js 讀（file:// 也能用，fetch 不行）。
+   版面照視窗大小縮放：字級用 vw，影片高度受視窗高度限制，16:9 的視窗剛好填滿。
+   網址參數：?b=fly|lesion025|scrambled_cal（一開始播哪一種大腦）&t=3.5（從第幾秒開始） */
+:root{
+  --ink:#1b2733; --soft:#5a6b7b; --faint:#8b98a5;
+  --bg:#ffffff; --panel:#f7f8fa; --border:#e4e8ee; --accent:#2563eb;
+  --blue:#2563eb; --amber:#d97706; --red:#dc2626;
+  --fs:clamp(11px,1.05vw,24px);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.5;
+  font-family:-apple-system,"Segoe UI","Noto Sans TC","Microsoft JhengHei","PingFang TC",Roboto,Helvetica,Arial,sans-serif;
+  display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:.6em;padding:.8em 1em;overflow:hidden}
+.top{display:flex;align-items:center;gap:.5em;flex-wrap:wrap}
+.top .name{font-weight:700;margin-right:.6em}
+.top .src{margin-left:auto;color:var(--soft);font-size:.85em}
+.top .src a{color:var(--accent);text-decoration:none}
+.tab,.pbtn{font:inherit;border:1px solid var(--border);background:var(--panel);color:var(--ink);cursor:pointer}
+.tab{padding:.2em .9em;border-radius:999px}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tab:focus-visible,.pbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.stage{display:grid;grid-template-columns:minmax(0,auto) minmax(16em,1fr);gap:1em;min-height:0}
+.left{display:flex;flex-direction:column;min-height:0;min-width:0}
+.vbox{position:relative;background:#000;border-radius:8px;overflow:hidden;aspect-ratio:4/3;height:100%;max-width:100%;min-height:0;flex:1 1 auto}
+.vbox video{width:100%;height:100%;display:block;image-rendering:pixelated}
+.hud{position:absolute;left:.6em;top:.3em;right:.6em;display:flex;justify-content:space-between;font-family:Menlo,Consolas,monospace;color:#fff;text-shadow:0 1px 2px #000;pointer-events:none}
+.hud b{font-size:1.5em}
+.fv svg{width:100%;height:auto;display:block}
+.fv{flex:none}
+.ctl{display:flex;align-items:center;gap:.4em;margin-top:.3em;flex:none}
+.pbtn{font-size:.9em;padding:.15em .7em;border-radius:6px;white-space:nowrap}
+.pbtn.main{background:var(--ink);color:#fff;border-color:var(--ink);min-width:5.2em}
+.pbtn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.ctl input[type=range]{flex:1;min-width:4em;accent-color:var(--ink)}
+.right{display:flex;flex-direction:column;gap:.6em;min-height:0;overflow:auto}
+.brain svg{width:100%;height:auto;max-height:46vh;display:block}
+.readout{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.3em .7em;align-items:center}
+.lab{color:var(--soft)}
+.meter{position:relative;height:1em;background:var(--panel);border:1px solid var(--border);border-radius:3px;overflow:hidden}
+.meter .fill{position:absolute;top:0;bottom:0}
+.meter .th{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--red)}
+.meter .mid{position:absolute;top:0;bottom:0;left:50%;width:1px;background:var(--faint)}
+.mono{font-family:Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-size:.92em;color:var(--soft)}
+.chips{display:flex;gap:.35em;flex-wrap:wrap}
+.chip{font-family:Menlo,Consolas,monospace;font-size:.9em;padding:.05em .6em;border-radius:999px;border:1px solid var(--border);color:var(--faint)}
+.chip.on{color:#fff;border-color:transparent}
+.chip.on.l{background:var(--blue)} .chip.on.r{background:var(--amber)} .chip.on.f{background:var(--red)} .chip.on.s{background:var(--soft)}
+.bottom{display:flex;flex-direction:column;gap:.2em}
+.tl canvas{width:100%;height:20vh;min-height:90px;display:block;cursor:pointer}
+.legend{display:flex;gap:1em;flex-wrap:wrap;font-size:.85em;color:var(--soft)}
+.sw{display:inline-block;width:1em;height:3px;vertical-align:middle;margin-right:.3em}
+.err{color:var(--red)}
+@media (max-aspect-ratio:4/3){.stage{grid-template-columns:minmax(0,1fr)}.vbox{height:auto;width:100%}.right{overflow:visible}body{overflow:auto}}
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="name">果蠅玩 Doom</span>
+  <span role="tablist" aria-label="大腦" style="display:contents">
+    <button class="tab" role="tab" data-p="fly" aria-selected="true">完整接線</button>
+    <button class="tab" role="tab" data-p="lesion025" aria-selected="false">損毀 AOTU025</button>
+    <button class="tab" role="tab" data-p="scrambled_cal" aria-selected="false">打亂接線（各自校準）</button>
+  </span>
+  <span class="src">種子 0 · 第 0 局 · <a href="https://marginli.github.io/bsc-flysimu/part5-demo.html" target="_blank" rel="noopener">PART 5 說明</a></span>
+</div>
+<div class="stage">
+  <div class="left">
+    <div class="vbox">
+      <video id="vid" muted playsinline preload="auto"></video>
+      <div class="hud"><span>t = <span id="hudT"></span> s</span> <span>kills <b id="hudK">0</b></span></div>
+    </div>
+    <div class="fv"><svg id="fv" viewBox="0 0 400 44" role="img" aria-label="果蠅視野中的敵人方位"></svg></div>
+    <div class="ctl">
+      <button class="pbtn main" id="play">▶ 播放</button>
+      <button class="pbtn" id="back" aria-label="上一格">◀ 格</button>
+      <button class="pbtn" id="fwd" aria-label="下一格">格 ▶</button>
+      <input type="range" id="scrub" min="0" max="480" value="0" aria-label="時間">
+      <span role="group" aria-label="速度">
+        <button class="pbtn" data-r="0.25" aria-pressed="false">¼×</button>
+        <button class="pbtn" data-r="0.5" aria-pressed="false">½×</button>
+        <button class="pbtn" data-r="1" aria-pressed="true">1×</button>
+      </span>
+      <button class="pbtn" id="full">全螢幕</button>
+    </div>
+  </div>
+  <div class="right">
+    <div class="brain"><svg id="circ" viewBox="0 0 460 300" role="img" aria-label="迴路圖：節點亮度隨放電率改變"></svg></div>
+    <div class="readout">
+      <span class="lab">轉向訊號</span>
+      <div class="meter"><div class="mid"></div><div class="fill" id="steerF"></div><div class="th" id="thL"></div><div class="th" id="thR"></div></div>
+      <span></span><span class="mono" id="steerV"></span>
+      <span class="lab">開火條件</span>
+      <div class="meter"><div class="fill" id="fireF" style="background:var(--ink);opacity:.7"></div><div class="th" id="fireT"></div></div>
+      <span></span><span class="mono" id="fireV"></span>
+      <span class="lab">本格按鍵</span>
+      <div class="chips"><span class="chip l" id="cL">左轉</span><span class="chip r" id="cR">右轉</span><span class="chip f" id="cF">開火</span><span class="chip s" id="cS">搜尋</span></div>
+    </div>
+  </div>
+</div>
+<div class="bottom">
+  <div class="tl"><canvas id="tl" aria-label="四種神經元左右共 8 組的放電率時間序列；點一下跳到該時間"></canvas></div>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--blue)"></i>左半腦</span>
+    <span><i class="sw" style="background:var(--amber)"></i>右半腦</span>
+    <span><i class="sw" style="background:var(--red)"></i>擊殺</span>
+    <span>灰底：畫面上有敵人</span>
+    <span>點曲線跳到那個時間</span>
+    <span>鍵盤：空白鍵 播放／暫停、← → 一格、Shift＋← → 一秒、1 2 3 換大腦</span>
+  </div>
+</div>
+<script src="assets/demo/data.js"></script>
+<script>
+// 播放邏輯照抄 part5-demo.html（改那邊要一起改這裡）；多的是：網址參數、鍵盤、整頁全螢幕、時間軸隨高度縮放
+const PANEL=["LC10a_L","LC10a_R","AOTU019_L","AOTU019_R","AOTU025_L","AOTU025_R","DNa02_L","DNa02_R"];
+const CONDS=["fly","lesion025","scrambled_cal"];
+const SCALE=250,FPS=35,$=s=>document.querySelector(s),NS="http://www.w3.org/2000/svg";
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e}
+const D=window.FD_DATA;let P="fly",idx=0,nodeEls={},tlBase=null;
+const cal=p=>D.cal[p==="scrambled_cal"?"scrambled":"fly"].cal;
+const POS={LC10a_L:[125,50],LC10a_R:[335,50],AOTU019_L:[75,150],AOTU025_L:[155,150],AOTU025_R:[305,150],AOTU019_R:[385,150],DNa02_L:[150,250],DNa02_R:[310,250]};
+const LAB={LC10a_L:[0,-30,"middle"],LC10a_R:[0,-30,"middle"],AOTU019_L:[-22,-22,"end"],AOTU019_R:[22,-22,"start"],AOTU025_L:[22,-22,"start"],AOTU025_R:[-22,-22,"end"],DNa02_L:[0,36,"middle"],DNa02_R:[0,36,"middle"]};
+function drawCircuit(){
+  const s=$("#circ");s.innerHTML="";const defs=el("defs",{},s);
+  const m1=el("marker",{id:"arr",viewBox:"0 0 10 10",refX:"9",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto"},defs);el("path",{d:"M0,0 L10,5 L0,10 z",fill:css("--soft")},m1);
+  const m2=el("marker",{id:"bar",viewBox:"0 0 10 10",refX:"5",refY:"5",markerWidth:"8",markerHeight:"8",orient:"auto"},defs);el("path",{d:"M5,0 L5,10",stroke:css("--soft"),"stroke-width":"3"},m2);
+  const R=n=>n.startsWith("LC10a")?22:20;
+  for(const e of D.circuit.edges.filter(e=>Math.abs(e.w_mv)>=30)){
+    const [x1,y1]=POS[e.from],[x2,y2]=POS[e.to],dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,inh=e.w_mv<0;
+    const a=[x1+ux*R(e.from),y1+uy*R(e.from)],b=[x2-ux*(R(e.to)+3),y2-uy*(R(e.to)+3)];
+    el("path",{d:`M${a[0]},${a[1]} L${b[0]},${b[1]}`,fill:"none",stroke:css("--soft"),"stroke-width":2,"stroke-dasharray":inh?"5 4":"","marker-end":inh?"url(#bar)":"url(#arr)",opacity:P==="scrambled_cal"?.25:1},s);
+  }
+  for(const [x,a,t,c] of [[8,"start","left","--blue"],[452,"end","right","--amber"]]){const h=el("text",{x,y:16,"text-anchor":a,"font-size":12,"font-weight":"700",fill:css(c),"font-family":"Menlo,Consolas,monospace"},s);h.textContent=t}
+  nodeEls={};
+  for(const n of PANEL){
+    const [x,y]=POS[n],col=css(n.endsWith("_L")?"--blue":"--amber"),[lx,ly,la]=LAB[n],g=el("g",{},s);
+    const c=el("circle",{cx:x,cy:y,r:R(n),fill:col,"fill-opacity":.08,stroke:css("--ink"),"stroke-width":1.2},g);
+    const nm=el("text",{x:x+lx,y:y+ly,"text-anchor":la,"font-size":11,fill:css("--ink"),"font-family":"Menlo,Consolas,monospace"},g);nm.textContent=n.split("_")[0];
+    const hz=el("text",{x,y:y+4,"text-anchor":"middle","font-size":12,"font-weight":"700",fill:css("--ink"),"font-family":"Menlo,Consolas,monospace"},g);
+    if(P==="lesion025"&&n.startsWith("AOTU025")){el("line",{x1:x-14,y1:y-14,x2:x+14,y2:y+14,stroke:css("--red"),"stroke-width":2.5},g);el("line",{x1:x+14,y1:y-14,x2:x-14,y2:y+14,stroke:css("--red"),"stroke-width":2.5},g)}
+    nodeEls[n]={c,hz};
+  }
+}
+function drawFlyView(e){
+  const s=$("#fv");s.innerHTML="";const X=az=>200+az/90*190;
+  el("rect",{x:X(-30),y:4,width:X(30)-X(-30),height:24,fill:css("--panel")},s);
+  el("rect",{x:X(-6),y:4,width:X(6)-X(-6),height:24,fill:css("--border")},s);
+  el("line",{x1:10,y1:28,x2:390,y2:28,stroke:css("--faint")},s);
+  for(const a of [-90,-45,0,45,90]){const t=el("text",{x:X(a),y:41,"text-anchor":"middle","font-size":10,fill:css("--soft"),"font-family":"Menlo,Consolas,monospace"},s);t.textContent=(a>0?"+":"")+a+"°"}
+  for(const az of e)el("circle",{cx:X(az),cy:16,r:6,fill:css(az<0?"--blue":"--amber"),stroke:css("--ink"),"stroke-width":1},s);
+}
+const tl=$("#tl"),ROWS=[["LC10a","LC10a (visual input)"],["AOTU019","AOTU019 (central field)"],["AOTU025","AOTU025 (peripheral field)"],["DNa02","DNa02 (descending, steering)"]];
+function drawTimeline(){
+  const ep=D.episodes[P],dpr=window.devicePixelRatio||1,W=tl.clientWidth,H=tl.clientHeight;if(!W||!H)return;tl.width=W*dpr;tl.height=H*dpr;
+  const fs=Math.max(10,Math.min(16,Math.round(H/20)));
+  const off=document.createElement("canvas");off.width=tl.width;off.height=tl.height;const g=off.getContext("2d");g.scale(dpr,dpr);
+  const pad=8,top=4,rowH=(H-top-fs*1.6)/4,n=ep.n,N=Math.max(n,481),X=i=>pad+i/(N-1)*(W-2*pad);
+  g.font=fs+"px Menlo,Consolas,monospace";
+  for(let i=0;i<n;i++)if(ep.e[i].length){g.fillStyle=css("--panel");g.fillRect(X(i),top,X(i+1)-X(i)+.5,rowH*4)}
+  ROWS.forEach(([grp,lab],r)=>{const y0=top+r*rowH,yb=y0+rowH-4;g.strokeStyle=css("--border");g.beginPath();g.moveTo(pad,yb+.5);g.lineTo(W-pad,yb+.5);g.stroke();
+    for(const [sf,col] of [["_L","--blue"],["_R","--amber"]]){const v=ep[grp+sf];g.strokeStyle=css(col);g.lineWidth=Math.max(1.6,H/150);g.beginPath();for(let i=0;i<n;i++){const y=yb-Math.min(v[i],SCALE)/SCALE*(rowH-fs-3);i?g.lineTo(X(i),y):g.moveTo(X(i),y)}g.stroke()}
+    g.fillStyle=css("--soft");g.fillText(lab,pad+4,y0+fs)});
+  g.fillStyle=css("--red");for(let i=1;i<n;i++)if(ep.k[i]>ep.k[i-1])g.fillRect(X(i)-1,top,2,rowH*4);
+  g.fillStyle=css("--soft");for(let t=0;t<=N/FPS;t+=2)g.fillText(t+"s",Math.min(X(t*FPS),W-pad-fs*2),H-4);
+  tlBase={off,X,N,dpr,top,rowH};paintPlayhead();
+}
+function paintPlayhead(){if(!tlBase)return;const g=tl.getContext("2d");g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,tl.width,tl.height);g.drawImage(tlBase.off,0,0);g.scale(tlBase.dpr,tlBase.dpr);g.fillStyle=css("--ink");g.fillRect(tlBase.X(idx)-1,0,2,tlBase.top+tlBase.rowH*4)}
+tl.addEventListener("click",ev=>{if(!tlBase)return;const r=tl.getBoundingClientRect();seek(Math.round((ev.clientX-r.left-8)/(r.width-16)*(tlBase.N-1)))});
+const vid=$("#vid");
+function show(i){
+  const ep=D.episodes[P];idx=Math.max(0,Math.min(ep.n-1,i));
+  $("#hudT").textContent=(idx/FPS).toFixed(1);$("#hudK").textContent=ep.k[idx];$("#scrub").value=idx;
+  for(const n of PANEL){const v=ep[n][idx];nodeEls[n].c.setAttribute("fill-opacity",(.08+.82*Math.min(v,SCALE)/SCALE).toFixed(2));nodeEls[n].hz.textContent=Math.round(v)}
+  const c=cal(P),st=(ep.DNa02_R[idx]-ep.DNa02_L[idx])+(ep.AOTU019_R[idx]-ep.AOTU019_L[idx]),half=Math.max(300,c.turn_th*2.2),pos=v=>50+Math.max(-1,Math.min(1,v/half))*50;
+  const f=$("#steerF"),p=pos(st);f.style.left=Math.min(50,p)+"%";f.style.width=Math.abs(p-50)+"%";f.style.background=css(st<0?"--blue":"--amber");
+  $("#thL").style.left=pos(-c.turn_th)+"%";$("#thR").style.left=pos(c.turn_th)+"%";
+  $("#steerV").textContent=`R − L = ${st>=0?"+":""}${st.toFixed(1)}　閾值 ±${c.turn_th}`;
+  const mn=Math.min(ep.AOTU019_L[idx],ep.AOTU019_R[idx]);$("#fireF").style.width=Math.min(mn,SCALE)/SCALE*100+"%";$("#fireT").style.left=c.fire_th/SCALE*100+"%";
+  $("#fireV").textContent=`min(AOTU019 L, R) = ${mn.toFixed(1)} Hz　閾值 ${c.fire_th}`;
+  const a=ep.a[idx],search=!ep.e[idx].length&&a==="010";
+  $("#cL").classList.toggle("on",a[0]==="1");$("#cR").classList.toggle("on",a[1]==="1"&&!search);$("#cF").classList.toggle("on",a[2]==="1");$("#cS").classList.toggle("on",search);
+  drawFlyView(ep.e[idx]);paintPlayhead();
+}
+const frameOf=t=>Math.floor(t*FPS+1e-3);
+function loop(){show(frameOf(vid.currentTime));if(!vid.paused&&!vid.ended)requestAnimationFrame(loop)}
+function setPlay(){$("#play").textContent=vid.paused||vid.ended?"▶ 播放":"❚❚ 暫停"}
+function seek(i){vid.pause();i=Math.max(0,Math.min(D.episodes[P].n-1,i));vid.currentTime=(i+.5)/FPS;show(i);setPlay()}
+function toggle(){if(vid.paused||vid.ended){if(vid.ended||idx>=D.episodes[P].n-1)vid.currentTime=0;vid.play().then(()=>{setPlay();requestAnimationFrame(loop)}).catch(()=>{})}else{vid.pause();setPlay()}}
+$("#play").onclick=toggle;
+vid.addEventListener("pause",setPlay);vid.addEventListener("ended",()=>{setPlay();show(D.episodes[P].n-1)});
+$("#back").onclick=()=>seek(idx-1);$("#fwd").onclick=()=>seek(idx+1);$("#scrub").oninput=e=>seek(+e.target.value);
+document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{vid.playbackRate=+b.dataset.r;document.querySelectorAll("[data-r]").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+// 全螢幕放大整頁（迴路圖、讀數與時間軸一起），不是只放大影片；嵌在不允許全螢幕的框裡就把按鈕藏起來
+const fsOK=document.fullscreenEnabled||document.webkitFullscreenEnabled;
+if(!fsOK)$("#full").hidden=true;
+$("#full").onclick=()=>{const de=document.documentElement;if(document.fullscreenElement||document.webkitFullscreenElement)(document.exitFullscreen||document.webkitExitFullscreen).call(document);else(de.requestFullscreen||de.webkitRequestFullscreen).call(de)};
+function selectCond(p,start=0){P=p;document.querySelectorAll(".tab[data-p]").forEach(t=>t.setAttribute("aria-selected",t.dataset.p===p));
+  const r=vid.playbackRate;vid.pause();vid.src="assets/demo/"+p+".mp4";vid.playbackRate=r;vid.load();$("#scrub").max=D.episodes[p].n-1;drawCircuit();drawTimeline();
+  if(start)seek(start);else{show(0);setPlay()}}
+document.querySelectorAll(".tab[data-p]").forEach(t=>t.onclick=()=>selectCond(t.dataset.p));
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT"&&e.key!==" ")return;
+  if(e.key===" "||e.key==="k"){e.preventDefault();toggle()}
+  else if(e.key==="ArrowRight"){e.preventDefault();seek(idx+(e.shiftKey?FPS:1))}
+  else if(e.key==="ArrowLeft"){e.preventDefault();seek(idx-(e.shiftKey?FPS:1))}
+  else if("123".includes(e.key)&&e.key.length===1)selectCond(CONDS[+e.key-1]);
+});
+if(!D){document.body.innerHTML='<p class="err">讀不到 assets/demo/data.js。請確認 player.html 旁邊有 assets/demo/ 資料夾（解壓縮時整個資料夾一起保留）。</p>'}
+else{
+  const q=new URLSearchParams(location.search),p0=CONDS.includes(q.get("b"))?q.get("b"):"fly";
+  const f0=Math.max(0,Math.min(D.episodes[p0].n-1,Math.round((parseFloat(q.get("t"))||0)*FPS)));
+  selectCond(p0,f0);new ResizeObserver(()=>drawTimeline()).observe(tl);
+}
+</script>
+</body>
+</html>
