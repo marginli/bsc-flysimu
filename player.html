@@ -57,6 +57,9 @@ body{background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.5;
 .chip.on{color:#fff;border-color:transparent}
 .chip.on.l{background:var(--blue)} .chip.on.r{background:var(--amber)} .chip.on.f{background:var(--red)} .chip.on.s{background:var(--soft)}
 .note{color:var(--soft);border-left:3px solid var(--border);padding-left:.7em;margin:0;font-size:.88em}
+.more summary{cursor:pointer;color:var(--soft);font-size:.85em;padding-left:calc(.7em + 3px);user-select:none}
+.more summary:hover{color:var(--ink)}
+.more[open] .note{margin-top:.3em;max-height:12em;overflow:auto}   /* 展開時限高，迴路圖不會被擠掉 */
 .bottom{display:flex;flex-direction:column;gap:.2em}
 .tl canvas{width:100%;height:20vh;min-height:90px;display:block;cursor:pointer}
 .legend{display:flex;gap:1em;flex-wrap:wrap;font-size:.85em;color:var(--soft)}
@@ -107,7 +110,10 @@ body{background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.5;
       <span class="lab">本格按鍵</span>
       <div class="chips"><span class="chip l" id="cL">左轉</span><span class="chip r" id="cR">右轉</span><span class="chip f" id="cF">開火</span><span class="chip s" id="cS">搜尋</span></div>
     </div>
-    <p class="note">圓圈與曲線上的數字是放電率（Hz），和前幾格平滑過，大約是最近十分之一秒的放電率，不是從開局累積的次數；敵人離開畫面後會一格一格降回 0。每一局在玩家被打死時結束：擊倒得越少，走到身邊的敵人越多，局就越短。同一個種子整局什麼鍵都不按，也是撐到第 218 格被打死，和打亂接線那局一樣長。圓圈之間的線是兩群之間連結權重的加總，只畫絕對值 30 mV 以上的；一條連結的權重 ＝ 突觸數（兩顆神經元之間的接點個數）× 正負號 × 0.275 mV，正負號看上游神經元（GABA、麩胺酸為負，其餘為正），沒有正規化。圖上只畫四種，模擬的卻是從全腦切出來的 3,963 顆神經元。用突觸數算（左右合計）：輸入端 LC10a 的突觸分給 1,557 顆神經元，給 AOTU019 的只有 4.1%、給 AOTU025 的 3.9%；出口 DNa02 收到的只有 1.9% 來自 AOTU019、1.8% 來自 AOTU025，LC10a 也不直接連到 DNa02。圖上是作者讀出時看的那幾站，訊號大多還經過圖上沒畫的神經元。AOTU025 興奮同側、AOTU019 抑制對側除了連結體，也有實驗支持（Collie 等人 2026）：打電流讓任一顆興奮，果蠅都轉向那顆細胞那一側。</p>
+    <p class="note">圓圈與曲線上的數字是放電率（Hz），和前幾格平滑過，大約是最近十分之一秒的放電率，不是從開局累積的次數；敵人離開畫面後會一格一格降回 0。</p>
+    <details class="more"><summary>更多說明：局長、連線權重、圖上沒畫的神經元、實驗根據</summary>
+    <p class="note">每一局在玩家被打死時結束：擊倒得越少，走到身邊的敵人越多，局就越短。同一個種子整局什麼鍵都不按，也是撐到第 218 格被打死，和打亂接線那局一樣長。圓圈之間的線是兩群之間連結權重的加總，只畫絕對值 30 mV 以上的；一條連結的權重 ＝ 突觸數（兩顆神經元之間的接點個數）× 正負號 × 0.275 mV，正負號看上游神經元（GABA、麩胺酸為負，其餘為正），沒有正規化。圖上只畫四種，模擬的卻是從全腦切出來的 3,963 顆神經元。用突觸數算（左右合計）：輸入端 LC10a 的突觸分給 1,557 顆神經元，給 AOTU019 的只有 4.1%、給 AOTU025 的 3.9%；出口 DNa02 收到的只有 1.9% 來自 AOTU019、1.8% 來自 AOTU025，LC10a 也不直接連到 DNa02。圖上是作者讀出時看的那幾站，訊號大多還經過圖上沒畫的神經元。AOTU025 興奮同側、AOTU019 抑制對側除了連結體，也有實驗支持（Collie 等人 2026）：打電流讓任一顆興奮，果蠅都轉向那顆細胞那一側。</p>
+    </details>
     <p class="figsrc" hidden>數字出處：放電率與局長在 out/demo_data.json、out/vizdoom_probe.json；連線加總在 out/demo_data.json 的 circuit.edges；權重定義在 out/weight_def.json；主幹占比在 out/subgraph_types.json 的 backbone_share。Collie 2026 的原文摘錄在 out/collie2026.json。說明全文：https://marginli.github.io/bsc-flysimu/part5-demo.html 與 part1-what.html#wdef、part1-what.html#s3</p>
   </div>
 </div>
