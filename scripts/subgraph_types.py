@@ -51,6 +51,54 @@ res["unread_visual"] = {"n": len(vis),
                         "top_types": collections.Counter(n[i]["type"] for i in vis).most_common(8),
                         "direct_from_lc10a": int(from_lc[vis].sum())}
 res["unread_direct_from_lc10a"] = int(from_lc[unread].sum())
+# 圖 2 的主幹在全部接線裡占多少：以突觸數算（|weight|，不管正負號）
+syn = np.abs(np.frombuffer(raw, np.int16, m, 4 * (N + 1) + 2 * m).astype(np.int64))
+T = np.array([x["type"] for x in n])
+
+
+def share(sel, other_end):
+    """sel 選出的連結，依另一端的種類加總突觸數，回傳總數與各種類的百分比（一位小數）。"""
+    c = collections.Counter()
+    for t, k in zip(T[other_end[sel]], syn[sel]):
+        c[t] += int(k)
+    tot = sum(c.values())
+    return {"n_partners": int(len(set(other_end[sel]))), "syn": tot,
+            "pct": {t: round(100 * k / tot, 1) for t, k in c.most_common(12)},
+            "pct_named": {t: round(100 * c[t] / tot, 1) for t in ("LC10a", "AOTU019", "AOTU025", "DNa02")}}
+
+
+res["backbone_share"] = {
+    "lc10a_out": share(T[pre] == "LC10a", post),
+    "dna02_in": share(T[post] == "DNa02", pre),
+    "aotu019_out": share(T[pre] == "AOTU019", post),
+    "aotu025_out": share(T[pre] == "AOTU025", post),
+}
+# 圖 2 八個數字的拆解：兩群之間的連結數、突觸數、正負各多少、加總 × 0.275 mV
+w_signed = np.frombuffer(raw, np.int16, m, 4 * (N + 1) + 2 * m).astype(np.int64)
+g = meta["groups"]
+res["fig2_edges"] = []
+for a, b in [("LC10a_L", "AOTU019_L"), ("LC10a_R", "AOTU019_R"), ("LC10a_L", "AOTU025_L"), ("LC10a_R", "AOTU025_R"),
+             ("AOTU025_L", "DNa02_L"), ("AOTU025_R", "DNa02_R"), ("AOTU019_L", "DNa02_R"), ("AOTU019_R", "DNa02_L")]:
+    sel = np.isin(pre, g[a]) & np.isin(post, g[b])
+    ws = w_signed[sel]
+    neg_pre = sorted({n[i]["nt"] for i in pre[sel][ws < 0]})
+    res["fig2_edges"].append({"pre": a, "post": b, "n_edges": int(sel.sum()), "n_pre": len(g[a]), "syn": int(np.abs(ws).sum()),
+                              "pos": int(ws[ws > 0].sum()), "neg": int(-ws[ws < 0].sum()), "n_neg_pre": int((ws < 0).sum()),
+                              "neg_pre_nt": neg_pre, "signed": int(ws.sum()), "mv": round(float(ws.sum()) * meta["w_syn_mv"], 3),
+                              "mv_abs": round(abs(float(ws.sum())) * meta["w_syn_mv"], 3)})
+res["lc10a_glutamate_side"] = [n[i]["side"] for i in range(N) if n[i]["type"] == "LC10a" and n[i]["nt"] == "glutamate"]
+side = np.array([x["side"] for x in n])
+# 兩顆麩胺酸 LC10a 各自連到哪一顆 AOTU（圖 2 左側兩列的負號突觸出自哪一顆）
+res["lc10a_glutamate_to_aotu"] = [
+    {"side": n[i]["side"], "to": {f"{T[q]}_{side[q]}": int(x) for q, x in zip(post[pre == i], w_signed[pre == i])
+                                  if T[q] in ("AOTU019", "AOTU025")}}
+    for i in range(N) if T[i] == "LC10a" and n[i]["nt"] == "glutamate"]
+# AOTU019／AOTU025 → DNa02，分同側、對側
+res["aotu_to_dna02_by_side"] = {
+    f"{k}_{sd}": {("same" if side[q] == sd else "contra"): int(x)
+                  for q, x in zip(post[(T[pre] == k) & (side[pre] == sd) & (T[post] == "DNa02")],
+                                  w_signed[(T[pre] == k) & (side[pre] == sd) & (T[post] == "DNa02")])}
+    for k in ("AOTU019", "AOTU025") for sd in ("left", "right")}
 res["unread_rest"] = res["other_incl_unread"] - res["dn_other4"] - len(vis)   # 其餘 3,723 顆扣掉另外四種下行神經元與視覺神經元
 assert sum(v["n"] for v in res["types"].values()) + len(rest) == len(n)
 json.dump(res, open(os.path.join(D, "out/subgraph_types.json"), "w"), indent=1, ensure_ascii=False)

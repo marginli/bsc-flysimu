@@ -167,5 +167,257 @@
   "direct_from_lc10a": 1009
  },
  "unread_direct_from_lc10a": 1319,
+ "backbone_share": {
+  "lc10a_out": {
+   "n_partners": 1557,
+   "syn": 71601,
+   "pct": {
+    "TuTuAa": 11.3,
+    "AOTU041": 7.2,
+    "LT52": 5.9,
+    "LC10a": 5.8,
+    "LC10d": 5.5,
+    "AOTU014": 4.7,
+    "AOTU019": 4.1,
+    "AOTU025": 3.9,
+    "AOTU023": 3.3,
+    "CB0007": 2.9,
+    "TuTuAb": 2.9,
+    "CB1080": 2.5
+   },
+   "pct_named": {
+    "LC10a": 5.8,
+    "AOTU019": 4.1,
+    "AOTU025": 3.9,
+    "DNa02": 0.0
+   }
+  },
+  "dna02_in": {
+   "n_partners": 686,
+   "syn": 17853,
+   "pct": {
+    "PS049": 4.1,
+    "DNa03": 2.9,
+    "PS059": 2.9,
+    "CB0757": 2.7,
+    "DNae005": 2.4,
+    "PS230,PLP242": 2.2,
+    "LAL126": 2.2,
+    "LAL018": 2.1,
+    "LT51": 2.0,
+    "PS013": 1.9,
+    "AOTU019": 1.9,
+    "DNa11": 1.9
+   },
+   "pct_named": {
+    "LC10a": 0.0,
+    "AOTU019": 1.9,
+    "AOTU025": 1.8,
+    "DNa02": 0.0
+   }
+  },
+  "aotu019_out": {
+   "n_partners": 608,
+   "syn": 11092,
+   "pct": {
+    "LAL046": 5.0,
+    "DNa13": 4.8,
+    "LAL074,LAL084": 4.6,
+    "DNa15": 4.5,
+    "DNa16": 3.7,
+    "DNa03": 3.5,
+    "DNg04": 3.4,
+    "DNa02": 3.0,
+    "LAL018": 2.9,
+    "PS232": 2.7,
+    "LAL125,LAL108": 2.4,
+    "PS018a": 2.3
+   },
+   "pct_named": {
+    "LC10a": 0.1,
+    "AOTU019": 0.3,
+    "AOTU025": 0.1,
+    "DNa02": 3.0
+   }
+  },
+  "aotu025_out": {
+   "n_partners": 489,
+   "syn": 4216,
+   "pct": {
+    "DNa02": 7.6,
+    "LAL074,LAL084": 7.1,
+    "CB1750": 5.2,
+    "DNa03": 4.7,
+    "AOTUv1A_T01": 4.5,
+    "LC33": 3.8,
+    "LAL018": 3.7,
+    "LAL152": 3.7,
+    "DNa13": 3.6,
+    "DNa06": 2.7,
+    "PS019": 2.2,
+    "VES041": 2.2
+   },
+   "pct_named": {
+    "LC10a": 1.1,
+    "AOTU019": 1.4,
+    "AOTU025": 0.0,
+    "DNa02": 7.6
+   }
+  }
+ },
+ "fig2_edges": [
+  {
+   "pre": "LC10a_L",
+   "post": "AOTU019_L",
+   "n_edges": 69,
+   "n_pre": 115,
+   "syn": 1345,
+   "pos": 1318,
+   "neg": 27,
+   "n_neg_pre": 1,
+   "neg_pre_nt": [
+    "glutamate"
+   ],
+   "signed": 1291,
+   "mv": 355.025,
+   "mv_abs": 355.025
+  },
+  {
+   "pre": "LC10a_R",
+   "post": "AOTU019_R",
+   "n_edges": 75,
+   "n_pre": 119,
+   "syn": 1594,
+   "pos": 1594,
+   "neg": 0,
+   "n_neg_pre": 0,
+   "neg_pre_nt": [],
+   "signed": 1594,
+   "mv": 438.35,
+   "mv_abs": 438.35
+  },
+  {
+   "pre": "LC10a_L",
+   "post": "AOTU025_L",
+   "n_edges": 62,
+   "n_pre": 115,
+   "syn": 1446,
+   "pos": 1407,
+   "neg": 39,
+   "n_neg_pre": 1,
+   "neg_pre_nt": [
+    "glutamate"
+   ],
+   "signed": 1368,
+   "mv": 376.2,
+   "mv_abs": 376.2
+  },
+  {
+   "pre": "LC10a_R",
+   "post": "AOTU025_R",
+   "n_edges": 67,
+   "n_pre": 119,
+   "syn": 1373,
+   "pos": 1373,
+   "neg": 0,
+   "n_neg_pre": 0,
+   "neg_pre_nt": [],
+   "signed": 1373,
+   "mv": 377.575,
+   "mv_abs": 377.575
+  },
+  {
+   "pre": "AOTU025_L",
+   "post": "DNa02_L",
+   "n_edges": 1,
+   "n_pre": 1,
+   "syn": 167,
+   "pos": 167,
+   "neg": 0,
+   "n_neg_pre": 0,
+   "neg_pre_nt": [],
+   "signed": 167,
+   "mv": 45.925,
+   "mv_abs": 45.925
+  },
+  {
+   "pre": "AOTU025_R",
+   "post": "DNa02_R",
+   "n_edges": 1,
+   "n_pre": 1,
+   "syn": 154,
+   "pos": 154,
+   "neg": 0,
+   "n_neg_pre": 0,
+   "neg_pre_nt": [],
+   "signed": 154,
+   "mv": 42.35,
+   "mv_abs": 42.35
+  },
+  {
+   "pre": "AOTU019_L",
+   "post": "DNa02_R",
+   "n_edges": 1,
+   "n_pre": 1,
+   "syn": 216,
+   "pos": 0,
+   "neg": 216,
+   "n_neg_pre": 1,
+   "neg_pre_nt": [
+    "gaba"
+   ],
+   "signed": -216,
+   "mv": -59.4,
+   "mv_abs": 59.4
+  },
+  {
+   "pre": "AOTU019_R",
+   "post": "DNa02_L",
+   "n_edges": 1,
+   "n_pre": 1,
+   "syn": 121,
+   "pos": 0,
+   "neg": 121,
+   "n_neg_pre": 1,
+   "neg_pre_nt": [
+    "gaba"
+   ],
+   "signed": -121,
+   "mv": -33.275,
+   "mv_abs": 33.275
+  }
+ ],
+ "lc10a_glutamate_side": [
+  "left",
+  "left"
+ ],
+ "lc10a_glutamate_to_aotu": [
+  {
+   "side": "left",
+   "to": {}
+  },
+  {
+   "side": "left",
+   "to": {
+    "AOTU019_left": -27,
+    "AOTU025_left": -39
+   }
+  }
+ ],
+ "aotu_to_dna02_by_side": {
+  "AOTU019_left": {
+   "same": -1,
+   "contra": -216
+  },
+  "AOTU019_right": {
+   "contra": -121
+  },
+  "AOTU025_left": {
+   "same": 167
+  },
+  "AOTU025_right": {
+   "same": 154
+  }
+ },
  "unread_rest": 1916
 }
