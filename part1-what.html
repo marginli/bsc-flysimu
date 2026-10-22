@@ -430,7 +430,14 @@ go(1);requestAnimationFrame(frame);
   </table>
   </div>
   <p>這四種就是圖 2 的 8 群、240 顆。子圖其餘 3,723 顆沒有人為指定的角色：不加輸入、不讀輸出、不損毀，模擬時照算，它們做什麼完全由接線決定。</p>
-  <p class="figsrc">顆數與傳導物質由 <code>scripts/subgraph_types.py</code> 從作者的 <code>circuit/meta.json</code> 數出，數字在 <code>out/subgraph_types.json</code>；「作用」一欄出自 <code>doom/fly_doom.py</code>（刺激 LC10a、讀出公式、<code>make_policy()</code> 的損毀名單）。</p>
+  <p><b>其餘 3,723 顆是什麼。</b>照 FlyWire 標註表的大類分成三份：</p>
+  <ul>
+    <li><b>另外四種轉向下行神經元，8 顆</b>：DNa01、DNa03、DNa04、DNa11，左右各 1。切子圖時和 DNa02 一起當終點，但程式不讀它們。</li>
+    <li><b>視覺神經元，1,799 顆、216 種</b>（標註表裡同一種的不同亞型各算一種，例如 LC10c-1 與 LC10c-2）：顆數前幾名是 LC10d 187 顆、LC9 112 顆、LC10c-1 99 顆、LC10c-2 97 顆（都和 LC10a 一樣，是從視葉把訊號送進中央腦的視覺投射神經元）。分大類是視覺投射神經元 1,356、視葉內部的神經元 382、從中央腦送回視葉的神經元 61。</li>
+    <li><b>其他 1,916 顆</b>：中央腦的神經元 1,722、其他種類的下行神經元 188、上行神經元 5（方向和下行神經元相反：從腹神經索往上送訊號回腦）、運動神經元 1（直接控制肌肉的神經元）。</li>
+  </ul>
+  <p><b>只有 LC10a 收到「看見」的訊號。</b>真果蠅裡，上面這 1,799 顆視覺神經元的訊號來自眼睛（經過視葉），看到東西時，反應的不只是 LC10a。模型沒有「從眼睛到 LC10a」這一段（眼睛收光，視葉裡一層層處理之後才交給 LC10a）：遊戲只回報敵人的方位和大小，作者用一條公式直接換成 LC10a 的放電（第 4 節），所以 LC10a 以外的視覺神經元全都沒有外部輸入，只能從子圖裡的連結收到訊號，其中 1,009 顆直接收 LC10a 的連結（不論幾個突觸）。它們會被切進子圖，是因為從 LC10a 往下游兩步內走得到、又能在兩步內走到下行神經元（上面的切法），不是因為作者要它們看東西。換句話說，在這個模型裡「看到敵人」只等於「LC10a 放電」；這是輸入編碼的簡化，算人為設定（第 6 節總表）。這些視覺神經元在模型裡被 LC10a 推動之後放電多少、對結果有沒有影響，本課沒有查。</p>
+  <p class="figsrc">顆數與傳導物質由 <code>scripts/subgraph_types.py</code> 從作者的 <code>circuit/meta.json</code> 數出，數字在 <code>out/subgraph_types.json</code>（其餘 3,723 顆的分類在 <code>other</code>、<code>dn_other4</code>、<code>unread_visual</code>；「直接收 LC10a 的連結」照作者的 <code>circuit/edges.bin</code> 數）；「作用」一欄與「只刺激 LC10a」出自 <code>doom/fly_doom.py</code>（<code>stim_rates()</code> 只給 LC10a 放電率，其餘一律是 0；讀出公式；<code>make_policy()</code> 的損毀名單）。</p>
 
   <!-- ══════════════════════════════════════════════════════ -->
   <h2 id="s4"><span class="pt">4</span>接進遊戲、接出動作</h2>

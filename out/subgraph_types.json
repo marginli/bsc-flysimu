@@ -121,5 +121,51 @@
   "nt_minor": 33
  },
  "other_incl_unread": 3723,
- "dn_other4": 8
+ "dn_other4": 8,
+ "unread_visual": {
+  "n": 1799,
+  "cls": {
+   "visual_projection": 1356,
+   "optic": 382,
+   "visual_centrifugal": 61
+  },
+  "n_types": 216,
+  "top_types": [
+   [
+    "LC10d",
+    187
+   ],
+   [
+    "LC9",
+    112
+   ],
+   [
+    "LC10c-1",
+    99
+   ],
+   [
+    "LC10c-2",
+    97
+   ],
+   [
+    "TmY31",
+    74
+   ],
+   [
+    "LPLC4",
+    67
+   ],
+   [
+    "LC10e",
+    66
+   ],
+   [
+    "LPLC1",
+    59
+   ]
+  ],
+  "direct_from_lc10a": 1009
+ },
+ "unread_direct_from_lc10a": 1319,
+ "unread_rest": 1916
 }
