@@ -85,7 +85,13 @@ for a, b in [("LC10a_L", "AOTU019_L"), ("LC10a_R", "AOTU019_R"), ("LC10a_L", "AO
     res["fig2_edges"].append({"pre": a, "post": b, "n_edges": int(sel.sum()), "n_pre": len(g[a]), "syn": int(np.abs(ws).sum()),
                               "pos": int(ws[ws > 0].sum()), "neg": int(-ws[ws < 0].sum()), "n_neg_pre": int((ws < 0).sum()),
                               "neg_pre_nt": neg_pre, "signed": int(ws.sum()), "mv": round(float(ws.sum()) * meta["w_syn_mv"], 3),
-                              "mv_abs": round(abs(float(ws.sum())) * meta["w_syn_mv"], 3)})
+                              "mv_abs": round(abs(float(ws.sum())) * meta["w_syn_mv"], 3),
+                              # 每條連結的突觸數分布（一條連結 ＝ 一對神經元）
+                              "syn_per_edge": {"min": int(np.abs(ws).min()), "median": float(np.median(np.abs(ws))),
+                                               "max": int(np.abs(ws).max()), "lt5": int((np.abs(ws) < 5).sum()),
+                                               "eq1": int((np.abs(ws) == 1).sum()),
+                                               "max_mv": round(int(np.abs(ws).max()) * meta["w_syn_mv"], 3),
+                                               "min_mv": round(int(np.abs(ws).min()) * meta["w_syn_mv"], 3)}})
 res["lc10a_glutamate_side"] = [n[i]["side"] for i in range(N) if n[i]["type"] == "LC10a" and n[i]["nt"] == "glutamate"]
 side = np.array([x["side"] for x in n])
 # 兩顆麩胺酸 LC10a 各自連到哪一顆 AOTU（圖 2 左側兩列的負號突觸出自哪一顆）

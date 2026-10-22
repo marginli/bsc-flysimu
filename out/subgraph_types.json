@@ -280,7 +280,16 @@
    ],
    "signed": 1291,
    "mv": 355.025,
-   "mv_abs": 355.025
+   "mv_abs": 355.025,
+   "syn_per_edge": {
+    "min": 1,
+    "median": 19.0,
+    "max": 56,
+    "lt5": 16,
+    "eq1": 2,
+    "max_mv": 15.4,
+    "min_mv": 0.275
+   }
   },
   {
    "pre": "LC10a_R",
@@ -294,7 +303,16 @@
    "neg_pre_nt": [],
    "signed": 1594,
    "mv": 438.35,
-   "mv_abs": 438.35
+   "mv_abs": 438.35,
+   "syn_per_edge": {
+    "min": 1,
+    "median": 17.0,
+    "max": 60,
+    "lt5": 18,
+    "eq1": 7,
+    "max_mv": 16.5,
+    "min_mv": 0.275
+   }
   },
   {
    "pre": "LC10a_L",
@@ -310,7 +328,16 @@
    ],
    "signed": 1368,
    "mv": 376.2,
-   "mv_abs": 376.2
+   "mv_abs": 376.2,
+   "syn_per_edge": {
+    "min": 1,
+    "median": 22.0,
+    "max": 55,
+    "lt5": 10,
+    "eq1": 6,
+    "max_mv": 15.125,
+    "min_mv": 0.275
+   }
   },
   {
    "pre": "LC10a_R",
@@ -324,7 +351,16 @@
    "neg_pre_nt": [],
    "signed": 1373,
    "mv": 377.575,
-   "mv_abs": 377.575
+   "mv_abs": 377.575,
+   "syn_per_edge": {
+    "min": 1,
+    "median": 19.0,
+    "max": 55,
+    "lt5": 15,
+    "eq1": 7,
+    "max_mv": 15.125,
+    "min_mv": 0.275
+   }
   },
   {
    "pre": "AOTU025_L",
@@ -338,7 +374,16 @@
    "neg_pre_nt": [],
    "signed": 167,
    "mv": 45.925,
-   "mv_abs": 45.925
+   "mv_abs": 45.925,
+   "syn_per_edge": {
+    "min": 167,
+    "median": 167.0,
+    "max": 167,
+    "lt5": 0,
+    "eq1": 0,
+    "max_mv": 45.925,
+    "min_mv": 45.925
+   }
   },
   {
    "pre": "AOTU025_R",
@@ -352,7 +397,16 @@
    "neg_pre_nt": [],
    "signed": 154,
    "mv": 42.35,
-   "mv_abs": 42.35
+   "mv_abs": 42.35,
+   "syn_per_edge": {
+    "min": 154,
+    "median": 154.0,
+    "max": 154,
+    "lt5": 0,
+    "eq1": 0,
+    "max_mv": 42.35,
+    "min_mv": 42.35
+   }
   },
   {
    "pre": "AOTU019_L",
@@ -368,7 +422,16 @@
    ],
    "signed": -216,
    "mv": -59.4,
-   "mv_abs": 59.4
+   "mv_abs": 59.4,
+   "syn_per_edge": {
+    "min": 216,
+    "median": 216.0,
+    "max": 216,
+    "lt5": 0,
+    "eq1": 0,
+    "max_mv": 59.4,
+    "min_mv": 59.4
+   }
   },
   {
    "pre": "AOTU019_R",
@@ -384,7 +447,16 @@
    ],
    "signed": -121,
    "mv": -33.275,
-   "mv_abs": 33.275
+   "mv_abs": 33.275,
+   "syn_per_edge": {
+    "min": 121,
+    "median": 121.0,
+    "max": 121,
+    "lt5": 0,
+    "eq1": 0,
+    "max_mv": 33.275,
+    "min_mv": 33.275
+   }
   }
  ],
  "lc10a_glutamate_side": [
